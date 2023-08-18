@@ -1,0 +1,20 @@
+.vs/
+
+# build result
+*.exe
+*.lib
+*.dll
+*.pdb
+
+# build intermediate
+*.tlog
+*.log
+*.idb
+*.recipe
+*.obj
+*.vcxproj.FileListAbsolute.txt
+*.lastbuildstate
+*.ilk
+
+#debug settings
+*.user
