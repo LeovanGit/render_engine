@@ -1,35 +1,54 @@
 #include <windows.h>
+#include <iostream>
+#include <memory>
 
-#include "source/windows/window.h"
+#include "windows/window.h"
+#include "application.h"
+#include "utils/fps_timer.h"
 
-//extern Window window;
-
-int WINAPI WinMain(HINSTANCE hInstance,
-                   HINSTANCE hPrevInstance,
-                   LPSTR lpCmdLine,
-                   int nCmdShow)
+// after this std::cout will print to the created console
+void initConsole()
 {
-    Window window(hInstance, 400, 400, 400, 300);
-    window.Show();
+    AllocConsole();
+    FILE *dummy;
+    auto s = freopen_s(&dummy, "CONOUT$", "w", stdout);
+}
+
+int WINAPI WinMain(HINSTANCE app_handle,
+                   HINSTANCE prev_app_handle,
+                   LPSTR cmd_line,
+                   int window_show_params)
+{
+    initConsole();
+
+    FPSTimer fps_timer(0.0f);
+
+    Application app(app_handle);
+    app.m_window.Show();
 
     MSG msg;
-
     while (true)
     {
-        if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+        while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
         {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
 
-            if (msg.message == WM_QUIT)
-                break;
+            if (msg.message == WM_QUIT) goto exit;
         }
-        else
-        {
-            // main loop
 
+        if (fps_timer.IsFrameTimeElapsed())
+        {
+            float delta_time = fps_timer.GetDeltaTime();
+
+            float fps = 1.0f / delta_time;
+            std::cout << "FPS: " << fps << "\n";
+
+            app.ProcessInput(delta_time);
+            app.m_scene.Render(app.m_window);
+            app.m_window.Flush();
         }
     }
 
-    return static_cast<int>(msg.wParam);
+    exit: return static_cast<int>(msg.wParam);
 }

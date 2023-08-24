@@ -107,6 +107,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)external\glm\</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -130,10 +132,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="source\windows\window.h" />
+    <ClInclude Include="render\scene.h" />
+    <ClInclude Include="source\input.h" />
+    <ClInclude Include="source\input_listener.h" />
+    <ClInclude Include="source\key_codes.h" />
+    <ClInclude Include="source\math\intersection.h" />
+    <ClInclude Include="source\math\ray.h" />
+    <ClInclude Include="source\math\sphere.h" />
+    <ClInclude Include="utils\fps_timer.h" />
+    <ClInclude Include="windows\window.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\windows\window.cpp" />
+    <ClCompile Include="render\scene.cpp" />
+    <ClCompile Include="source\input.cpp" />
+    <ClCompile Include="source\math\intersection.cpp" />
+    <ClCompile Include="source\math\ray.cpp" />
+    <ClCompile Include="source\math\sphere.cpp" />
+    <ClCompile Include="utils\fps_timer.cpp" />
+    <ClCompile Include="windows\window.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
