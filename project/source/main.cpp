@@ -21,7 +21,7 @@ int WINAPI WinMain(HINSTANCE app_handle,
 {
     initConsole();
 
-    FPSTimer fps_timer(0.0f);
+    FPSTimer fps_timer(60.0f);
 
     Application app(app_handle);
     app.m_window.Show();

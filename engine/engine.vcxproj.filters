@@ -33,13 +33,16 @@
     <ClInclude Include="utils\fps_timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\input_listener.h">
+    <ClInclude Include="input\input_listener.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\input.h">
+    <ClInclude Include="input\input.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\key_codes.h">
+    <ClInclude Include="input\key_codes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\colors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -62,7 +65,7 @@
     <ClCompile Include="utils\fps_timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\input.cpp">
+    <ClCompile Include="input\input.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

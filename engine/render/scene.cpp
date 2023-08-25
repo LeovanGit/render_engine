@@ -31,7 +31,7 @@ void Scene::Render(Window &window)
 
         for (const auto &sphere : m_spheres) sphere.IsIntersected(ray, intersection);
 
-        if (intersection) pixels[i] = HEX_WHITE;
+        if (intersection) pixels[i] = HEX_COLORS::WHITE;
 
         intersection.Reset();
     }

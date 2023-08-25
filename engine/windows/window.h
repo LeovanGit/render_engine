@@ -4,13 +4,8 @@
 #include <vector>
 #include "glm/glm.hpp"
 
-#include "../source/input_listener.h"
-
-enum COLORS
-{
-    HEX_BLACK = 0x000000,
-    HEX_WHITE = 0xFFFFFF,
-};
+#include "../input/input_listener.h"
+#include "../source/colors.h"
 
 void AttachListener(InputListener *input_listener);
 

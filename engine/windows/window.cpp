@@ -85,7 +85,7 @@ void Window::Clear()
 {
     uint32_t size = m_pixels_size.x * m_pixels_size.y;
 
-    for (uint32_t i = 0; i != size; ++i) m_pixels[i] = HEX_BLACK;
+    for (uint32_t i = 0; i != size; ++i) m_pixels[i] = HEX_COLORS::BLACK;
 }
 
 void Window::Flush()
@@ -164,7 +164,7 @@ void Window::InitPixelsBuffer()
     m_bmp_info.bmiHeader.biSizeImage = 4 * size;
 
     // RGB
-    for (uint32_t i = 0; i != size; ++i) m_pixels[i] = HEX_BLACK;
+    for (uint32_t i = 0; i != size; ++i) m_pixels[i] = HEX_COLORS::BLACK;
 }
 
 LRESULT CALLBACK Window::WindowProc(HWND win_handle, UINT message, WPARAM w_param, LPARAM l_param)
