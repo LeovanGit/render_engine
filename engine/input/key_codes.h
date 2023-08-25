@@ -3,7 +3,7 @@
 #include "windows.h"
 
 // https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
-enum class VK_CODE
+enum VK_CODE
 {
     W = 0x57,
     A = 0x41,

@@ -1,8 +1,9 @@
 #pragma once
 
-#include <cstdint>
+#include <iostream>
 #include "windows.h"
 #include "glm/glm.hpp"
+#include <bitset>
 
 #include "key_codes.h"
 
@@ -17,7 +18,7 @@ public:
 
     void CaptureMousePosition(uint16_t pos_x, uint16_t pos_y);
 
-    bool m_keys_state[static_cast<uint8_t>(VK_CODE::MAX)];
+    std::bitset<VK_CODE::MAX> m_keys_state;
 
     glm::u16vec2 m_mouse_position;
 };

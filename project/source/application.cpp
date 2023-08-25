@@ -13,7 +13,7 @@ void Application::InitScene()
     m_scene.AddSphere(math::Sphere(glm::vec3(0, 0, 0), 15));
     m_scene.AddSphere(math::Sphere(glm::vec3(50, 50, 0), 10));
 }
-#include <iostream>
+
 void Application::ProcessInput(float delta_time)
 {
     if (m_input.IsKeyPressed(VK_CODE::W))

@@ -3,8 +3,8 @@
 #include <memory>
 
 #include "windows/window.h"
-#include "source/input_listener.h"
-#include "source/input.h"
+#include "input/input_listener.h"
+#include "input/input.h"
 #include "render/scene.h"
 #include "source/math/sphere.h"
 

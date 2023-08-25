@@ -132,10 +132,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="input\input.h" />
+    <ClInclude Include="input\input_listener.h" />
+    <ClInclude Include="input\key_codes.h" />
     <ClInclude Include="render\scene.h" />
-    <ClInclude Include="source\input.h" />
-    <ClInclude Include="source\input_listener.h" />
-    <ClInclude Include="source\key_codes.h" />
+    <ClInclude Include="source\colors.h" />
     <ClInclude Include="source\math\intersection.h" />
     <ClInclude Include="source\math\ray.h" />
     <ClInclude Include="source\math\sphere.h" />
@@ -143,8 +144,8 @@
     <ClInclude Include="windows\window.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="input\input.cpp" />
     <ClCompile Include="render\scene.cpp" />
-    <ClCompile Include="source\input.cpp" />
     <ClCompile Include="source\math\intersection.cpp" />
     <ClCompile Include="source\math\ray.cpp" />
     <ClCompile Include="source\math\sphere.cpp" />
