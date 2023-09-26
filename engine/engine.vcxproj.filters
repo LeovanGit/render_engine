@@ -45,6 +45,15 @@
     <ClInclude Include="source\colors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="source\non_copyable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="render\d3d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="render\engine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="windows\window.cpp">
@@ -66,6 +75,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="input\input.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="render\d3d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="render\engine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

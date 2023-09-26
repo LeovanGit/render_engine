@@ -5,6 +5,7 @@
 #include "windows/window.h"
 #include "application.h"
 #include "utils/fps_timer.h"
+#include "render/engine.h"
 
 // after this std::cout will print to the created console
 void initConsole()
@@ -20,6 +21,8 @@ int WINAPI WinMain(HINSTANCE app_handle,
                    int window_show_params)
 {
     initConsole();
+
+    engine::Engine::Init();
 
     FPSTimer fps_timer(60.0f);
 
@@ -41,8 +44,8 @@ int WINAPI WinMain(HINSTANCE app_handle,
         {
             float delta_time = fps_timer.GetDeltaTime();
 
-            float fps = 1.0f / delta_time;
-            std::cout << "FPS: " << fps << "\n";
+            // float fps = 1.0f / delta_time;
+            // std::cout << "FPS: " << fps << "\n";
 
             app.ProcessInput(delta_time);
             app.m_scene.Render(app.m_window);
@@ -50,5 +53,8 @@ int WINAPI WinMain(HINSTANCE app_handle,
         }
     }
 
-    exit: return static_cast<int>(msg.wParam);
+exit:
+    engine::Engine::Deinit();
+
+    return static_cast<int>(msg.wParam);
 }

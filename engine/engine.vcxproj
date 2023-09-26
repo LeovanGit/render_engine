@@ -114,6 +114,9 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalDependencies>DXGI.lib</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -135,16 +138,21 @@
     <ClInclude Include="input\input.h" />
     <ClInclude Include="input\input_listener.h" />
     <ClInclude Include="input\key_codes.h" />
+    <ClInclude Include="render\d3d.h" />
+    <ClInclude Include="render\engine.h" />
     <ClInclude Include="render\scene.h" />
     <ClInclude Include="source\colors.h" />
     <ClInclude Include="source\math\intersection.h" />
     <ClInclude Include="source\math\ray.h" />
     <ClInclude Include="source\math\sphere.h" />
+    <ClInclude Include="source\non_copyable.h" />
     <ClInclude Include="utils\fps_timer.h" />
     <ClInclude Include="windows\window.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="input\input.cpp" />
+    <ClCompile Include="render\d3d.cpp" />
+    <ClCompile Include="render\engine.cpp" />
     <ClCompile Include="render\scene.cpp" />
     <ClCompile Include="source\math\intersection.cpp" />
     <ClCompile Include="source\math\ray.cpp" />
