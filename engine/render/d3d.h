@@ -5,13 +5,10 @@
 #include <cassert>
 #include <vector>
 
-#include <dxgi1_4.h>
-#include <wrl.h> // Windows Runtime Library -> ComPtr
-#include <d3d12.h>
+#include "../source/stdafx.h"
+#include "engine.h"
 
 #include "../source/non_copyable.h"
-
-namespace wrl = Microsoft::WRL;
 
 namespace engine
 {
@@ -31,18 +28,39 @@ private:
     static Direct3D *m_instance;
 
     void InitDirect3D12();
-    void CreateFactory();
     void EnableDebugLayer();
+    void CreateFactory();
     void CreateDevice();
+    void CreateFence();
+    void CreateCommandObjects();
+    void GetDescriptorSizes();
+    void CreateDescriptorHeaps();
+
+    D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentBackBufferView() const;
+    D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilView() const;
 
     void LogAvailableVideoAdapters();
-
     void LogVideoAdapterOutputs(IDXGIAdapter1 *adapter);
-
     void LogOutputDisplayModes(IDXGIOutput *output, DXGI_FORMAT format);
 
+public:
     // our engine requires DirectX12 support, so we should use IDXGIFactory4
     wrl::ComPtr<IDXGIFactory4> m_factory;
     wrl::ComPtr<ID3D12Device> m_device;
+    wrl::ComPtr<ID3D12Fence> m_fence;
+
+    wrl::ComPtr<ID3D12CommandQueue> m_command_queue;
+    wrl::ComPtr<ID3D12CommandAllocator> m_command_list_allocator;
+    wrl::ComPtr<ID3D12GraphicsCommandList> m_command_list;
+
+    uint32_t m_RTV_descriptor_size;
+    uint32_t m_DSV_descriptor_size;
+    uint32_t m_CBV_SRV_descriptor_size;
+    uint32_t m_sampler_descriptor_size;
+
+    wrl::ComPtr<ID3D12DescriptorHeap> m_RTV_heap;
+    wrl::ComPtr<ID3D12DescriptorHeap> m_DSV_heap;
+    wrl::ComPtr<ID3D12DescriptorHeap> m_CBV_SRV_UAV_heap;
+    wrl::ComPtr<ID3D12DescriptorHeap> m_sampler_heap;
 };
 } // namespace engine

@@ -1,7 +1,8 @@
 #include "application.h"
 
-Application::Application(HINSTANCE app_handle) :
-    m_window(Window(app_handle, 400, 400, 400, 300, 2)),
+Application::Application(HINSTANCE app_handle,
+                         float fps_limit) :
+    m_window(engine::Window(app_handle, 400, 400, 400, 300, 2, fps_limit)),
     m_speed(100.0f)
 {
     InitScene();

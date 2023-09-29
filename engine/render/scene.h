@@ -7,6 +7,8 @@
 #include "../source/math/ray.h"
 #include "../source/math/intersection.h"
 
+namespace engine
+{
 class Scene
 {
 public:
@@ -18,3 +20,4 @@ public:
 
     std::vector<math::Sphere> m_spheres;
 };
+} // namespace engine

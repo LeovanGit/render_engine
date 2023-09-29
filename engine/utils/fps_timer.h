@@ -12,7 +12,9 @@ public:
 
     bool IsFrameTimeElapsed();
 
-    float GetDeltaTime();
+    float GetDeltaTime() const;
+
+    float GetFPSLimit() const;
 
 private:
     float m_fps_limit;

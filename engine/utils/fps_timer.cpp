@@ -25,7 +25,12 @@ bool FPSTimer::IsFrameTimeElapsed()
     return true;
 }
 
-float FPSTimer::GetDeltaTime()
+float FPSTimer::GetDeltaTime() const
 {
     return m_delta_time.count();
+}
+
+float FPSTimer::GetFPSLimit() const
+{
+    return m_fps_limit;
 }

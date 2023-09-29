@@ -146,6 +146,7 @@
     <ClInclude Include="source\math\ray.h" />
     <ClInclude Include="source\math\sphere.h" />
     <ClInclude Include="source\non_copyable.h" />
+    <ClInclude Include="source\stdafx.h" />
     <ClInclude Include="utils\fps_timer.h" />
     <ClInclude Include="windows\window.h" />
   </ItemGroup>

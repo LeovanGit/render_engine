@@ -11,7 +11,8 @@
 class Application : public InputListener
 {
 public:
-    Application(HINSTANCE app_handle);
+    Application(HINSTANCE app_handle,
+                float fps_limit);
 
     void InitScene();
     void ProcessInput(float delta_time);
@@ -23,9 +24,9 @@ public:
 
     virtual ~Application() = default;
 
-    Window m_window;
+    engine::Window m_window;
     Input m_input;
-    Scene m_scene;
+    engine::Scene m_scene;
 
     float m_speed;
 };

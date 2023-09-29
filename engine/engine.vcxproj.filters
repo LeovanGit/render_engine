@@ -54,6 +54,9 @@
     <ClInclude Include="render\engine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="source\stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="windows\window.cpp">

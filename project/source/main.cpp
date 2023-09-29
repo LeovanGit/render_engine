@@ -26,7 +26,7 @@ int WINAPI WinMain(HINSTANCE app_handle,
 
     FPSTimer fps_timer(60.0f);
 
-    Application app(app_handle);
+    Application app(app_handle, fps_timer.GetFPSLimit());
     app.m_window.Show();
 
     MSG msg;

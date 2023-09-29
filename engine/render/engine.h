@@ -8,6 +8,12 @@
 
 namespace engine
 {
+struct Settings
+{
+    DXGI_FORMAT backbuffer_format;
+    uint8_t swapchain_buffer_count;
+};
+
 class Engine final : NonCopyable
 {
 public:
@@ -21,6 +27,11 @@ private:
     Engine() = default;
     ~Engine() = default;
 
+    void LoadEngineSettings();
+
     static Engine *m_instance;
+
+public:
+    Settings settings;
 };
 } // namespace engine
