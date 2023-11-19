@@ -16,8 +16,12 @@ public:
 
     void AddSphere(const math::Sphere &sphere);
 
+    void CreateDepthBuffer(uint16_t width, uint16_t height);
+
     void Render(Window &window);
 
     std::vector<math::Sphere> m_spheres;
+
+    wrl::ComPtr<ID3D12Resource> m_depth_stencil_buffer;
 };
 } // namespace engine

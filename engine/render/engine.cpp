@@ -12,6 +12,7 @@ void Engine::Init()
 
     m_instance->LoadEngineSettings();
     Direct3D::Init();
+    ShaderManager::Init();
 }
 
 const Engine *Engine::GetInstance()
@@ -26,6 +27,7 @@ void Engine::Deinit()
     assert(m_instance && "Engine singleton is not initalized or Engine::Deinit() was called twice!");
     
     // deinitialize singletons in reverse order:
+    ShaderManager::Deinit();
     Direct3D::Deinit();
 
     delete m_instance;

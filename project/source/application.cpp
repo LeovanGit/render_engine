@@ -5,8 +5,17 @@ Application::Application(HINSTANCE app_handle,
     m_window(engine::Window(app_handle, 400, 400, 400, 300, 2, fps_limit)),
     m_speed(100.0f)
 {
+    InitShaders();
     InitScene();
     m_window.AttachListener(this);
+}
+
+void Application::InitShaders()
+{
+    engine::ShaderManager *shader_manager = engine::ShaderManager::GetInstance();
+
+    shader_manager->GetShader("../project/shaders/shader.hlsl", "vertexShader", "vs_5_0");
+    shader_manager->GetShader("../project/shaders/shader.hlsl", "pixelShader", "ps_5_0");
 }
 
 void Application::InitScene()

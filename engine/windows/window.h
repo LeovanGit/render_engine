@@ -55,6 +55,8 @@ private:
 	void Init(HINSTANCE app_handle);
 	void InitPixelsBuffer();
 	void CreateSwapChain(float fps_limit);
+	void CreateRenderTargetView();
+	void CreateViewport();
 
 	// hack to make WindowProc class field:
 	LRESULT CALLBACK WindowProc(HWND win_handle, UINT message, WPARAM w_param, LPARAM l_param);

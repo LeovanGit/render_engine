@@ -5,6 +5,7 @@
 
 #include "../source/non_copyable.h"
 #include "d3d.h"
+#include "shader_manager.h"
 
 namespace engine
 {

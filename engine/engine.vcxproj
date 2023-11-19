@@ -115,7 +115,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>DXGI.lib;D3D12.lib</AdditionalDependencies>
+      <AdditionalDependencies>DXGI.lib;D3D12.lib;d3dcompiler.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -141,6 +141,8 @@
     <ClInclude Include="render\d3d.h" />
     <ClInclude Include="render\engine.h" />
     <ClInclude Include="render\scene.h" />
+    <ClInclude Include="render\shader.h" />
+    <ClInclude Include="render\shader_manager.h" />
     <ClInclude Include="source\colors.h" />
     <ClInclude Include="source\math\intersection.h" />
     <ClInclude Include="source\math\ray.h" />
@@ -155,6 +157,8 @@
     <ClCompile Include="render\d3d.cpp" />
     <ClCompile Include="render\engine.cpp" />
     <ClCompile Include="render\scene.cpp" />
+    <ClCompile Include="render\shader.cpp" />
+    <ClCompile Include="render\shader_manager.cpp" />
     <ClCompile Include="source\math\intersection.cpp" />
     <ClCompile Include="source\math\ray.cpp" />
     <ClCompile Include="source\math\sphere.cpp" />

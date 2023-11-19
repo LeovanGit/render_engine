@@ -17,6 +17,7 @@ Window::Window(HINSTANCE app_handle,
     Init(app_handle);
     InitPixelsBuffer();
     CreateSwapChain(fps_limit);
+    CreateRenderTargetView();
 }
 
 void Window::AttachListener(InputListener *input_listener)
@@ -201,6 +202,48 @@ void Window::CreateSwapChain(float fps_limit)
                                                      &scd,
                                                      &m_swapchain);
     assert(result >= 0 && "Failed to CreateSwapChain()");
+}
+
+void Window::CreateRenderTargetView()
+{
+    const Direct3D *d3d = Direct3D::GetInstance();
+    const Engine *engine = Engine::GetInstance();
+
+    HRESULT result;
+
+    // TODO: use CD3DX12_CPU_DESCRIPTOR_HANDLE wrapper which manage offsets in heap or write your own
+    D3D12_CPU_DESCRIPTOR_HANDLE RTV_heap_handle = d3d->m_RTV_heap->GetCPUDescriptorHandleForHeapStart();
+
+    // Create RTV for each buffer in swapchain
+    for (uint32_t i = 0; i != engine->settings.swapchain_buffer_count; ++i)
+    {
+        wrl::ComPtr<ID3D12Resource> swapchain_buffer;
+        
+        result = m_swapchain->GetBuffer(i, IID_PPV_ARGS(&swapchain_buffer));
+
+        d3d->m_device->CreateRenderTargetView(swapchain_buffer.Get(), nullptr, RTV_heap_handle);
+
+        // move to the next empty cell in the heap
+        RTV_heap_handle.ptr += d3d->m_RTV_descriptor_size;
+    }
+}
+
+void Window::CreateViewport()
+{
+    const Direct3D *d3d = Direct3D::GetInstance();
+
+    D3D12_VIEWPORT viewport;
+    viewport.TopLeftX = 0.0f;
+    viewport.TopLeftY = 0.0f;
+    viewport.Width = static_cast<float>(m_client_size.x);
+    viewport.Height = static_cast<float>(m_client_size.y);
+    viewport.MinDepth = 0.0f;
+    viewport.MaxDepth = 1.0f;
+
+    d3d->m_command_list->RSSetViewports(1, &viewport);
+
+    tagRECT mScissorRect = { 0, 0, m_client_size.x, m_client_size.y };
+    d3d->m_command_list->RSSetScissorRects(1, &mScissorRect);
 }
 
 LRESULT CALLBACK Window::WindowProc(HWND win_handle, UINT message, WPARAM w_param, LPARAM l_param)

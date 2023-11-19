@@ -36,14 +36,14 @@ private:
     void GetDescriptorSizes();
     void CreateDescriptorHeaps();
 
-    D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentBackBufferView() const;
-    D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilView() const;
-
     void LogAvailableVideoAdapters();
     void LogVideoAdapterOutputs(IDXGIAdapter1 *adapter);
     void LogOutputDisplayModes(IDXGIOutput *output, DXGI_FORMAT format);
 
 public:
+    D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentBackBufferView() const;
+    D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilView() const;
+
     // our engine requires DirectX12 support, so we should use IDXGIFactory4
     wrl::ComPtr<IDXGIFactory4> m_factory;
     wrl::ComPtr<ID3D12Device> m_device;
@@ -58,7 +58,7 @@ public:
     uint32_t m_CBV_SRV_descriptor_size;
     uint32_t m_sampler_descriptor_size;
 
-    wrl::ComPtr<ID3D12DescriptorHeap> m_RTV_heap;
+    wrl::ComPtr<ID3D12DescriptorHeap> m_RTV_heap; // TOOD: should I move RTV_heap to Window?
     wrl::ComPtr<ID3D12DescriptorHeap> m_DSV_heap;
     wrl::ComPtr<ID3D12DescriptorHeap> m_CBV_SRV_UAV_heap;
     wrl::ComPtr<ID3D12DescriptorHeap> m_sampler_heap;

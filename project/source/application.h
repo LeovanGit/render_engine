@@ -6,6 +6,7 @@
 #include "input/input_listener.h"
 #include "input/input.h"
 #include "render/scene.h"
+#include "render/shader_manager.h"
 #include "source/math/sphere.h"
 
 class Application : public InputListener
@@ -14,6 +15,7 @@ public:
     Application(HINSTANCE app_handle,
                 float fps_limit);
 
+    void InitShaders();
     void InitScene();
     void ProcessInput(float delta_time);
 
