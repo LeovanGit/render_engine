@@ -4,37 +4,44 @@
 
 #include <SDL.h>
 
+#include "globals.h"
+
 namespace engine
 {
 Engine *Engine::s_instance = nullptr;
 
 void Engine::Create()
 {
-    assert(s_instance == nullptr && "Engine instance already created");
+    assert(s_instance == nullptr && "Engine instance already created\n");
     s_instance = new Engine;
 }
 
 Engine *Engine::GetInstance()
 {
-    assert(s_instance && "Engine instance is not created");
+    assert(s_instance && "Engine instance is not created\n");
     return s_instance;
 }
 
 void Engine::Destroy()
 {
-    assert(s_instance && "Engine instance is not created");
+    assert(s_instance && "Engine instance is not created\n");
     delete s_instance;
     s_instance = nullptr;
 }
 
 void Engine::Init()
 {
-    assert(SDL_Init(SDL_INIT_VIDEO) == 0 && "Couldn't initialize SDL");
+    assert(SDL_Init(SDL_INIT_VIDEO) == 0 && "Couldn't initialize SDL\n");
     //SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Couldn't initialize SDL: %s\n", SDL_GetError());
+    
+    Globals::Create();    
+    Globals::GetInstance()->InitD3D11();
 }
 
 void Engine::Deinit()
 {
+    Globals::Destroy();
+
     SDL_Quit(); // SDL_Init
 }
 } // namespace engine

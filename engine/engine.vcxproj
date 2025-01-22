@@ -20,10 +20,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="render\engine.cpp" />
+    <ClCompile Include="render\globals.cpp" />
+    <ClCompile Include="render\renderer.cpp" />
     <ClCompile Include="window\window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="render\engine.h" />
+    <ClInclude Include="render\globals.h" />
+    <ClInclude Include="render\renderer.h" />
     <ClInclude Include="utils\utils.h" />
     <ClInclude Include="window\window.h" />
   </ItemGroup>
@@ -120,7 +124,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;d3d11.lib;dxgi.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\external\SDL2-2.30.11\lib\x64</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
