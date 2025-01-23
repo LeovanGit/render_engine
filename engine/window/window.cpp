@@ -90,19 +90,27 @@ void Window::Destroy()
     SDL_DestroyWindow(m_window); // SDL_CreateWindow
 }
 
-void Window::Update()
+void Window::SetViewport()
 {
-    // fill window with green color
-    //SDL_FillRect(m_screenSurface, NULL, SDL_MapRGB(m_screenSurface->format, 0, 255, 0));
-    //SDL_UpdateWindowSurface(m_window);
-
     Globals *globals = Globals::GetInstance();
-
-    constexpr float clearColor[] = { 0.1f, 0.1f, 0.1f, 1.0f };
-
     globals->m_deviceContext->RSSetViewports(1, &viewport);
+}
+
+void Window::ClearRenderTarget()
+{
+    Globals *globals = Globals::GetInstance();
+    static constexpr float clearColor[] = { 0.1f, 0.1f, 0.1f, 1.0f };
     globals->m_deviceContext->ClearRenderTargetView(m_renderTarget.Get(), clearColor);
+}
+
+void Window::SetRenderTarget()
+{
+    Globals *globals = Globals::GetInstance();
     globals->m_deviceContext->OMSetRenderTargets(1, m_renderTarget.GetAddressOf(), nullptr);
+}
+
+void Window::Present()
+{
     m_swapChain->Present(1, 0);
 }
 } // namespace engine

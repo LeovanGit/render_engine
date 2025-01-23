@@ -1,16 +1,10 @@
 #pragma once
 
 #include "utils/utils.h"
-
-#include <d3d11.h>
-#include <dxgi1_5.h>
-#include <wrl.h>
+#include "utils/d3d11common.h"
 
 namespace engine
 {
-template <typename T>
-using ComPtr = Microsoft::WRL::ComPtr<T>;
-
 class Globals : public NonCopyable
 {
 public:

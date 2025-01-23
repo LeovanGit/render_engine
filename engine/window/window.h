@@ -7,9 +7,6 @@
 
 namespace engine
 {
-template <typename T>
-using ComPtr = Microsoft::WRL::ComPtr<T>;
-
 class Window
 {
 public:
@@ -19,7 +16,10 @@ public:
 
     void Destroy();
 
-    void Update();
+    void SetViewport();
+    void ClearRenderTarget();
+    void SetRenderTarget();
+    void Present();
 
 private:
     void CreateSwapchain();
