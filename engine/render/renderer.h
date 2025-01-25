@@ -10,17 +10,12 @@ class Renderer
 {
 public:
     Renderer(Window *window);
-    ~Renderer();
-
-    void SetVertexBuffer(VertexBuffer *buffer) { m_currentVertexBuffer = buffer; }
-    void SetVertexShader(Shader *shader) { m_currentVertexShader = shader; }
-    void SetPixelShader(Shader *shader) { m_currentPixelShader = shader; }
+    ~Renderer() = default;
 
     void Render();
 
     Window *m_window;
-    VertexBuffer *m_currentVertexBuffer;
-    Shader *m_currentVertexShader;
-    Shader *m_currentPixelShader;
+    std::shared_ptr<VertexBuffer> m_currentVertexBuffer;
+    std::shared_ptr<Shader> m_currentShader;
 };
 } // namespace engine

@@ -1,40 +1,31 @@
 #pragma once
 
-#include <string>
+#include <iostream>
+#include <unordered_map>
 
-#include <SDL.h>
-
-#include "utils/d3d11common.h"
-#include "render/globals.h"
+#include "shader.h"
 
 namespace engine
 {
-class Shader
+class ShaderManager : public NonCopyable
 {
 public:
-    enum class ShaderType
-    {
-        VertexShader = 0,
-        PixelShader
-    };
+    static void Create();
+    static ShaderManager *GetInstance();
+    static void Destroy();
 
-    Shader(Shader::ShaderType type,
-           const std::wstring &pathToFile,
-           const std::string &entryPoint,
-           D3D11_INPUT_ELEMENT_DESC inputLayout[] = nullptr,
-           size_t numElements = 0);
+    std::shared_ptr<Shader> GetOrCreateShader(
+        uint32_t shaderStages,
+        const std::wstring &pathToFile,
+        D3D11_INPUT_ELEMENT_DESC inputLayout[] = nullptr,
+        size_t numElements = 0);
+    
+    std::unordered_map<std::wstring, std::shared_ptr<Shader>> m_shaders;
 
-    void Bind();
+private:
+    ShaderManager() = default;
+    ~ShaderManager() = default;
 
-    ShaderType m_type;
-    std::wstring m_pathToFile;
-    std::string m_entryPoint;
-
-    ComPtr<ID3D11VertexShader> m_vertexShader;
-    ComPtr<ID3D11PixelShader> m_pixelShader;
-
-    ComPtr<ID3D11InputLayout> m_inputLayout;
+    static ShaderManager *s_instance;
 };
-
-std::string GetShaderTarget(Shader::ShaderType type);
 } // engine

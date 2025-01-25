@@ -24,7 +24,7 @@ public:
 
 private:
     Globals();
-    ~Globals() = default;
+    ~Globals();
 
     static Globals *s_instance;
 };

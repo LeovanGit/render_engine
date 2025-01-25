@@ -1,6 +1,9 @@
 #pragma once
 
 #include "utils/utils.h"
+#include "globals.h"
+#include "shader_manager.h"
+#include "model_manager.h"
 
 namespace engine
 {

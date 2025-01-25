@@ -34,6 +34,17 @@ Globals::Globals()
 
 }
 
+Globals::~Globals()
+{
+    m_deviceContext.Reset();
+#if defined(DEBUG) || defined(_DEBUG)
+    // check that all D3D11 objects was released (warning in output):
+    m_debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+    m_debug.Reset();
+#endif
+    m_device.Reset();
+}
+
 void Globals::InitD3D11()
 {
     HRESULT hr;

@@ -21,7 +21,9 @@
   <ItemGroup>
     <ClCompile Include="render\engine.cpp" />
     <ClCompile Include="render\globals.cpp" />
+    <ClCompile Include="render\model_manager.cpp" />
     <ClCompile Include="render\renderer.cpp" />
+    <ClCompile Include="render\shader.cpp" />
     <ClCompile Include="render\shader_manager.cpp" />
     <ClCompile Include="render\vertex_buffer.cpp" />
     <ClCompile Include="window\window.cpp" />
@@ -29,7 +31,9 @@
   <ItemGroup>
     <ClInclude Include="render\engine.h" />
     <ClInclude Include="render\globals.h" />
+    <ClInclude Include="render\model_manager.h" />
     <ClInclude Include="render\renderer.h" />
+    <ClInclude Include="render\shader.h" />
     <ClInclude Include="render\shader_manager.h" />
     <ClInclude Include="render\vertex_buffer.h" />
     <ClInclude Include="utils\d3d11common.h" />

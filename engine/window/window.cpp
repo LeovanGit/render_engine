@@ -9,8 +9,8 @@ Window::Window(uint16_t width, uint16_t height)
     , m_screenSurface(nullptr)
     , m_width(width)
     , m_height(height)
-    , m_swapChain(nullptr)
-    , m_backBuffer(nullptr)
+    , m_swapchain(nullptr)
+    , m_backbuffer(nullptr)
     , m_renderTarget(nullptr)
 {
 
@@ -62,16 +62,16 @@ void Window::CreateSwapchain()
         &swapChainDesc,
         &swapChainFullscreenDesc,
         nullptr,
-        &m_swapChain);
+        &m_swapchain);
     assert(hr >= 0 && "Failed to create swapchain\n");
 
     // Swapchain resources
-    hr = m_swapChain->GetBuffer(0, IID_PPV_ARGS(&m_backBuffer));
+    hr = m_swapchain->GetBuffer(0, IID_PPV_ARGS(&m_backbuffer));
     assert(hr >= 0 && "Failed to get Back Buffer from the SwapChain\n");
 
 
     hr = globals->m_device->CreateRenderTargetView(
-        m_backBuffer.Get(),
+        m_backbuffer.Get(),
         nullptr,
         &m_renderTarget);
     assert(hr >= 0 && "Failed to create RTV from Back Buffer\n");
@@ -111,6 +111,6 @@ void Window::SetRenderTarget()
 
 void Window::Present()
 {
-    m_swapChain->Present(1, 0);
+    m_swapchain->Present(1, 0);
 }
 } // namespace engine

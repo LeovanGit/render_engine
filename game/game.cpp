@@ -7,8 +7,6 @@
 #include "window/window.h"
 #include "render/renderer.h"
 
-#include "render/shader_manager.h"
-#include "render/vertex_buffer.h"
 #include <DirectXMath.h>
 
 struct VertexBufferGPU
@@ -19,6 +17,9 @@ struct VertexBufferGPU
 
 void InitScene(engine::Renderer &renderer)
 {
+    engine::ShaderManager *sm = engine::ShaderManager::GetInstance();
+    engine::ModelManager *mm = engine::ModelManager::GetInstance();
+
     D3D11_INPUT_ELEMENT_DESC inputLayout[] =
     {
         {
@@ -41,19 +42,11 @@ void InitScene(engine::Renderer &renderer)
         }
     };
 
-    engine::Shader *vertexShader = new engine::Shader(
-        engine::Shader::ShaderType::VertexShader,
+    renderer.m_currentShader = sm->GetOrCreateShader(
+        engine::ShaderStage_VertexShader | engine::ShaderStage_PixelShader,
         L"../assets/shaders/hello_triangle.hlsl",
-        "mainVS",
         inputLayout,
         _countof(inputLayout));
-    renderer.SetVertexShader(vertexShader);
-
-    engine::Shader *pixelShader = new engine::Shader(
-        engine::Shader::ShaderType::PixelShader,
-        L"../assets/shaders/hello_triangle.hlsl",
-        "mainPS");
-    renderer.SetPixelShader(pixelShader);
 
     VertexBufferGPU vertices[] =
     {
@@ -62,8 +55,11 @@ void InitScene(engine::Renderer &renderer)
         { DirectX::XMFLOAT3(-0.5f, -0.5f, 0.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f) }, // vertex 3
     };
 
-    engine::VertexBuffer *vertexBuffer = new engine::VertexBuffer(vertices, sizeof(vertices), sizeof(VertexBufferGPU));
-    renderer.SetVertexBuffer(vertexBuffer);
+    renderer.m_currentVertexBuffer = mm->GetOrCreateModel(
+        "triangle",
+        vertices,
+        sizeof(vertices),
+        sizeof(VertexBufferGPU));
 }
 
 int main(int argc, char *argv[])

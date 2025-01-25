@@ -11,9 +11,9 @@ class Window
 {
 public:
     Window(uint16_t width, uint16_t height);
+    ~Window() = default;
     
     void Create();
-
     void Destroy();
 
     void SetViewport();
@@ -30,8 +30,8 @@ private:
     uint16_t m_width;
     uint16_t m_height;
 
-    ComPtr<IDXGISwapChain1> m_swapChain;
-    ComPtr<ID3D11Texture2D> m_backBuffer;
+    ComPtr<IDXGISwapChain1> m_swapchain;
+    ComPtr<ID3D11Texture2D> m_backbuffer;
     ComPtr<ID3D11RenderTargetView> m_renderTarget;
 
     D3D11_VIEWPORT viewport;

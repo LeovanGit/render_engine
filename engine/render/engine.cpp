@@ -4,8 +4,6 @@
 
 #include <SDL.h>
 
-#include "globals.h"
-
 namespace engine
 {
 Engine *Engine::s_instance = nullptr;
@@ -36,10 +34,18 @@ void Engine::Init()
     
     Globals::Create();    
     Globals::GetInstance()->InitD3D11();
+
+    ShaderManager::Create();
+
+    ModelManager::Create();
 }
 
 void Engine::Deinit()
 {
+    ModelManager::Destroy();
+
+    ShaderManager::Destroy();
+
     Globals::Destroy();
 
     SDL_Quit(); // SDL_Init

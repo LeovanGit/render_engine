@@ -10,8 +10,8 @@ namespace engine
 class VertexBuffer
 {
 public:
-    VertexBuffer() = default;
     VertexBuffer(void *data, size_t bufferSize, size_t vertexSize);
+    ~VertexBuffer() = default;
 
     void Bind();
 
