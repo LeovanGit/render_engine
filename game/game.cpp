@@ -13,11 +13,13 @@ struct VertexBufferGPU
 {
     DirectX::XMFLOAT3 m_position;
     DirectX::XMFLOAT3 m_color;
+    DirectX::XMFLOAT2 m_uv;
 };
 
 void InitScene(engine::Renderer &renderer)
 {
     engine::ShaderManager *sm = engine::ShaderManager::GetInstance();
+    engine::TextureManager *tm = engine::TextureManager::GetInstance();
     engine::ModelManager *mm = engine::ModelManager::GetInstance();
 
     D3D11_INPUT_ELEMENT_DESC inputLayout[] =
@@ -39,6 +41,15 @@ void InitScene(engine::Renderer &renderer)
             D3D11_APPEND_ALIGNED_ELEMENT, //offsetof(VertexBufferGPU, color), 12
             D3D11_INPUT_PER_VERTEX_DATA,
             0
+        },
+        {
+            "UV",
+            0,
+            DXGI_FORMAT_R32G32_FLOAT, // float2
+            0,
+            D3D11_APPEND_ALIGNED_ELEMENT, //offsetof(VertexBufferGPU, color), 24
+            D3D11_INPUT_PER_VERTEX_DATA,
+            0
         }
     };
 
@@ -50,9 +61,42 @@ void InitScene(engine::Renderer &renderer)
 
     VertexBufferGPU vertices[] =
     {
-        { DirectX::XMFLOAT3( 0.0f,  0.5f, 0.0f), DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f) }, // vertex 1
-        { DirectX::XMFLOAT3( 0.5f, -0.5f, 0.0f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f) }, // vertex 2
-        { DirectX::XMFLOAT3(-0.5f, -0.5f, 0.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f) }, // vertex 3
+        // vertex 1
+        {
+            DirectX::XMFLOAT3(-0.5f, -0.5f, 0.0f), // pos
+            DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f), // color
+            DirectX::XMFLOAT2(0.0f, 0.0f) // uv
+        },
+        // vertex 2
+        {
+            DirectX::XMFLOAT3(0.5f, 0.5f, 0.0f),
+            DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f),
+            DirectX::XMFLOAT2(1.0f, 1.0f)
+        },
+        // vertex 3
+        {
+            DirectX::XMFLOAT3(0.5f, -0.5f, 0.0f),
+            DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f),
+            DirectX::XMFLOAT2(1.0f, 0.0f)
+        },
+        // vertex 4
+        {
+            DirectX::XMFLOAT3(-0.5f, -0.5f, 0.0f),
+            DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f),
+            DirectX::XMFLOAT2(0.0f, 0.0f)
+        },
+        // vertex 5
+        {
+            DirectX::XMFLOAT3(-0.5f, 0.5f, 0.0f),
+            DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f),
+            DirectX::XMFLOAT2(0.0f, 1.0f)
+        },
+        // vertex 6
+        {
+            DirectX::XMFLOAT3(0.5f, 0.5f, 0.0f),
+            DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f),
+            DirectX::XMFLOAT2(1.0f, 1.0f)
+        }
     };
 
     renderer.m_currentVertexBuffer = mm->GetOrCreateModel(
@@ -60,6 +104,8 @@ void InitScene(engine::Renderer &renderer)
         vertices,
         sizeof(vertices),
         sizeof(VertexBufferGPU));
+
+    renderer.m_currentTexture = tm->GetOrCreateTexture(L"../assets/textures/default.dds");
 }
 
 int main(int argc, char *argv[])

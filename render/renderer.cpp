@@ -27,7 +27,7 @@ void Renderer::Render()
 
     globals->m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-    globals->m_deviceContext->Draw(6, 0);
+    globals->m_deviceContext->Draw(4, 0);
 
     m_window->Present();
 }
