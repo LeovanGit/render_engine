@@ -139,7 +139,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;d3d11.lib;dxgi.lib;D3DCompiler.lib</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;d3d11.lib;dxgi.lib;D3DCompiler.lib;dxguid.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\external\SDL2-2.30.11\lib\x64</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>

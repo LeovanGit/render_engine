@@ -62,8 +62,8 @@ void Shader::Compile(ShaderStage type,
     uint32_t flags = 0;
 #endif
 
-    ComPtr<ID3DBlob> compiled; // bytecode
-    ComPtr<ID3DBlob> error;
+    ComPtr<ID3DBlob> compiled = nullptr; // bytecode
+    ComPtr<ID3DBlob> error = nullptr;
 
     hr = D3DCompileFromFile(
         m_pathToFile.c_str(),
@@ -73,8 +73,8 @@ void Shader::Compile(ShaderStage type,
         GetShaderTarget(type).c_str(),
         flags,
         0,
-        &compiled,
-        &error);
+        compiled.GetAddressOf(),
+        error.GetAddressOf());
 
     if (hr < 0)
     {
@@ -92,7 +92,7 @@ void Shader::Compile(ShaderStage type,
             compiled->GetBufferPointer(),
             compiled->GetBufferSize(),
             nullptr,
-            &m_vertexShader);
+            m_vertexShader.GetAddressOf());
         assert(hr >= 0 && "Failed to create vertex shader\n");
     }
     else
@@ -101,7 +101,7 @@ void Shader::Compile(ShaderStage type,
             compiled->GetBufferPointer(),
             compiled->GetBufferSize(),
             nullptr,
-            &m_pixelShader);
+            m_pixelShader.GetAddressOf());
         assert(hr >= 0 && "Failed to create pixel shader\n");
     }
 
@@ -112,7 +112,7 @@ void Shader::Compile(ShaderStage type,
             static_cast<UINT>(numElements),
             compiled->GetBufferPointer(),
             compiled->GetBufferSize(),
-            &m_inputLayout);
+            m_inputLayout.GetAddressOf());
         assert(hr >= 0 && "Failed to create input layout\n");
     }
 }

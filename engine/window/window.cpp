@@ -62,7 +62,7 @@ void Window::CreateSwapchain()
         &swapChainDesc,
         &swapChainFullscreenDesc,
         nullptr,
-        &m_swapchain);
+        m_swapchain.GetAddressOf());
     assert(hr >= 0 && "Failed to create swapchain\n");
 
     // Swapchain resources
@@ -73,7 +73,7 @@ void Window::CreateSwapchain()
     hr = globals->m_device->CreateRenderTargetView(
         m_backbuffer.Get(),
         nullptr,
-        &m_renderTarget);
+        m_renderTarget.GetAddressOf());
     assert(hr >= 0 && "Failed to create RTV from Back Buffer\n");
 
     // Create Viewport
@@ -87,6 +87,9 @@ void Window::CreateSwapchain()
 
 void Window::Destroy()
 {
+    m_swapchain.Reset();
+    m_backbuffer.Reset();
+    m_renderTarget.Reset();
     SDL_DestroyWindow(m_window); // SDL_CreateWindow
 }
 

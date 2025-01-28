@@ -16,7 +16,7 @@ Texture::Texture(const std::wstring &pathToFile)
         globals->m_device.Get(),
         m_pathToFile.c_str(),
         nullptr,
-        &m_texture);
+        m_texture.GetAddressOf());
     assert(hr >= 0 && "Failed to create texture\n");
 }
 

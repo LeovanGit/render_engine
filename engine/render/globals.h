@@ -29,7 +29,7 @@ public:
 
 private:
     Globals();
-    ~Globals();
+    ~Globals() = default;
 
     static Globals *s_instance;
 };

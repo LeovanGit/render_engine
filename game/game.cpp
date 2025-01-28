@@ -152,11 +152,12 @@ int main(int argc, char *argv[])
                 }
             }
         }
-
+        
         renderer.Render();
     }
 
     window.Destroy();
+    renderer.Destroy(); // unbind all resources
     engine->Deinit();
     engine::Engine::Destroy();
 

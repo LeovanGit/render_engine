@@ -43,6 +43,9 @@ void Engine::Init()
 
 void Engine::Deinit()
 {
+    // WARNING: Renderer still keep alive current texture, vertex buffer, input layout and shaders
+    // because  shared_ptr, so we should break references to them separately before Engine::Deinit()
+    // in Renderer::Destroy():
     ModelManager::Destroy();
     TextureManager::Destroy();
     ShaderManager::Destroy();

@@ -15,6 +15,8 @@ public:
 
     void Render();
 
+    void Destroy();
+
     Window *m_window;
 
     // Model:

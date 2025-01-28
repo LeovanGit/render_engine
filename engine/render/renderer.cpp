@@ -31,4 +31,43 @@ void Renderer::Render()
 
     m_window->Present();
 }
+
+void Renderer::Destroy()
+{
+    Globals *globals = Globals::GetInstance();
+
+    // unbind all resources
+    ID3D11RenderTargetView *nullRTV = nullptr;
+    globals->m_deviceContext->OMSetRenderTargets(1, &nullRTV, nullptr);
+
+    ID3D11InputLayout *nullInputLayout = nullptr;
+    globals->m_deviceContext->IASetInputLayout(nullInputLayout);
+
+    ID3D11VertexShader *nullVS = nullptr;
+    globals->m_deviceContext->VSSetShader(nullVS, nullptr, 0);
+
+    ID3D11PixelShader *nullPS = nullptr;
+    globals->m_deviceContext->PSSetShader(nullPS, nullptr, 0);
+
+    ID3D11SamplerState *nullSampler = nullptr;
+    globals->m_deviceContext->PSSetSamplers(0, 1, &nullSampler);
+
+    ID3D11ShaderResourceView *nullSRV = nullptr;
+    globals->m_deviceContext->PSSetShaderResources(0, 1, &nullSRV);
+
+    ID3D11Buffer *nullBuffer = nullptr;
+    UINT stride = 0;
+    UINT offset = 0;
+    globals->m_deviceContext->IASetVertexBuffers(
+        0,
+        1,
+        &nullBuffer,
+        &stride,
+        &offset);
+
+    // Just break references to them, they will be destructed in Engine::Deinit():
+    m_currentTexture = nullptr;
+    m_currentVertexBuffer = nullptr;
+    m_currentShader = nullptr;
+}
 } // namespace engine

@@ -19,7 +19,7 @@ VertexBuffer::VertexBuffer(void *data, size_t bufferSize, size_t vertexSize)
     HRESULT hr = globals->m_device->CreateBuffer(
         &bufferInfo,
         &resourceData,
-        &m_buffer);
+        m_buffer.GetAddressOf());
     assert(hr >= 0 && "Failed to create triangle vertex buffer\n");
 
     m_stride = vertexSize;

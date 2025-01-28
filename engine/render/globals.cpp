@@ -37,17 +37,6 @@ Globals::Globals()
 
 }
 
-Globals::~Globals()
-{
-    m_deviceContext.Reset();
-#if defined(DEBUG) || defined(_DEBUG)
-    // check that all D3D11 objects was released (warning in output):
-    m_debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
-    m_debug.Reset();
-#endif
-    m_device.Reset();
-}
-
 void Globals::InitD3D11()
 {
     HRESULT hr;
@@ -71,9 +60,9 @@ void Globals::InitD3D11()
         &featureLevel,
         1,
         D3D11_SDK_VERSION,
-        &m_device,
+        m_device.GetAddressOf(),
         nullptr,
-        &m_deviceContext);
+        m_deviceContext.GetAddressOf());
     assert(hr >= 0 && "Failed to create device and device Context\n");
 
 #if defined(DEBUG) || defined(_DEBUG)
@@ -90,7 +79,7 @@ void Globals::CreateSamplers()
     linearSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
     linearSamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
 
-    HRESULT hr = m_device->CreateSamplerState(&linearSamplerDesc, &m_linearSampler);
+    HRESULT hr = m_device->CreateSamplerState(&linearSamplerDesc, m_linearSampler.GetAddressOf());
     assert(hr >= 0 && "Failed to create linear sampler state\n");
 }
 
