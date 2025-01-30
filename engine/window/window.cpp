@@ -87,9 +87,10 @@ void Window::CreateSwapchain()
 
 void Window::Destroy()
 {
-    m_swapchain.Reset();
-    m_backbuffer.Reset();
     m_renderTarget.Reset();
+    m_backbuffer.Reset();
+    m_swapchain.Reset();
+
     SDL_DestroyWindow(m_window); // SDL_CreateWindow
 }
 

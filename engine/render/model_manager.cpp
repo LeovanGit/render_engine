@@ -25,11 +25,15 @@ void ModelManager::Destroy()
     s_instance = nullptr;
 }
 
-std::shared_ptr<VertexBuffer> ModelManager::GetOrCreateModel(
-    const std::string & modelName,
+std::shared_ptr<Mesh> ModelManager::GetOrCreateModel(
+    const std::string &modelName,
+    const std::wstring &pathToTexture,
     void *data,
     size_t bufferSize,
-    size_t vertexSize)
+    size_t vertexSize,
+    DirectX::XMFLOAT3 position,
+    DirectX::XMFLOAT3 scale,
+    DirectX::XMFLOAT3 rotation)
 {
     auto found = m_models.find(modelName);
     if (found != m_models.end())
@@ -37,9 +41,13 @@ std::shared_ptr<VertexBuffer> ModelManager::GetOrCreateModel(
 
     return m_models.try_emplace(
         modelName,
-        std::make_shared<VertexBuffer>(
+        std::make_shared<Mesh>(
+            pathToTexture,
             data,
             bufferSize,
-            vertexSize)).first->second;
+            vertexSize,
+            position,
+            scale,
+            rotation)).first->second;
 }
 } // namespace engine

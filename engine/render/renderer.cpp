@@ -4,15 +4,30 @@ namespace engine
 {
 Renderer::Renderer(Window *window)
     : m_window(window)
-    , m_currentVertexBuffer(nullptr)
     , m_currentShader(nullptr)
+    , m_mesh(nullptr)
+    , m_perViewConstantBuffer(nullptr)
+    , m_perMeshConstantBuffer(nullptr)
 {
+    CreateConstantBuffers();
+}
 
+void Renderer::Update()
+{
+    PerViewConstantBuffer perViewData;
+    DirectX::XMStoreFloat4x4(&perViewData.viewProjMatrix, m_camera->m_viewProjMatrix);
+    UpdatePerViewConstantBuffer(perViewData);
+
+    PerMeshConstantBuffer perMeshData;
+    DirectX::XMStoreFloat4x4(&perMeshData.modelMatrix, m_mesh->m_modelMatrix);
+    UpdatePerMeshConstantBuffer(perMeshData);
 }
 
 void Renderer::Render()
 {
     Globals *globals = Globals::GetInstance();
+
+    Update();
 
     m_window->SetViewport();
     m_window->ClearRenderTarget();
@@ -20,10 +35,12 @@ void Renderer::Render()
     
     m_currentShader->Bind();
 
-    // Model:
     globals->BindSamplers();
-    m_currentTexture->Bind(0);
-    m_currentVertexBuffer->Bind();
+
+    BindConstantBuffers();
+
+    m_mesh->m_texture->Bind(0);
+    m_mesh->m_vertexBuffer->Bind();
 
     globals->m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -65,9 +82,48 @@ void Renderer::Destroy()
         &stride,
         &offset);
 
+    for (uint32_t i = 0; i != 1; ++i)
+    {
+        globals->m_deviceContext->VSSetConstantBuffers(i, 1, &nullBuffer);
+        globals->m_deviceContext->PSSetConstantBuffers(i, 1, &nullBuffer);
+    }
+
+    m_perViewConstantBuffer->m_buffer.Reset();
+    m_perMeshConstantBuffer->m_buffer.Reset();
+
     // Just break references to them, they will be destructed in Engine::Deinit():
-    m_currentTexture = nullptr;
-    m_currentVertexBuffer = nullptr;
     m_currentShader = nullptr;
+    m_mesh = nullptr;
+}
+
+void Renderer::CreateConstantBuffers()
+{
+    m_perViewConstantBuffer = std::make_shared<Buffer>(
+        nullptr,
+        sizeof(PerViewConstantBuffer),
+        sizeof(PerViewConstantBuffer),
+        BufferUsage_ConstantBuffer);
+
+    m_perMeshConstantBuffer = std::make_shared<Buffer>(
+        nullptr,
+        sizeof(PerMeshConstantBuffer),
+        sizeof(PerMeshConstantBuffer),
+        BufferUsage_ConstantBuffer);
+}
+
+void Renderer::BindConstantBuffers()
+{
+    m_perViewConstantBuffer->Bind(0);
+    m_perMeshConstantBuffer->Bind(1);
+}
+
+void Renderer::UpdatePerViewConstantBuffer(PerViewConstantBuffer &data)
+{
+    m_perViewConstantBuffer->Update(static_cast<void *>(&data), sizeof(data));
+}
+
+void Renderer::UpdatePerMeshConstantBuffer(PerMeshConstantBuffer &data)
+{
+    m_perMeshConstantBuffer->Update(static_cast<void *>(&data), sizeof(data));
 }
 } // namespace engine

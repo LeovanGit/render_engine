@@ -1,6 +1,16 @@
 sampler linearSampler : register(s0);
 Texture2D texture0 : register(t0);
 
+cbuffer PerView : register(b0)
+{
+    float4x4 viewProjMatrix;
+};
+
+cbuffer PerMesh : register(b1)
+{
+    float4x4 modelMatrix;
+};
+
 struct VSInput
 {
     float3 position : POSITION; // user defined semantics
@@ -17,8 +27,11 @@ struct VSOutput
 
 VSOutput mainVS(VSInput input)
 {
+    float4 posWS = mul(modelMatrix, float4(input.position.xyz, 1.0f));
+    float4 posCS = mul(viewProjMatrix, posWS);
+
     VSOutput output;
-    output.position = float4(input.position.xyz, 1.0f);
+    output.position = posCS;
     output.color = input.color;
     output.uv = input.uv;
 

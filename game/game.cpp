@@ -9,18 +9,19 @@
 
 #include <DirectXMath.h>
 
-struct VertexBufferGPU
-{
-    DirectX::XMFLOAT3 m_position;
-    DirectX::XMFLOAT3 m_color;
-    DirectX::XMFLOAT2 m_uv;
-};
-
 void InitScene(engine::Renderer &renderer)
 {
     engine::ShaderManager *sm = engine::ShaderManager::GetInstance();
-    engine::TextureManager *tm = engine::TextureManager::GetInstance();
     engine::ModelManager *mm = engine::ModelManager::GetInstance();
+
+    float aspectRatio = static_cast<float>(renderer.m_window->GetWidth()) /
+        static_cast<float>(renderer.m_window->GetHeight());
+
+    renderer.m_camera = std::make_unique<engine::Camera>(
+        DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
+        DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f),
+        DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f),
+        aspectRatio);
 
     D3D11_INPUT_ELEMENT_DESC inputLayout[] =
     {
@@ -58,6 +59,13 @@ void InitScene(engine::Renderer &renderer)
         L"../assets/shaders/hello_triangle.hlsl",
         inputLayout,
         _countof(inputLayout));
+
+    struct VertexBufferGPU
+    {
+        DirectX::XMFLOAT3 m_position;
+        DirectX::XMFLOAT3 m_color;
+        DirectX::XMFLOAT2 m_uv;
+    };
 
     VertexBufferGPU vertices[] =
     {
@@ -99,13 +107,15 @@ void InitScene(engine::Renderer &renderer)
         }
     };
 
-    renderer.m_currentVertexBuffer = mm->GetOrCreateModel(
+    renderer.m_mesh = mm->GetOrCreateModel(
         "triangle",
+        L"../assets/textures/default.dds",
         vertices,
         sizeof(vertices),
-        sizeof(VertexBufferGPU));
-
-    renderer.m_currentTexture = tm->GetOrCreateTexture(L"../assets/textures/default.dds");
+        sizeof(VertexBufferGPU),
+        { 0.0f, 0.0f, 1.0f },
+        { 1.0f, 1.0f, 1.0f },
+        { 0.0f, 0.0f, 0.0f });
 }
 
 int main(int argc, char *argv[])

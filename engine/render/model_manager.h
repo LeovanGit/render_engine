@@ -3,7 +3,7 @@
 #include <iostream>
 #include <unordered_map>
 
-#include "vertex_buffer.h"
+#include "model.h"
 
 namespace engine
 {
@@ -14,13 +14,17 @@ public:
     static ModelManager *GetInstance();
     static void Destroy();
 
-    std::shared_ptr<VertexBuffer> GetOrCreateModel(
-        const std::string & modelName,
+    std::shared_ptr<Mesh> GetOrCreateModel(
+        const std::string &modelName,
+        const std::wstring &pathToTexture,
         void *data,
         size_t bufferSize,
-        size_t vertexSize);
+        size_t vertexSize,
+        DirectX::XMFLOAT3 position,
+        DirectX::XMFLOAT3 scale,
+        DirectX::XMFLOAT3 rotation);
 
-    std::unordered_map<std::string, std::shared_ptr<VertexBuffer>> m_models;
+    std::unordered_map<std::string, std::shared_ptr<Mesh>> m_models;
 
 private:
     ModelManager() = default;

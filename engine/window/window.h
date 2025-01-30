@@ -16,6 +16,9 @@ public:
     void Create();
     void Destroy();
 
+    uint16_t GetWidth() { return m_width; }
+    uint16_t GetHeight() { return m_height; }
+
     void SetViewport();
     void ClearRenderTarget();
     void SetRenderTarget();

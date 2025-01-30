@@ -30,9 +30,6 @@
     <ClCompile Include="render\shader_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="render\vertex_buffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="render\shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -46,6 +43,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\external\DDSTextureLoader\DDSTextureLoader11.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="render\camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="render\model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -71,7 +74,7 @@
     <ClInclude Include="utils\d3d11common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="render\vertex_buffer.h">
+    <ClInclude Include="render\buffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="render\shader.h">
@@ -87,6 +90,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\external\DDSTextureLoader\DDSTextureLoader11.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="render\camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="render\model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -20,28 +20,31 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\external\DDSTextureLoader\DDSTextureLoader11.cpp" />
+    <ClCompile Include="render\camera.cpp" />
     <ClCompile Include="render\engine.cpp" />
     <ClCompile Include="render\globals.cpp" />
+    <ClCompile Include="render\model.cpp" />
     <ClCompile Include="render\model_manager.cpp" />
     <ClCompile Include="render\renderer.cpp" />
     <ClCompile Include="render\shader.cpp" />
     <ClCompile Include="render\shader_manager.cpp" />
     <ClCompile Include="render\texture.cpp" />
     <ClCompile Include="render\texture_manager.cpp" />
-    <ClCompile Include="render\vertex_buffer.cpp" />
     <ClCompile Include="window\window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\external\DDSTextureLoader\DDSTextureLoader11.h" />
+    <ClInclude Include="render\camera.h" />
     <ClInclude Include="render\engine.h" />
     <ClInclude Include="render\globals.h" />
+    <ClInclude Include="render\model.h" />
     <ClInclude Include="render\model_manager.h" />
     <ClInclude Include="render\renderer.h" />
     <ClInclude Include="render\shader.h" />
     <ClInclude Include="render\shader_manager.h" />
     <ClInclude Include="render\texture.h" />
     <ClInclude Include="render\texture_manager.h" />
-    <ClInclude Include="render\vertex_buffer.h" />
+    <ClInclude Include="render\buffer.h" />
     <ClInclude Include="utils\d3d11common.h" />
     <ClInclude Include="utils\utils.h" />
     <ClInclude Include="window\window.h" />
