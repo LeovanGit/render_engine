@@ -35,7 +35,7 @@ public:
 
     Window *m_window;
 
-    std::unique_ptr<Camera> m_camera;
+    std::shared_ptr<Camera> m_camera;
     std::shared_ptr<Shader> m_currentShader;
     std::shared_ptr<Mesh> m_mesh;
 

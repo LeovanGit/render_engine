@@ -24,6 +24,6 @@ Mesh::Mesh(const std::wstring &pathToTexture,
     DirectX::XMMATRIX translationMat = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
 
     // Scale -> Rotate -> Translate
-    m_modelMatrix = XMMatrixMultiply(translationMat, XMMatrixMultiply(scalingMat, rotationMat));
+    m_modelMatrix = XMMatrixMultiply(XMMatrixMultiply(scalingMat, rotationMat), translationMat);
 }
 } // namespace engine

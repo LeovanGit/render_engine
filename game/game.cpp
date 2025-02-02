@@ -2,26 +2,29 @@
 
 #include <iostream>
 #include <cassert>
+#include <string>
 
 #include "render/engine.h"
 #include "window/window.h"
 #include "render/renderer.h"
+#include "timer/timer.h"
 
 #include <DirectXMath.h>
+
+#include "controller.h"
 
 void InitScene(engine::Renderer &renderer)
 {
     engine::ShaderManager *sm = engine::ShaderManager::GetInstance();
     engine::ModelManager *mm = engine::ModelManager::GetInstance();
 
-    float aspectRatio = static_cast<float>(renderer.m_window->GetWidth()) /
-        static_cast<float>(renderer.m_window->GetHeight());
-
     renderer.m_camera = std::make_unique<engine::Camera>(
-        DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
-        DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f),
-        DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f),
-        aspectRatio);
+        renderer.m_window->GetWidth(),
+        renderer.m_window->GetHeight(),
+        0.1f,
+        1000.0f,
+        90.0f);
+    renderer.m_camera->SetPosition(0.0f, 0.0f, 0.0f);
 
     D3D11_INPUT_ELEMENT_DESC inputLayout[] =
     {
@@ -131,6 +134,11 @@ int main(int argc, char *argv[])
     engine::Renderer renderer(&window);
     InitScene(renderer);
 
+    Controller controller(renderer.m_camera);
+
+    engine::FPSTimer fpsTimer(0);
+    fpsTimer.Start();
+
     // TODO: hide SDL under engine.vcxproj
     SDL_Event event;
     bool run = true;
@@ -138,32 +146,25 @@ int main(int argc, char *argv[])
     {
         while (SDL_PollEvent(&event) != 0)
         {
-            if (event.type == SDL_QUIT) run = false;
-
-            if (event.type == SDL_KEYDOWN)
+            switch (event.type)
             {
-                switch (event.key.keysym.sym)
-                {
-                case SDLK_UP:
-                    SDL_Log("up\n");
-                    break;
-                case SDLK_DOWN:
-                    SDL_Log("down\n");
-                    break;
-                case SDLK_RIGHT:
-                    SDL_Log("right\n");
-                    break;
-                case SDLK_LEFT:
-                    SDL_Log("left\n");
-                    break;
-                default:
-                    SDL_Log("unknown\n");
-                    break;
-                }
+            case SDL_QUIT:
+            {
+                run = false;
+                break;
+            }
             }
         }
         
-        renderer.Render();
+        if (fpsTimer.IsTimeElapsed())
+        {
+            controller.Update(fpsTimer.GetDeltaTime());
+            renderer.m_camera->UpdateMatrices();
+            renderer.Render();
+
+            std::string title = "SDL + Direct3D11 Engine. FPS: " + std::to_string(fpsTimer.GetFPS());
+            window.SetTitle(title.c_str());
+        }
     }
 
     window.Destroy();

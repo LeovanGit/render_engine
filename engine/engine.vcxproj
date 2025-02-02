@@ -30,10 +30,12 @@
     <ClCompile Include="render\shader_manager.cpp" />
     <ClCompile Include="render\texture.cpp" />
     <ClCompile Include="render\texture_manager.cpp" />
+    <ClCompile Include="timer\timer.cpp" />
     <ClCompile Include="window\window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\external\DDSTextureLoader\DDSTextureLoader11.h" />
+    <ClInclude Include="math\math.h" />
     <ClInclude Include="render\camera.h" />
     <ClInclude Include="render\engine.h" />
     <ClInclude Include="render\globals.h" />
@@ -45,6 +47,7 @@
     <ClInclude Include="render\texture.h" />
     <ClInclude Include="render\texture_manager.h" />
     <ClInclude Include="render\buffer.h" />
+    <ClInclude Include="timer\timer.h" />
     <ClInclude Include="utils\d3d11common.h" />
     <ClInclude Include="utils\utils.h" />
     <ClInclude Include="window\window.h" />

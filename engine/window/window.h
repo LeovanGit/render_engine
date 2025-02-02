@@ -24,6 +24,8 @@ public:
     void SetRenderTarget();
     void Present();
 
+    void SetTitle(const char *title);
+
 private:
     void CreateSwapchain();
 

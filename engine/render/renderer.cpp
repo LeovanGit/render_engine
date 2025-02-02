@@ -15,7 +15,7 @@ Renderer::Renderer(Window *window)
 void Renderer::Update()
 {
     PerViewConstantBuffer perViewData;
-    DirectX::XMStoreFloat4x4(&perViewData.viewProjMatrix, m_camera->m_viewProjMatrix);
+    DirectX::XMStoreFloat4x4(&perViewData.viewProjMatrix, m_camera->GetViewProjMatrix());
     UpdatePerViewConstantBuffer(perViewData);
 
     PerMeshConstantBuffer perMeshData;

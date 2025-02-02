@@ -19,7 +19,7 @@ Window::Window(uint16_t width, uint16_t height)
 void Window::Create()
 {
     m_window = SDL_CreateWindow(
-        "SDL + Direct3D11",
+        "SDL + Direct3D11 Engine",
         SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_UNDEFINED,
         m_width, // client area size
@@ -116,5 +116,10 @@ void Window::SetRenderTarget()
 void Window::Present()
 {
     m_swapchain->Present(1, 0);
+}
+
+void Window::SetTitle(const char *title)
+{
+    SDL_SetWindowTitle(m_window, title);
 }
 } // namespace engine
