@@ -14,14 +14,12 @@ cbuffer PerMesh : register(b1)
 struct VSInput
 {
     float3 position : POSITION; // user defined semantics
-    float3 color : COLOR0;
     float2 uv : UV0;
 };
 
 struct VSOutput
 {
     float4 position : SV_POSITION; // system-value semantics
-    float3 color : COLOR0;
     float2 uv : UV0;
 };
 
@@ -32,7 +30,6 @@ VSOutput mainVS(VSInput input)
 
     VSOutput output;
     output.position = posCS;
-    output.color = input.color;
     output.uv = input.uv;
 
     return output;

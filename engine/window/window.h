@@ -20,14 +20,17 @@ public:
     uint16_t GetHeight() { return m_height; }
 
     void SetViewport();
+
     void ClearRenderTarget();
-    void SetRenderTarget();
+    void BindRenderTarget();
+
     void Present();
 
     void SetTitle(const char *title);
 
 private:
     void CreateSwapchain();
+    void CreateDepthStencilView();
 
     SDL_Window *m_window;
     SDL_Surface *m_screenSurface;
@@ -38,6 +41,7 @@ private:
     ComPtr<IDXGISwapChain1> m_swapchain;
     ComPtr<ID3D11Texture2D> m_backbuffer;
     ComPtr<ID3D11RenderTargetView> m_renderTarget;
+    ComPtr<ID3D11DepthStencilView> m_depthStencil;
 
     D3D11_VIEWPORT viewport;
 };

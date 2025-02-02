@@ -17,6 +17,12 @@ public:
     void CreateSamplers();
     void BindSamplers();
 
+    void CreateDepthStencilState();
+    void BindDepthStencilState();
+
+    void CreateRasterizerState();
+    void BindRasterizerState();
+
     ComPtr<IDXGIFactory2> m_dxgiFactory;
     ComPtr<ID3D11Device> m_device;
     ComPtr<ID3D11DeviceContext> m_deviceContext;
@@ -26,6 +32,9 @@ public:
 #endif
 
     ComPtr<ID3D11SamplerState> m_linearSampler;
+
+    ComPtr<ID3D11DepthStencilState> m_depthStencilState;
+    ComPtr<ID3D11RasterizerState> m_rasterizerState;
 
 private:
     Globals();

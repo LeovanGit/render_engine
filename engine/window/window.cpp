@@ -76,6 +76,8 @@ void Window::CreateSwapchain()
         m_renderTarget.GetAddressOf());
     assert(hr >= 0 && "Failed to create RTV from Back Buffer\n");
 
+    CreateDepthStencilView();
+
     // Create Viewport
     viewport.TopLeftX = 0;
     viewport.TopLeftY = 0;
@@ -83,6 +85,32 @@ void Window::CreateSwapchain()
     viewport.Height = static_cast<float>(m_height);
     viewport.MinDepth = 0.0f;
     viewport.MaxDepth = 1.0f;
+}
+
+void Window::CreateDepthStencilView()
+{
+    Globals *globals = Globals::GetInstance();
+    HRESULT hr;
+
+    D3D11_TEXTURE2D_DESC textureDesc = {};
+    textureDesc.Height = m_height;
+    textureDesc.Width = m_width;
+    textureDesc.ArraySize = 1;
+    textureDesc.SampleDesc.Count = 1;
+    textureDesc.MipLevels = 1;
+    textureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+    textureDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+
+    ComPtr<ID3D11Texture2D> depthTexture = nullptr;
+    hr = globals->m_device->CreateTexture2D(&textureDesc, nullptr, depthTexture.GetAddressOf());
+    assert(hr >= 0 && "Failed to create texture for DepthStencilView\n");
+
+    D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+    dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+    dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+
+    hr = globals->m_device->CreateDepthStencilView(depthTexture.Get(), &dsvDesc, &m_depthStencil);
+    assert(hr >= 0 && "Failed to create DepthStencilView\n");
 }
 
 void Window::Destroy()
@@ -105,12 +133,15 @@ void Window::ClearRenderTarget()
     Globals *globals = Globals::GetInstance();
     static constexpr float clearColor[] = { 0.1f, 0.1f, 0.1f, 1.0f };
     globals->m_deviceContext->ClearRenderTargetView(m_renderTarget.Get(), clearColor);
+
+    // 0.0f - reversed depth
+    globals->m_deviceContext->ClearDepthStencilView(m_depthStencil.Get(), D3D11_CLEAR_FLAG::D3D11_CLEAR_DEPTH, 0.0f, 0);
 }
 
-void Window::SetRenderTarget()
+void Window::BindRenderTarget()
 {
     Globals *globals = Globals::GetInstance();
-    globals->m_deviceContext->OMSetRenderTargets(1, m_renderTarget.GetAddressOf(), nullptr);
+    globals->m_deviceContext->OMSetRenderTargets(1, m_renderTarget.GetAddressOf(), m_depthStencil.Get());
 }
 
 void Window::Present()

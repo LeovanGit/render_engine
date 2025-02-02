@@ -29,8 +29,8 @@ Camera::Camera(uint16_t width,
     XMStoreFloat4x4(&m_projMatrix, XMMatrixPerspectiveFovLH(
         XMConvertToRadians(m_fovY),
         m_aspectRatio,
-        m_nearPlane,
-        m_farPlane));
+        m_farPlane, // inverted depth
+        m_nearPlane));
 
     UpdateMatrices();
 }

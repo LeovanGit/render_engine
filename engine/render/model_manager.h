@@ -17,9 +17,18 @@ public:
     std::shared_ptr<Mesh> GetOrCreateModel(
         const std::string &modelName,
         const std::wstring &pathToTexture,
-        void *data,
-        size_t bufferSize,
+        void *vertexBufferData,
+        size_t vertexBufferSize,
         size_t vertexSize,
+        void *indexBufferData,
+        size_t indexBufferSize,
+        DirectX::XMFLOAT3 position,
+        DirectX::XMFLOAT3 scale,
+        DirectX::XMFLOAT3 rotation);
+
+    std::shared_ptr<Mesh> GenerateUnitCube(
+        const std::string &modelName,
+        const std::wstring &pathToTexture,
         DirectX::XMFLOAT3 position,
         DirectX::XMFLOAT3 scale,
         DirectX::XMFLOAT3 rotation);

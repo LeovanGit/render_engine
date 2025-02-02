@@ -35,6 +35,8 @@ void Engine::Init()
     Globals::Create();    
     Globals::GetInstance()->InitD3D11();
     Globals::GetInstance()->CreateSamplers();
+    Globals::GetInstance()->CreateDepthStencilState();
+    Globals::GetInstance()->CreateRasterizerState();
 
     ShaderManager::Create();
     TextureManager::Create();

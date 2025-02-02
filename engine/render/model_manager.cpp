@@ -28,9 +28,11 @@ void ModelManager::Destroy()
 std::shared_ptr<Mesh> ModelManager::GetOrCreateModel(
     const std::string &modelName,
     const std::wstring &pathToTexture,
-    void *data,
-    size_t bufferSize,
+    void *vertexBufferData,
+    size_t vertexBufferSize,
     size_t vertexSize,
+    void *indexBufferData,
+    size_t indexBufferSize,
     DirectX::XMFLOAT3 position,
     DirectX::XMFLOAT3 scale,
     DirectX::XMFLOAT3 rotation)
@@ -43,11 +45,102 @@ std::shared_ptr<Mesh> ModelManager::GetOrCreateModel(
         modelName,
         std::make_shared<Mesh>(
             pathToTexture,
-            data,
-            bufferSize,
+            vertexBufferData,
+            vertexBufferSize,
             vertexSize,
+            indexBufferData,
+            indexBufferSize,
             position,
             scale,
             rotation)).first->second;
+}
+
+std::shared_ptr<Mesh> ModelManager::GenerateUnitCube(
+    const std::string &modelName,
+    const std::wstring &pathToTexture,
+    DirectX::XMFLOAT3 position,
+    DirectX::XMFLOAT3 scale,
+    DirectX::XMFLOAT3 rotation)
+{
+    struct VertexBufferGPU
+    {
+        DirectX::XMFLOAT3 m_position;
+        DirectX::XMFLOAT2 m_uv;
+    };
+
+    VertexBufferGPU vertices[] =
+    {
+        {
+            { -1.0f, -1.0f, -1.0f },
+            { 0.0f, 0.0f }
+        },
+        {
+            { -1.0f, 1.0f, -1.0f },
+            { 0.0f, 1.0f }
+        },
+        {
+            { 1.0f, 1.0f, -1.0f },
+            { 1.0f, 1.0f }
+        },
+        {
+            { 1.0f, -1.0f, -1.0f },
+            { 1.0f, 0.0f }
+        },
+        {
+            { 1.0f, -1.0f, 1.0f },
+            { 0.0f, 0.0f }
+        },
+        {
+            { -1.0f, -1.0f, 1.0f },
+            { 1.0f, 0.0f }
+        },
+        {
+            { -1.0f, 1.0f, 1.0f },
+            { 1.0f, 1.0f }
+        },
+        {
+            { 1.0f, 1.0f, 1.0f },
+            { 0.0f, 1.0f }
+        },
+    };
+
+    uint16_t indices[] =
+    {
+        // front
+        0, 1, 2,
+        0, 2, 3,
+
+        // right
+        3, 2, 4,
+        2, 7, 4,
+
+        // back
+        4, 6, 5,
+        4, 7, 6,
+
+        // left
+        0, 6, 1,
+        0, 5, 6,
+
+        // top
+        2, 1, 6,
+        2, 6, 7,
+
+        // bot
+        3, 5, 0,
+        3, 4, 5
+    };
+
+    return GetOrCreateModel(
+        modelName,
+        pathToTexture,
+        vertices,
+        sizeof(vertices),
+        sizeof(VertexBufferGPU),
+        indices,
+        sizeof(indices),
+        position,
+        scale,
+        rotation);
 }
 } // namespace engine

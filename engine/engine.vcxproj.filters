@@ -101,9 +101,6 @@
     <ClInclude Include="render\model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="math\math.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="timer\timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>

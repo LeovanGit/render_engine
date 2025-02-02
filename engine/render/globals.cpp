@@ -87,4 +87,33 @@ void Globals::BindSamplers()
 {
     m_deviceContext->PSSetSamplers(0, 1, m_linearSampler.GetAddressOf());
 }
+
+void Globals::CreateDepthStencilState()
+{
+    D3D11_DEPTH_STENCIL_DESC depthStateDesc = {};
+    depthStateDesc.DepthEnable = TRUE;
+    depthStateDesc.DepthFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_GREATER; // reversed depth
+    depthStateDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+
+    m_device->CreateDepthStencilState(&depthStateDesc, m_depthStencilState.GetAddressOf());
+}
+
+void Globals::BindDepthStencilState()
+{
+    m_deviceContext->OMSetDepthStencilState(m_depthStencilState.Get(), 0);
+}
+
+void Globals::CreateRasterizerState()
+{
+    D3D11_RASTERIZER_DESC rasterizerDesc = {};
+    rasterizerDesc.CullMode = D3D11_CULL_BACK;
+    rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+
+    m_device->CreateRasterizerState(&rasterizerDesc, m_rasterizerState.GetAddressOf());
+}
+
+void Globals::BindRasterizerState()
+{
+    m_deviceContext->RSSetState(m_rasterizerState.Get());
+}
 } // namespace engine
