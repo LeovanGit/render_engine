@@ -14,8 +14,11 @@ public:
     ~Renderer() = default;
 
     void Update();
-    void Render();
+    void Render(bool debugMode);
+    void RenderOpaque();
+    void RenderDebug();
 
+    void UnbindAll();
     void Destroy();
 
     struct PerViewConstantBuffer
@@ -38,6 +41,7 @@ public:
 
     std::shared_ptr<Camera> m_camera;
     std::shared_ptr<Shader> m_currentShader;
+    std::shared_ptr<Shader> m_debugShader;
     std::vector< std::shared_ptr<Mesh>> m_meshes;
 
     std::shared_ptr<Buffer> m_perViewConstantBuffer;

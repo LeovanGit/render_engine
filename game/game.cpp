@@ -49,8 +49,14 @@ void InitScene(engine::Renderer &renderer)
     };
 
     renderer.m_currentShader = sm->GetOrCreateShader(
-        engine::ShaderStage_VertexShader | engine::ShaderStage_GeometryShader | engine::ShaderStage_PixelShader,
+        engine::ShaderStage_VertexShader | engine::ShaderStage_PixelShader,
         L"../assets/shaders/opaque.hlsl",
+        inputLayout,
+        _countof(inputLayout));
+
+    renderer.m_debugShader = sm->GetOrCreateShader(
+        engine::ShaderStage_VertexShader | engine::ShaderStage_GeometryShader | engine::ShaderStage_PixelShader,
+        L"../assets/shaders/debug.hlsl",
         inputLayout,
         _countof(inputLayout));
 
@@ -87,6 +93,9 @@ int main(int argc, char *argv[])
     engine::FPSTimer fpsTimer(0);
     fpsTimer.Start();
 
+    bool debugMode = false;
+    bool keyNDown = false; // could be std::map with event.key.keysym.sym as keys
+
     // TODO: hide SDL under engine.vcxproj
     SDL_Event event;
     bool run = true;
@@ -101,6 +110,23 @@ int main(int argc, char *argv[])
                 run = false;
                 break;
             }
+            case SDL_KEYDOWN:
+            {
+                if (event.key.keysym.sym == SDLK_n && !keyNDown)
+                {
+                    debugMode = !debugMode;
+                    keyNDown = true;
+                }
+                break;
+            }
+            case SDL_KEYUP:
+            {
+                if (event.key.keysym.sym == SDLK_n && keyNDown)
+                {
+                    keyNDown = false;
+                }
+                break;
+            }
             }
         }
         
@@ -108,7 +134,7 @@ int main(int argc, char *argv[])
         {
             controller.Update(fpsTimer.GetDeltaTime());
             renderer.m_camera->UpdateMatrices();
-            renderer.Render();
+            renderer.Render(debugMode);
 
             std::string title = "SDL + Direct3D11 Engine. FPS: " + std::to_string(fpsTimer.GetFPS());
             window.SetTitle(title.c_str());

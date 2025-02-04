@@ -106,7 +106,7 @@ void Globals::BindDepthStencilState()
 void Globals::CreateRasterizerState()
 {
     D3D11_RASTERIZER_DESC rasterizerDesc = {};
-    rasterizerDesc.CullMode = D3D11_CULL_NONE;
+    rasterizerDesc.CullMode = D3D11_CULL_BACK;
     rasterizerDesc.FillMode = D3D11_FILL_SOLID;
 
     m_device->CreateRasterizerState(&rasterizerDesc, m_rasterizerState.GetAddressOf());

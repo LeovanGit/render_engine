@@ -146,6 +146,11 @@ void Shader::Bind()
             nullptr,
             0);
     }
+    else
+    {
+        ID3D11VertexShader *nullVS = nullptr;
+        globals->m_deviceContext->VSSetShader(nullVS, nullptr, 0);
+    }
 
     if (m_shaderStages & ShaderStage_GeometryShader)
     {
@@ -154,6 +159,11 @@ void Shader::Bind()
             nullptr,
             0);
     }
+    else
+    {
+        ID3D11GeometryShader *nullGS = nullptr;
+        globals->m_deviceContext->GSSetShader(nullGS, nullptr, 0);
+    }
 
     if (m_shaderStages & ShaderStage_PixelShader)
     {
@@ -161,6 +171,11 @@ void Shader::Bind()
             m_pixelShader.Get(),
             nullptr,
             0);
+    }
+    else
+    {
+        ID3D11PixelShader *nullPS = nullptr;
+        globals->m_deviceContext->PSSetShader(nullPS, nullptr, 0);
     }
 }
 } // namespace engine

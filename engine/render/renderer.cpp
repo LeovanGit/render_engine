@@ -5,6 +5,7 @@ namespace engine
 Renderer::Renderer(Window *window)
     : m_window(window)
     , m_currentShader(nullptr)
+    , m_debugShader(nullptr)
     , m_perViewConstantBuffer(nullptr)
     , m_perMeshConstantBuffer(nullptr)
 {
@@ -18,7 +19,7 @@ void Renderer::Update()
     UpdatePerViewConstantBuffer(perViewData);
 }
 
-void Renderer::Render()
+void Renderer::Render(bool debugMode)
 {
     Globals *globals = Globals::GetInstance();
 
@@ -27,7 +28,18 @@ void Renderer::Render()
     m_window->SetViewport();
     m_window->ClearRenderTarget();
     m_window->BindRenderTarget();
-    
+
+    RenderOpaque();
+
+    if (debugMode) RenderDebug();
+
+    m_window->Present();
+}
+
+void Renderer::RenderOpaque()
+{
+    Globals *globals = Globals::GetInstance();
+
     m_currentShader->Bind();
 
     globals->BindSamplers();
@@ -52,15 +64,39 @@ void Renderer::Render()
 
         globals->m_deviceContext->DrawIndexed(mesh->m_indexBuffer->m_size, 0, 0);
     }
-
-    m_window->Present();
 }
 
-void Renderer::Destroy()
+void Renderer::RenderDebug()
 {
     Globals *globals = Globals::GetInstance();
 
-    // unbind all resources
+    m_debugShader->Bind();
+
+    globals->BindDepthStencilState();
+    globals->BindRasterizerState();
+
+    globals->m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+    BindPerViewConstantBuffer();
+
+    for (auto mesh : m_meshes)
+    {
+        PerMeshConstantBuffer perMeshData;
+        DirectX::XMStoreFloat4x4(&perMeshData.modelMatrix, mesh->m_modelMatrix);
+        UpdatePerMeshConstantBuffer(perMeshData);
+        BindPerMeshConstantBuffer();
+
+        mesh->m_vertexBuffer->Bind();
+        mesh->m_indexBuffer->Bind();
+
+        globals->m_deviceContext->DrawIndexed(mesh->m_indexBuffer->m_size, 0, 0);
+    }
+}
+
+void Renderer::UnbindAll()
+{
+    Globals *globals = Globals::GetInstance();
+
     ID3D11RenderTargetView *nullRTV = nullptr;
     globals->m_deviceContext->OMSetRenderTargets(1, &nullRTV, nullptr);
 
@@ -69,6 +105,9 @@ void Renderer::Destroy()
 
     ID3D11VertexShader *nullVS = nullptr;
     globals->m_deviceContext->VSSetShader(nullVS, nullptr, 0);
+
+    ID3D11GeometryShader *nullGS = nullptr;
+    globals->m_deviceContext->GSSetShader(nullGS, nullptr, 0);
 
     ID3D11PixelShader *nullPS = nullptr;
     globals->m_deviceContext->PSSetShader(nullPS, nullptr, 0);
@@ -89,6 +128,11 @@ void Renderer::Destroy()
         &stride,
         &offset);
 
+    globals->m_deviceContext->IASetIndexBuffer(
+        nullBuffer,
+        DXGI_FORMAT_R16_UINT,
+        0);
+
     for (uint32_t i = 0; i != 1; ++i)
     {
         globals->m_deviceContext->VSSetConstantBuffers(i, 1, &nullBuffer);
@@ -96,11 +140,21 @@ void Renderer::Destroy()
         globals->m_deviceContext->GSSetConstantBuffers(i, 1, &nullBuffer);
     }
 
+    globals->m_deviceContext->OMSetDepthStencilState(nullptr, 0);
+
+    globals->m_deviceContext->RSSetState(nullptr);
+}
+
+void Renderer::Destroy()
+{
+    UnbindAll();
+
     m_perViewConstantBuffer->m_buffer.Reset();
     m_perMeshConstantBuffer->m_buffer.Reset();
 
     // Just break references to them, they will be destructed in Engine::Deinit():
     m_currentShader = nullptr;
+    m_debugShader = nullptr;
     m_meshes.clear();
 }
 
