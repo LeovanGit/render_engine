@@ -10,6 +10,8 @@ std::string GetShaderTarget(ShaderStage type)
     {
     case ShaderStage_VertexShader:
         return "vs_5_0";
+    case ShaderStage_GeometryShader:
+        return "gs_5_0";
     case ShaderStage_PixelShader:
         return "ps_5_0";
     default:
@@ -24,6 +26,8 @@ std::string GetShaderEntryPoint(ShaderStage type)
     {
     case ShaderStage_VertexShader:
         return "mainVS";
+    case ShaderStage_GeometryShader:
+        return "mainGS";
     case ShaderStage_PixelShader:
         return "mainPS";
     default:
@@ -44,6 +48,9 @@ Shader::Shader(uint32_t shaderStages,
 {
     if (shaderStages & ShaderStage_VertexShader)
         Compile(ShaderStage_VertexShader, inputLayout, numElements);
+
+    if (shaderStages & ShaderStage_GeometryShader)
+        Compile(ShaderStage_GeometryShader);
 
     if (shaderStages & ShaderStage_PixelShader)
         Compile(ShaderStage_PixelShader);
@@ -86,7 +93,7 @@ void Shader::Compile(ShaderStage type,
         assert(false && "Failed to compile shader\n");
     }
 
-    if (type == ShaderStage_VertexShader)
+    if (type & ShaderStage_VertexShader)
     {
         hr = globals->m_device->CreateVertexShader(
             compiled->GetBufferPointer(),
@@ -95,7 +102,16 @@ void Shader::Compile(ShaderStage type,
             m_vertexShader.GetAddressOf());
         assert(hr >= 0 && "Failed to create vertex shader\n");
     }
-    else
+    else if (type & ShaderStage_GeometryShader)
+    {
+        hr = globals->m_device->CreateGeometryShader(
+            compiled->GetBufferPointer(),
+            compiled->GetBufferSize(),
+            nullptr,
+            m_geometryShader.GetAddressOf());
+        assert(hr >= 0 && "Failed to create geometry shader\n");
+    }
+    else if (type & ShaderStage_PixelShader)
     {
         hr = globals->m_device->CreatePixelShader(
             compiled->GetBufferPointer(),
@@ -105,7 +121,7 @@ void Shader::Compile(ShaderStage type,
         assert(hr >= 0 && "Failed to create pixel shader\n");
     }
 
-    if (type == ShaderStage_VertexShader && inputLayout)
+    if (type & ShaderStage_VertexShader && inputLayout)
     {
         hr = globals->m_device->CreateInputLayout(
             inputLayout,
@@ -127,6 +143,14 @@ void Shader::Bind()
 
         globals->m_deviceContext->VSSetShader(
             m_vertexShader.Get(),
+            nullptr,
+            0);
+    }
+
+    if (m_shaderStages & ShaderStage_GeometryShader)
+    {
+        globals->m_deviceContext->GSSetShader(
+            m_geometryShader.Get(),
             nullptr,
             0);
     }

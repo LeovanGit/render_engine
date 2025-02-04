@@ -12,7 +12,8 @@ namespace engine
 enum ShaderStage
 {
     ShaderStage_VertexShader = (1 << 0),
-    ShaderStage_PixelShader = (1 << 1)
+    ShaderStage_GeometryShader = (1 << 1),
+    ShaderStage_PixelShader = (1 << 2)
 };
 
 std::string GetShaderTarget(ShaderStage type);
@@ -40,6 +41,7 @@ public:
 
     ComPtr<ID3D11InputLayout> m_inputLayout;
     ComPtr<ID3D11VertexShader> m_vertexShader;
+    ComPtr<ID3D11GeometryShader> m_geometryShader;
     ComPtr<ID3D11PixelShader> m_pixelShader;
 };
 } // namespace engine

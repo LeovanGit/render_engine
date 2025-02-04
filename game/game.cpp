@@ -49,8 +49,8 @@ void InitScene(engine::Renderer &renderer)
     };
 
     renderer.m_currentShader = sm->GetOrCreateShader(
-        engine::ShaderStage_VertexShader | engine::ShaderStage_PixelShader,
-        L"../assets/shaders/hello_triangle.hlsl",
+        engine::ShaderStage_VertexShader | engine::ShaderStage_GeometryShader | engine::ShaderStage_PixelShader,
+        L"../assets/shaders/opaque.hlsl",
         inputLayout,
         _countof(inputLayout));
 

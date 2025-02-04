@@ -112,6 +112,7 @@ public:
         {
             globals->m_deviceContext->VSSetConstantBuffers(slot, 1, m_buffer.GetAddressOf());
             globals->m_deviceContext->PSSetConstantBuffers(slot, 1, m_buffer.GetAddressOf());
+            globals->m_deviceContext->GSSetConstantBuffers(slot, 1, m_buffer.GetAddressOf());
 
             break;
         }

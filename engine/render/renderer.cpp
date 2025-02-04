@@ -93,6 +93,7 @@ void Renderer::Destroy()
     {
         globals->m_deviceContext->VSSetConstantBuffers(i, 1, &nullBuffer);
         globals->m_deviceContext->PSSetConstantBuffers(i, 1, &nullBuffer);
+        globals->m_deviceContext->GSSetConstantBuffers(i, 1, &nullBuffer);
     }
 
     m_perViewConstantBuffer->m_buffer.Reset();
