@@ -19,6 +19,7 @@ public:
 
     void CreateDepthStencilState();
     void BindDepthStencilState();
+    void BindDepthStencilState2();
 
     void CreateRasterizerState();
     void BindRasterizerState();
@@ -34,6 +35,7 @@ public:
     ComPtr<ID3D11SamplerState> m_linearSampler;
 
     ComPtr<ID3D11DepthStencilState> m_depthStencilState;
+    ComPtr<ID3D11DepthStencilState> m_depthStencilState2;
     ComPtr<ID3D11RasterizerState> m_rasterizerState;
 
 private:

@@ -24,14 +24,18 @@ public:
     Shader(uint32_t shaderStages,
         const std::wstring &pathToFile,
         D3D11_INPUT_ELEMENT_DESC inputLayout[] = nullptr,
-        size_t numElements = 0);
+        size_t numElements = 0,
+        D3D11_SO_DECLARATION_ENTRY inputSignature[] = nullptr,
+        size_t numSignatureElements = 0);
 
     ~Shader() = default;
 
 private:
     void Compile(ShaderStage type,
         D3D11_INPUT_ELEMENT_DESC inputLayout[] = nullptr,
-        size_t numElements = 0);
+        size_t numElements = 0,
+        D3D11_SO_DECLARATION_ENTRY inputSignature[] = nullptr,
+        size_t numSignatureElements = 0);
 
 public:
     void Bind();

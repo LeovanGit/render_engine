@@ -12,7 +12,8 @@ enum BufferUsage
 {
     BufferUsage_VertexBuffer = 0,
     BufferUsage_IndexBuffer,
-    BufferUsage_ConstantBuffer
+    BufferUsage_ConstantBuffer,
+    BufferUsage_StreamOutput
 };
 
 class Buffer
@@ -51,6 +52,15 @@ public:
             bufferDesc.Usage = D3D11_USAGE::D3D11_USAGE_DYNAMIC;
             bufferDesc.BindFlags = D3D11_BIND_FLAG::D3D11_BIND_CONSTANT_BUFFER;
             bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+            break;
+        }
+        case BufferUsage_StreamOutput:
+        {
+            bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+            bufferDesc.BindFlags = D3D11_BIND_STREAM_OUTPUT | D3D11_BIND_VERTEX_BUFFER;
+            bufferDesc.CPUAccessFlags = 0;
+            bufferDesc.MiscFlags = 0;
 
             break;
         }
@@ -113,6 +123,13 @@ public:
             globals->m_deviceContext->VSSetConstantBuffers(slot, 1, m_buffer.GetAddressOf());
             globals->m_deviceContext->PSSetConstantBuffers(slot, 1, m_buffer.GetAddressOf());
             globals->m_deviceContext->GSSetConstantBuffers(slot, 1, m_buffer.GetAddressOf());
+
+            break;
+        }
+        case BufferUsage_StreamOutput:
+        {
+            UINT offsets[] = { 0 };
+            globals->m_deviceContext->SOSetTargets(1, m_buffer.GetAddressOf(), offsets);
 
             break;
         }

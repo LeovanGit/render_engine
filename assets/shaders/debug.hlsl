@@ -53,8 +53,3 @@ void mainGS(triangle VSOutput input[3],
         output.RestartStrip();
     }
 }
-
-float4 mainPS(VSOutput input) : SV_TARGET0
-{
-    return float4(0.0f, 0.46f, 0.79f, 1.0f);
-}

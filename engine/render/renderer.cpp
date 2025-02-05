@@ -8,6 +8,7 @@ Renderer::Renderer(Window *window)
     , m_debugShader(nullptr)
     , m_perViewConstantBuffer(nullptr)
     , m_perMeshConstantBuffer(nullptr)
+    , m_streamOutputBuffer(nullptr)
 {
     CreateConstantBuffers();
 }
@@ -70,15 +71,6 @@ void Renderer::RenderDebug()
 {
     Globals *globals = Globals::GetInstance();
 
-    m_debugShader->Bind();
-
-    globals->BindDepthStencilState();
-    globals->BindRasterizerState();
-
-    globals->m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-    BindPerViewConstantBuffer();
-
     for (auto mesh : m_meshes)
     {
         PerMeshConstantBuffer perMeshData;
@@ -86,10 +78,43 @@ void Renderer::RenderDebug()
         UpdatePerMeshConstantBuffer(perMeshData);
         BindPerMeshConstantBuffer();
 
+        m_debugShaderSO->Bind();
+
+        globals->BindRasterizerState();
+
+        BindPerViewConstantBuffer();
+
         mesh->m_vertexBuffer->Bind();
         mesh->m_indexBuffer->Bind();
 
+        m_streamOutputBuffer->Bind();
+
+        globals->BindDepthStencilState2();
+
+        // draw to SO buffer:
+        globals->m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         globals->m_deviceContext->DrawIndexed(mesh->m_indexBuffer->m_size, 0, 0);
+        
+        UINT offsets[] = { 0 };
+        ComPtr<ID3D11Buffer> nullBuffer = nullptr;
+        globals->m_deviceContext->SOSetTargets(1, &nullBuffer, offsets);
+
+        // draw from SO buffer:
+        globals->m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+        m_debugShader->Bind();
+
+        uint32_t stride = 16; // float4
+        uint32_t offset = 0;
+        globals->m_deviceContext->IASetVertexBuffers(
+            0,
+            1,
+            m_streamOutputBuffer->m_buffer.GetAddressOf(),
+            &stride,
+            &offset);
+
+        globals->BindDepthStencilState();
+
+        globals->m_deviceContext->Draw(72, 0);
     }
 }
 
@@ -148,6 +173,8 @@ void Renderer::UnbindAll()
 void Renderer::Destroy()
 {
     UnbindAll();
+
+    m_streamOutputBuffer->m_buffer.Reset();
 
     m_perViewConstantBuffer->m_buffer.Reset();
     m_perMeshConstantBuffer->m_buffer.Reset();

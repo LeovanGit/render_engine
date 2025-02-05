@@ -96,11 +96,19 @@ void Globals::CreateDepthStencilState()
     depthStateDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 
     m_device->CreateDepthStencilState(&depthStateDesc, m_depthStencilState.GetAddressOf());
+
+    depthStateDesc.DepthEnable = FALSE;
+    m_device->CreateDepthStencilState(&depthStateDesc, m_depthStencilState2.GetAddressOf());
 }
 
 void Globals::BindDepthStencilState()
 {
     m_deviceContext->OMSetDepthStencilState(m_depthStencilState.Get(), 0);
+}
+
+void Globals::BindDepthStencilState2()
+{
+    m_deviceContext->OMSetDepthStencilState(m_depthStencilState2.Get(), 0);
 }
 
 void Globals::CreateRasterizerState()

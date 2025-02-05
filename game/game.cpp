@@ -54,11 +54,37 @@ void InitScene(engine::Renderer &renderer)
         inputLayout,
         _countof(inputLayout));
 
-    renderer.m_debugShader = sm->GetOrCreateShader(
-        engine::ShaderStage_VertexShader | engine::ShaderStage_GeometryShader | engine::ShaderStage_PixelShader,
+    D3D11_SO_DECLARATION_ENTRY soInputSignature[] =
+    {
+        { 0, "SV_POSITION", 0, 0, 4, 0 },
+    };
+
+    renderer.m_debugShaderSO = sm->GetOrCreateShader(
+        engine::ShaderStage_VertexShader | engine::ShaderStage_GeometryShader,
         L"../assets/shaders/debug.hlsl",
         inputLayout,
-        _countof(inputLayout));
+        _countof(inputLayout),
+        soInputSignature,
+        _countof(soInputSignature));
+
+    D3D11_INPUT_ELEMENT_DESC inputLayoutForSO[] =
+    {
+        {
+            "POSITION",
+            0,
+            DXGI_FORMAT_R32G32B32A32_FLOAT, // float4
+            0,
+            D3D11_APPEND_ALIGNED_ELEMENT,
+            D3D11_INPUT_PER_VERTEX_DATA,
+            0
+        }
+    };
+
+    renderer.m_debugShader = sm->GetOrCreateShader(
+        engine::ShaderStage_VertexShader | engine::ShaderStage_PixelShader,
+        L"../assets/shaders/streamOutput.hlsl",
+        inputLayoutForSO,
+        _countof(inputLayoutForSO));
 
     renderer.m_meshes.push_back(mm->GenerateUnitCube(
         "unitCube",
@@ -73,6 +99,15 @@ void InitScene(engine::Renderer &renderer)
         { 0.0f, 1.6f, 3.0f },
         { 0.6f, 0.6f, 0.6f },
         { 0.0f, 0.0f, 0.0f }));
+
+    // just for test:
+    renderer.m_streamOutputBuffer = std::make_shared<engine::Buffer>(
+        nullptr,
+        // cube is 36 vertices, 1 line for each vertex -> 72 vertices
+        // 72 vertices * float4 = 1152 bytes
+        1152,
+        1152,
+        engine::BufferUsage_StreamOutput);
 }
 
 int main(int argc, char *argv[])

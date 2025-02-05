@@ -39,7 +39,9 @@ std::string GetShaderEntryPoint(ShaderStage type)
 Shader::Shader(uint32_t shaderStages,
     const std::wstring &pathToFile,
     D3D11_INPUT_ELEMENT_DESC inputLayout[],
-    size_t numElements)
+    size_t numElements,
+    D3D11_SO_DECLARATION_ENTRY inputSignature[],
+    size_t numSignatureElements)
     : m_shaderStages(shaderStages)
     , m_pathToFile(pathToFile)
     , m_inputLayout(nullptr)
@@ -50,7 +52,7 @@ Shader::Shader(uint32_t shaderStages,
         Compile(ShaderStage_VertexShader, inputLayout, numElements);
 
     if (shaderStages & ShaderStage_GeometryShader)
-        Compile(ShaderStage_GeometryShader);
+        Compile(ShaderStage_GeometryShader, nullptr, 0, inputSignature, numSignatureElements);
 
     if (shaderStages & ShaderStage_PixelShader)
         Compile(ShaderStage_PixelShader);
@@ -58,7 +60,9 @@ Shader::Shader(uint32_t shaderStages,
 
 void Shader::Compile(ShaderStage type,
     D3D11_INPUT_ELEMENT_DESC inputLayout[],
-    size_t numElements)
+    size_t numElements,
+    D3D11_SO_DECLARATION_ENTRY inputSignature[],
+    size_t numSignatureElements)
 {
     Globals *globals = Globals::GetInstance();
     HRESULT hr;
@@ -104,11 +108,27 @@ void Shader::Compile(ShaderStage type,
     }
     else if (type & ShaderStage_GeometryShader)
     {
-        hr = globals->m_device->CreateGeometryShader(
-            compiled->GetBufferPointer(),
-            compiled->GetBufferSize(),
-            nullptr,
-            m_geometryShader.GetAddressOf());
+        if (inputSignature)
+        {
+            hr = globals->m_device->CreateGeometryShaderWithStreamOutput(
+                compiled->GetBufferPointer(),
+                compiled->GetBufferSize(),
+                inputSignature,
+                numSignatureElements,
+                nullptr,
+                0,
+                0,
+                nullptr,
+                m_geometryShader.GetAddressOf());
+        }
+        else
+        {
+            hr = globals->m_device->CreateGeometryShader(
+                compiled->GetBufferPointer(),
+                compiled->GetBufferSize(),
+                nullptr,
+                m_geometryShader.GetAddressOf());
+        }
         assert(hr >= 0 && "Failed to create geometry shader\n");
     }
     else if (type & ShaderStage_PixelShader)

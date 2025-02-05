@@ -29,7 +29,9 @@ std::shared_ptr<Shader> ShaderManager::GetOrCreateShader(
     uint32_t shaderStages,
     const std::wstring &pathToFile,
     D3D11_INPUT_ELEMENT_DESC inputLayout[],
-    size_t numElements)
+    size_t numElements,
+    D3D11_SO_DECLARATION_ENTRY inputSignature[],
+    size_t numSignatureElements)
 {
     auto found = m_shaders.find(pathToFile);
     if (found != m_shaders.end())
@@ -41,6 +43,8 @@ std::shared_ptr<Shader> ShaderManager::GetOrCreateShader(
             shaderStages,
             pathToFile,
             inputLayout,
-            numElements)).first->second;
+            numElements,
+            inputSignature,
+            numSignatureElements)).first->second;
 }
 } // namespace engine

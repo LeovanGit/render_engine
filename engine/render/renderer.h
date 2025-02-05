@@ -41,10 +41,13 @@ public:
 
     std::shared_ptr<Camera> m_camera;
     std::shared_ptr<Shader> m_currentShader;
+    std::shared_ptr<Shader> m_debugShaderSO;
     std::shared_ptr<Shader> m_debugShader;
     std::vector< std::shared_ptr<Mesh>> m_meshes;
 
     std::shared_ptr<Buffer> m_perViewConstantBuffer;
     std::shared_ptr<Buffer> m_perMeshConstantBuffer;
+
+    std::shared_ptr<Buffer> m_streamOutputBuffer;
 };
 } // namespace engine
