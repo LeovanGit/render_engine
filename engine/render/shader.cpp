@@ -10,6 +10,10 @@ std::string GetShaderTarget(ShaderStage type)
     {
     case ShaderStage_VertexShader:
         return "vs_5_0";
+    case ShaderStage_HullShader:
+        return "hs_5_0";
+    case ShaderStage_DomainShader:
+        return "ds_5_0";
     case ShaderStage_GeometryShader:
         return "gs_5_0";
     case ShaderStage_PixelShader:
@@ -26,6 +30,10 @@ std::string GetShaderEntryPoint(ShaderStage type)
     {
     case ShaderStage_VertexShader:
         return "mainVS";
+    case ShaderStage_HullShader:
+        return "mainHS";
+    case ShaderStage_DomainShader:
+        return "mainDS";
     case ShaderStage_GeometryShader:
         return "mainGS";
     case ShaderStage_PixelShader:
@@ -48,6 +56,12 @@ Shader::Shader(uint32_t shaderStages,
 {
     if (shaderStages & ShaderStage_VertexShader)
         Compile(ShaderStage_VertexShader, inputLayout, numElements);
+
+    if (shaderStages & ShaderStage_HullShader)
+        Compile(ShaderStage_HullShader);
+
+    if (shaderStages & ShaderStage_DomainShader)
+        Compile(ShaderStage_DomainShader);
 
     if (shaderStages & ShaderStage_GeometryShader)
         Compile(ShaderStage_GeometryShader);
@@ -102,6 +116,24 @@ void Shader::Compile(ShaderStage type,
             m_vertexShader.GetAddressOf());
         assert(hr >= 0 && "Failed to create vertex shader\n");
     }
+    else if (type & ShaderStage_HullShader)
+    {
+        hr = globals->m_device->CreateHullShader(
+            compiled->GetBufferPointer(),
+            compiled->GetBufferSize(),
+            nullptr,
+            m_hullShader.GetAddressOf());
+        assert(hr >= 0 && "Failed to create hull shader\n");
+    }
+    else if (type & ShaderStage_DomainShader)
+    {
+        hr = globals->m_device->CreateDomainShader(
+            compiled->GetBufferPointer(),
+            compiled->GetBufferSize(),
+            nullptr,
+            m_domainShader.GetAddressOf());
+        assert(hr >= 0 && "Failed to create hull shader\n");
+    }
     else if (type & ShaderStage_GeometryShader)
     {
         hr = globals->m_device->CreateGeometryShader(
@@ -150,6 +182,32 @@ void Shader::Bind()
     {
         ID3D11VertexShader *nullVS = nullptr;
         globals->m_deviceContext->VSSetShader(nullVS, nullptr, 0);
+    }
+
+    if (m_shaderStages & ShaderStage_HullShader)
+    {
+        globals->m_deviceContext->HSSetShader(
+            m_hullShader.Get(),
+            nullptr,
+            0);
+    }
+    else
+    {
+        ID3D11HullShader *nullHS = nullptr;
+        globals->m_deviceContext->HSSetShader(nullHS, nullptr, 0);
+    }
+
+    if (m_shaderStages & ShaderStage_DomainShader)
+    {
+        globals->m_deviceContext->DSSetShader(
+            m_domainShader.Get(),
+            nullptr,
+            0);
+    }
+    else
+    {
+        ID3D11DomainShader *nullDS = nullptr;
+        globals->m_deviceContext->DSSetShader(nullDS, nullptr, 0);
     }
 
     if (m_shaderStages & ShaderStage_GeometryShader)

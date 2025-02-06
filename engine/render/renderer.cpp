@@ -15,6 +15,7 @@ Renderer::Renderer(Window *window)
 void Renderer::Update()
 {
     PerViewConstantBuffer perViewData;
+    DirectX::XMStoreFloat3(&perViewData.cameraPosition, m_camera->GetPosition());
     DirectX::XMStoreFloat4x4(&perViewData.viewProjMatrix, m_camera->GetViewProjMatrix());
     UpdatePerViewConstantBuffer(perViewData);
 }
@@ -47,7 +48,7 @@ void Renderer::RenderOpaque()
     globals->BindDepthStencilState();
     globals->BindRasterizerState();
 
-    globals->m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    globals->m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
 
     BindPerViewConstantBuffer();
 

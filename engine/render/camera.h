@@ -50,6 +50,8 @@ public:
     // in 3D space: x-axis, y-axis, z-axis, all in degrees
     void AddRotation(float pitch, float yaw, float roll);
 
+    XMVECTOR GetPosition() const;
+
     XMVECTOR GetRight() const;
     XMVECTOR GetUp() const;
     XMVECTOR GetForward() const;

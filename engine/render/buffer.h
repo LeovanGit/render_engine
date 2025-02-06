@@ -111,8 +111,10 @@ public:
         case BufferUsage_ConstantBuffer:
         {
             globals->m_deviceContext->VSSetConstantBuffers(slot, 1, m_buffer.GetAddressOf());
-            globals->m_deviceContext->PSSetConstantBuffers(slot, 1, m_buffer.GetAddressOf());
+            globals->m_deviceContext->HSSetConstantBuffers(slot, 1, m_buffer.GetAddressOf());
+            globals->m_deviceContext->DSSetConstantBuffers(slot, 1, m_buffer.GetAddressOf());
             globals->m_deviceContext->GSSetConstantBuffers(slot, 1, m_buffer.GetAddressOf());
+            globals->m_deviceContext->PSSetConstantBuffers(slot, 1, m_buffer.GetAddressOf());
 
             break;
         }

@@ -23,6 +23,8 @@ public:
 
     struct PerViewConstantBuffer
     {
+        DirectX::XMFLOAT3 cameraPosition;
+        float offset;
         DirectX::XMFLOAT4X4 viewProjMatrix;
     };
 

@@ -1,5 +1,7 @@
 cbuffer PerView : register(b0)
 {
+    float3 cameraPostion;
+    float offset;
     float4x4 viewProjMatrix;
 };
 

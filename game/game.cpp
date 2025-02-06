@@ -49,13 +49,18 @@ void InitScene(engine::Renderer &renderer)
     };
 
     renderer.m_currentShader = sm->GetOrCreateShader(
-        engine::ShaderStage_VertexShader | engine::ShaderStage_PixelShader,
+        engine::ShaderStage_VertexShader |
+        engine::ShaderStage_HullShader |
+        engine::ShaderStage_DomainShader | 
+        engine::ShaderStage_PixelShader,
         L"../assets/shaders/opaque.hlsl",
         inputLayout,
         _countof(inputLayout));
 
     renderer.m_debugShader = sm->GetOrCreateShader(
-        engine::ShaderStage_VertexShader | engine::ShaderStage_GeometryShader | engine::ShaderStage_PixelShader,
+        engine::ShaderStage_VertexShader |
+        engine::ShaderStage_GeometryShader |
+        engine::ShaderStage_PixelShader,
         L"../assets/shaders/debug.hlsl",
         inputLayout,
         _countof(inputLayout));
@@ -67,12 +72,12 @@ void InitScene(engine::Renderer &renderer)
         { 1.0f, 1.0f, 1.0f },
         { 0.0f, 45.0f, 0.0f }));
 
-    renderer.m_meshes.push_back(mm->GenerateUnitCube(
-        "unitCube2",
-        L"../assets/textures/lava.dds",
-        { 0.0f, 1.6f, 3.0f },
-        { 0.6f, 0.6f, 0.6f },
-        { 0.0f, 0.0f, 0.0f }));
+    //renderer.m_meshes.push_back(mm->GenerateUnitCube(
+    //    "unitCube2",
+    //    L"../assets/textures/lava.dds",
+    //    { 0.0f, 1.6f, 3.0f },
+    //    { 0.6f, 0.6f, 0.6f },
+    //    { 0.0f, 0.0f, 0.0f }));
 }
 
 int main(int argc, char *argv[])

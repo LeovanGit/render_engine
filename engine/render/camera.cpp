@@ -121,6 +121,11 @@ void Camera::AddRotation(float pitch, float yaw, float roll)
     // UpdateMatrices()
 }
 
+XMVECTOR Camera::GetPosition() const
+{
+    return XMLoadFloat3(&m_position);
+}
+
 XMVECTOR Camera::GetRight() const
 {
     return XMLoadFloat3(&m_right);
