@@ -1,17 +1,7 @@
+#include "globals.hlsli"
+
 sampler linearSampler : register(s0);
 Texture2D texture0 : register(t0);
-
-cbuffer PerView : register(b0)
-{
-    float3 cameraPostion;
-    float offset;
-    float4x4 viewProjMatrix;
-};
-
-cbuffer PerMesh : register(b1)
-{
-    float4x4 modelMatrix;
-};
 
 struct VSInput
 {
@@ -39,7 +29,7 @@ struct DSOutput
 
 VSOutput mainVS(VSInput input)
 {
-    float4 posWS = mul(modelMatrix, float4(input.position.xyz, 1.0f));
+    float4 posWS = mul(g_modelMatrix, float4(input.position.xyz, 1.0f));
 
     VSOutput output;
     output.position = posWS;
@@ -75,7 +65,7 @@ PatchTessFactors mainConstantHS(InputPatch<VSOutput, 3> patch,
 					 uint patchID : SV_PrimitiveID)
 {
     float4 triangleCenterWS = (patch[0].position + patch[1].position + patch[2].position) / 3;
-    float d = distance(triangleCenterWS.xyz, cameraPostion.xyz);
+    float d = distance(triangleCenterWS.xyz, g_cameraPostion.xyz);
 
     float d0 = 1.0f;
     float d1 = 5.0f;
@@ -105,7 +95,7 @@ DSOutput mainDS(PatchTessFactors patchTessFactors,
         patch[1].position * barycentric.y +
         patch[2].position * barycentric.z;
 
-    output.position = mul(viewProjMatrix, position);
+    output.position = mul(g_viewProjMatrix, position);
 
     output.uv = patch[0].uv * barycentric.x +
         patch[1].uv * barycentric.y +
@@ -114,7 +104,7 @@ DSOutput mainDS(PatchTessFactors patchTessFactors,
     return output;
 }
 
-float4 mainPS(VSOutput input) : SV_TARGET0
+float4 mainPS(DSOutput input) : SV_TARGET0
 {
     float4 texel = texture0.Sample(linearSampler, input.uv);
     return texel;

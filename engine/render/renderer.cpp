@@ -8,6 +8,7 @@ Renderer::Renderer(Window *window)
     , m_debugShader(nullptr)
     , m_perViewConstantBuffer(nullptr)
     , m_perMeshConstantBuffer(nullptr)
+    , m_terrain(nullptr)
 {
     CreateConstantBuffers();
 }
@@ -31,7 +32,7 @@ void Renderer::Render(bool debugMode)
     m_window->BindRenderTarget();
 
     RenderOpaque();
-
+    RenderTerrain();
     if (debugMode) RenderDebug();
 
     m_window->Present();
@@ -92,6 +93,28 @@ void Renderer::RenderDebug()
 
         globals->m_deviceContext->DrawIndexed(mesh->m_indexBuffer->m_size, 0, 0);
     }
+}
+
+void Renderer::RenderTerrain()
+{
+    Globals *globals = Globals::GetInstance();
+
+    m_terrain->m_shader->Bind();
+
+    BindPerViewConstantBuffer();
+
+    PerMeshConstantBuffer perMeshData;
+    DirectX::XMStoreFloat4x4(&perMeshData.modelMatrix, m_terrain->m_mesh->m_modelMatrix);
+    UpdatePerMeshConstantBuffer(perMeshData);
+    BindPerMeshConstantBuffer();
+
+    m_terrain->m_mesh->m_texture->Bind(0);
+    m_terrain->m_mesh->m_vertexBuffer->Bind();
+    m_terrain->m_mesh->m_indexBuffer->Bind();
+
+    globals->m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
+
+    globals->m_deviceContext->DrawIndexed(m_terrain->m_mesh->m_indexBuffer->m_size, 0, 0);
 }
 
 void Renderer::UnbindAll()

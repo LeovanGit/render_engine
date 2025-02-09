@@ -1,14 +1,4 @@
-cbuffer PerView : register(b0)
-{
-    float3 cameraPostion;
-    float offset;
-    float4x4 viewProjMatrix;
-};
-
-cbuffer PerMesh : register(b1)
-{
-    float4x4 modelMatrix;
-};
+#include "globals.hlsli"
 
 struct VSInput
 {
@@ -23,7 +13,7 @@ struct VSOutput
 
 VSOutput mainVS(VSInput input)
 {
-    float4 posWS = mul(modelMatrix, float4(input.position.xyz, 1.0f));
+    float4 posWS = mul(g_modelMatrix, float4(input.position.xyz, 1.0f));
     
     VSOutput output;
     output.position = posWS;
@@ -45,10 +35,10 @@ void mainGS(triangle VSOutput input[3],
     for (uint i = 0; i != 3; ++i)
     {
         VSOutput vertexA;
-        vertexA.position = mul(viewProjMatrix, input[i].position);
+        vertexA.position = mul(g_viewProjMatrix, input[i].position);
 
         VSOutput vertexB;
-        vertexB.position = mul(viewProjMatrix, input[i].position + normalLength * float4(normal, 0.0f));
+        vertexB.position = mul(g_viewProjMatrix, input[i].position + normalLength * float4(normal, 0.0f));
         
         output.Append(vertexA);
         output.Append(vertexB);

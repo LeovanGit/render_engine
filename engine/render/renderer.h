@@ -4,6 +4,7 @@
 #include "camera.h"
 #include "shader_manager.h"
 #include "model_manager.h"
+#include "terrain.h"
 
 namespace engine
 {
@@ -17,6 +18,7 @@ public:
     void Render(bool debugMode);
     void RenderOpaque();
     void RenderDebug();
+    void RenderTerrain();
 
     void UnbindAll();
     void Destroy();
@@ -44,9 +46,11 @@ public:
     std::shared_ptr<Camera> m_camera;
     std::shared_ptr<Shader> m_currentShader;
     std::shared_ptr<Shader> m_debugShader;
-    std::vector< std::shared_ptr<Mesh>> m_meshes;
+    std::vector<std::shared_ptr<Mesh>> m_meshes;
 
     std::shared_ptr<Buffer> m_perViewConstantBuffer;
     std::shared_ptr<Buffer> m_perMeshConstantBuffer;
+
+    std::shared_ptr<Terrain> m_terrain;
 };
 } // namespace engine

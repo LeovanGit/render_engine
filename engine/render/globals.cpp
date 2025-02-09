@@ -86,6 +86,7 @@ void Globals::CreateSamplers()
 void Globals::BindSamplers()
 {
     m_deviceContext->PSSetSamplers(0, 1, m_linearSampler.GetAddressOf());
+    m_deviceContext->DSSetSamplers(0, 1, m_linearSampler.GetAddressOf());
 }
 
 void Globals::CreateDepthStencilState()

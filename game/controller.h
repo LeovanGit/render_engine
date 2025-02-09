@@ -18,6 +18,6 @@ public:
 
     const uint8_t *m_keyStates;
 
-    float m_movePower;
-    float m_rotatePower;
+    float m_moveSpeed;
+    float m_rotateSpeed;
 };

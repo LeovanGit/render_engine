@@ -65,19 +65,29 @@ void InitScene(engine::Renderer &renderer)
         inputLayout,
         _countof(inputLayout));
 
-    renderer.m_meshes.push_back(mm->GenerateUnitCube(
+    renderer.m_meshes.push_back(mm->GenerateCube(
         "unitCube",
         L"../assets/textures/bricks.dds",
         { 0.0f, 0.0f, 3.0f },
         { 1.0f, 1.0f, 1.0f },
         { 0.0f, 45.0f, 0.0f }));
 
-    //renderer.m_meshes.push_back(mm->GenerateUnitCube(
-    //    "unitCube2",
-    //    L"../assets/textures/lava.dds",
-    //    { 0.0f, 1.6f, 3.0f },
-    //    { 0.6f, 0.6f, 0.6f },
-    //    { 0.0f, 0.0f, 0.0f }));
+    renderer.m_meshes.push_back(mm->GenerateCube(
+        "worldOrigin",
+        L"../assets/textures/lava.dds",
+        { 0.0f, 0.0f, 0.0f },
+        { 0.02f, 0.02f, 0.02f },
+        { 0.0f, 0.0f, 0.0f }));
+
+    // be aware: for big grid size need to change index type from uint16 to uin32
+    // max for uint16 is 21845 triangles
+    renderer.m_terrain = std::make_shared<engine::Terrain>(
+        L"../assets/textures/terrain_heightmap.dds",
+        80,
+        120,
+        DirectX::XMFLOAT3(0.0f, -10.0f, 0.0f),
+        DirectX::XMFLOAT3(3.0f, 3.0f, 3.0f),
+        DirectX::XMFLOAT3(90.0f, 0.0f, 0.0f));
 }
 
 int main(int argc, char *argv[])
@@ -130,6 +140,12 @@ int main(int argc, char *argv[])
                 {
                     keyNDown = false;
                 }
+                break;
+            }
+            case SDL_MOUSEWHEEL:
+            {
+                float newMoveSpeed = controller.m_moveSpeed + event.wheel.y;
+                controller.m_moveSpeed = newMoveSpeed > 0 ? newMoveSpeed : 0.1f;
                 break;
             }
             }

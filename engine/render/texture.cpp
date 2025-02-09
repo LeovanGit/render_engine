@@ -28,5 +28,10 @@ void Texture::Bind(uint8_t slot)
         slot,
         1,
         m_texture.GetAddressOf());
+
+    globals->m_deviceContext->DSSetShaderResources(
+        slot,
+        1,
+        m_texture.GetAddressOf());
 }
 } // namespace engine

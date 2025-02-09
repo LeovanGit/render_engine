@@ -14,6 +14,12 @@ public:
     static ModelManager *GetInstance();
     static void Destroy();
 
+    struct VertexBufferGPU
+    {
+        DirectX::XMFLOAT3 m_position;
+        DirectX::XMFLOAT2 m_uv;
+    };
+
     std::shared_ptr<Mesh> GetOrCreateModel(
         const std::string &modelName,
         const std::wstring &pathToTexture,
@@ -26,10 +32,26 @@ public:
         DirectX::XMFLOAT3 scale,
         DirectX::XMFLOAT3 rotation);
 
-    std::shared_ptr<Mesh> GenerateUnitCube(
+    std::shared_ptr<Mesh> GeneratePlane(
         const std::string &modelName,
         const std::wstring &pathToTexture,
         DirectX::XMFLOAT3 position,
+        DirectX::XMFLOAT3 scale,
+        DirectX::XMFLOAT3 rotation);
+
+    std::shared_ptr<Mesh> GeneratePlanesGrid(
+        const std::string &modelName,
+        const std::wstring &pathToTexture,
+        uint32_t rows,
+        uint32_t cols,
+        DirectX::XMFLOAT3 position,
+        DirectX::XMFLOAT3 scale,
+        DirectX::XMFLOAT3 rotation);
+
+    std::shared_ptr<Mesh> GenerateCube(
+        const std::string &modelName,
+        const std::wstring &pathToTexture,
+        DirectX::XMFLOAT3 startPosition,
         DirectX::XMFLOAT3 scale,
         DirectX::XMFLOAT3 rotation);
 
