@@ -65,7 +65,7 @@ PatchTessFactors mainConstantHS(InputPatch<VSOutput, 3> patch,
 					 uint patchID : SV_PrimitiveID)
 {
     float4 triangleCenterWS = (patch[0].position + patch[1].position + patch[2].position) / 3;
-    float d = distance(triangleCenterWS.xyz, g_cameraPostion.xyz);
+    float d = distance(triangleCenterWS.xyz, g_cameraPostionWS.xyz);
 
     float d0 = 1.0f;
     float d1 = 5.0f;

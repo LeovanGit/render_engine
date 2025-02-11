@@ -28,6 +28,7 @@
     <ClCompile Include="render\renderer.cpp" />
     <ClCompile Include="render\shader.cpp" />
     <ClCompile Include="render\shader_manager.cpp" />
+    <ClCompile Include="render\sky.cpp" />
     <ClCompile Include="render\terrain.cpp" />
     <ClCompile Include="render\texture.cpp" />
     <ClCompile Include="render\texture_manager.cpp" />
@@ -44,6 +45,7 @@
     <ClInclude Include="render\renderer.h" />
     <ClInclude Include="render\shader.h" />
     <ClInclude Include="render\shader_manager.h" />
+    <ClInclude Include="render\sky.h" />
     <ClInclude Include="render\terrain.h" />
     <ClInclude Include="render\texture.h" />
     <ClInclude Include="render\texture_manager.h" />

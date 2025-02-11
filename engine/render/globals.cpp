@@ -93,7 +93,7 @@ void Globals::CreateDepthStencilState()
 {
     D3D11_DEPTH_STENCIL_DESC depthStateDesc = {};
     depthStateDesc.DepthEnable = TRUE;
-    depthStateDesc.DepthFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_GREATER; // reversed depth
+    depthStateDesc.DepthFunc = D3D11_COMPARISON_GREATER_EQUAL; // reversed depth
     depthStateDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 
     m_device->CreateDepthStencilState(&depthStateDesc, m_depthStencilState.GetAddressOf());
@@ -108,7 +108,7 @@ void Globals::CreateRasterizerState()
 {
     D3D11_RASTERIZER_DESC rasterizerDesc = {};
     rasterizerDesc.CullMode = D3D11_CULL_BACK;
-    rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
+    rasterizerDesc.FillMode = D3D11_FILL_SOLID;
 
     m_device->CreateRasterizerState(&rasterizerDesc, m_rasterizerState.GetAddressOf());
 }

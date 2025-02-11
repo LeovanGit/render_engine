@@ -50,6 +50,9 @@ void Camera::UpdateMatrices()
             XMLoadFloat4x4(&m_viewMatrix),
             XMLoadFloat4x4(&m_projMatrix)));
 
+        XMStoreFloat4x4(&m_invViewProjMatrix,
+            XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_viewProjMatrix)));
+
         m_dirtyFlag = false;
     }
 }
@@ -139,5 +142,17 @@ XMVECTOR Camera::GetUp() const
 XMVECTOR Camera::GetForward() const
 {
     return XMLoadFloat3(&m_forward);
+}
+
+XMVECTOR Camera::Reproject(float x, float y) const
+{
+    // point on near plane (reversed depth: z = 1.0f):
+    XMFLOAT4 pointCS(x, y, 1.0f, 1.0f);
+
+    XMVECTOR pointWS = XMVector4Transform(XMLoadFloat4(&pointCS), XMLoadFloat4x4(&m_invViewProjMatrix));
+    XMVECTOR w = XMVectorSplatW(pointWS); // pointWS.wwww
+    pointWS = XMVectorDivide(pointWS, w);
+
+    return pointWS;
 }
 } // namespace engine

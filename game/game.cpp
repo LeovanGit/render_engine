@@ -17,6 +17,7 @@ void InitScene(engine::Renderer &renderer)
 {
     engine::ShaderManager *sm = engine::ShaderManager::GetInstance();
     engine::ModelManager *mm = engine::ModelManager::GetInstance();
+    engine::TextureManager *tm = engine::TextureManager::GetInstance();
 
     renderer.m_camera = std::make_unique<engine::Camera>(
         renderer.m_window->GetWidth(),
@@ -88,6 +89,8 @@ void InitScene(engine::Renderer &renderer)
         DirectX::XMFLOAT3(0.0f, -10.0f, 0.0f),
         DirectX::XMFLOAT3(3.0f, 3.0f, 3.0f),
         DirectX::XMFLOAT3(90.0f, 0.0f, 0.0f));
+
+    renderer.m_skybox = std::make_shared<engine::Sky>(L"../assets/textures/skybox.dds");
 }
 
 int main(int argc, char *argv[])

@@ -5,6 +5,7 @@
 #include "shader_manager.h"
 #include "model_manager.h"
 #include "terrain.h"
+#include "sky.h"
 
 namespace engine
 {
@@ -17,17 +18,24 @@ public:
     void Update();
     void Render(bool debugMode);
     void RenderOpaque();
-    void RenderDebug();
     void RenderTerrain();
+    void RenderDebug();
+    void RenderSkybox();
 
     void UnbindAll();
     void Destroy();
 
     struct PerViewConstantBuffer
     {
-        DirectX::XMFLOAT3 cameraPosition;
-        float offset;
         DirectX::XMFLOAT4X4 viewProjMatrix;
+        DirectX::XMFLOAT3 cameraPostionWS;
+        float offset0;
+        DirectX::XMFLOAT3 nearPlaneTLCornerWS; // top left
+        float offset1;
+        DirectX::XMFLOAT3 nearPlaneBLCornerWS; // bottom left
+        float offset2;
+        DirectX::XMFLOAT3 nearPlaneBRCornerWS; // bottom right
+        float offset3;
     };
 
     struct PerMeshConstantBuffer
@@ -52,5 +60,6 @@ public:
     std::shared_ptr<Buffer> m_perMeshConstantBuffer;
 
     std::shared_ptr<Terrain> m_terrain;
+    std::shared_ptr<Sky> m_skybox;
 };
 } // namespace engine

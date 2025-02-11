@@ -16,12 +16,18 @@ using DirectX::XMStoreFloat3;
 using DirectX::XMLoadFloat3;
 using DirectX::XMVector3Cross;
 using DirectX::XMVectorAdd;
+using DirectX::XMVector4Transform;
+using DirectX::XMStoreFloat4;
+using DirectX::XMLoadFloat4;
+using DirectX::XMVectorSplatW;
+using DirectX::XMVectorDivide;
 
 using DirectX::XMStoreFloat4x4;
 using DirectX::XMLoadFloat4x4;
 using DirectX::XMMatrixPerspectiveFovLH;
 using DirectX::XMMatrixLookToLH;
 using DirectX::XMMatrixMultiply;
+using DirectX::XMMatrixInverse;
 
 using DirectX::XMConvertToRadians;
 using DirectX::XMQuaternionRotationAxis;
@@ -56,6 +62,8 @@ public:
     XMVECTOR GetUp() const;
     XMVECTOR GetForward() const;
 
+    XMVECTOR Reproject(float x, float y) const;
+
 private:
     XMFLOAT3 m_position;
 
@@ -80,5 +88,6 @@ private:
     XMFLOAT4X4 m_projMatrix;
 
     XMFLOAT4X4 m_viewProjMatrix;
+    XMFLOAT4X4 m_invViewProjMatrix;
 };
 } // namespace engine

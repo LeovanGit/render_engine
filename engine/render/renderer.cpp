@@ -16,8 +16,12 @@ Renderer::Renderer(Window *window)
 void Renderer::Update()
 {
     PerViewConstantBuffer perViewData;
-    DirectX::XMStoreFloat3(&perViewData.cameraPosition, m_camera->GetPosition());
     DirectX::XMStoreFloat4x4(&perViewData.viewProjMatrix, m_camera->GetViewProjMatrix());
+    DirectX::XMStoreFloat3(&perViewData.cameraPostionWS, m_camera->GetPosition());
+    // camera frustum near plane's corners in WS:
+    DirectX::XMStoreFloat3(&perViewData.nearPlaneTLCornerWS, m_camera->Reproject(-1.0f, 1.0f));
+    DirectX::XMStoreFloat3(&perViewData.nearPlaneBLCornerWS, m_camera->Reproject(-1.0f, -1.0f));
+    DirectX::XMStoreFloat3(&perViewData.nearPlaneBRCornerWS, m_camera->Reproject(1.0f, -1.0f));
     UpdatePerViewConstantBuffer(perViewData);
 }
 
@@ -34,6 +38,7 @@ void Renderer::Render(bool debugMode)
     RenderOpaque();
     RenderTerrain();
     if (debugMode) RenderDebug();
+    RenderSkybox();
 
     m_window->Present();
 }
@@ -77,7 +82,7 @@ void Renderer::RenderDebug()
     globals->BindDepthStencilState();
     globals->BindRasterizerState();
 
-    globals->m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    globals->m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     BindPerViewConstantBuffer();
 
@@ -115,6 +120,40 @@ void Renderer::RenderTerrain()
     globals->m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
 
     globals->m_deviceContext->DrawIndexed(m_terrain->m_mesh->m_indexBuffer->m_size, 0, 0);
+}
+
+void Renderer::RenderSkybox()
+{
+    Globals *globals = Globals::GetInstance();
+    m_skybox->m_shader->Bind();
+    
+    globals->BindSamplers();
+
+    ID3D11InputLayout *nullInputLayout = nullptr;
+    globals->m_deviceContext->IASetInputLayout(nullInputLayout);
+
+    ID3D11Buffer *nullBuffer = nullptr;
+    UINT stride = 0;
+    UINT offset = 0;
+    globals->m_deviceContext->IASetVertexBuffers(
+        0,
+        1,
+        &nullBuffer,
+        &stride,
+        &offset);
+
+    globals->m_deviceContext->IASetIndexBuffer(
+        nullBuffer,
+        DXGI_FORMAT_R16_UINT,
+        0);
+
+    BindPerViewConstantBuffer();
+
+    m_skybox->m_cubemap->Bind(0);
+
+    globals->m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+    globals->m_deviceContext->Draw(3, 0);
 }
 
 void Renderer::UnbindAll()
