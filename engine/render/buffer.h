@@ -57,9 +57,8 @@ public:
         }
         case BufferUsage_ReadBuffer:
         {
-            bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-            bufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-            bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+            bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+            bufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
 
             if (isStructured)
             {
@@ -87,7 +86,7 @@ public:
         if (usage == BufferUsage_ReadBuffer)
         {
             D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-            srvDesc.Format = isStructured ? DXGI_FORMAT_UNKNOWN : DXGI_FORMAT_R32_UINT;
+            srvDesc.Format = isStructured ? DXGI_FORMAT_UNKNOWN : DXGI_FORMAT_R32_FLOAT;
             srvDesc.ViewDimension = D3D_SRV_DIMENSION_BUFFER;
             srvDesc.Buffer.NumElements = m_size;
             srvDesc.Buffer.FirstElement = 0;
@@ -97,6 +96,19 @@ public:
                 &srvDesc,
                 m_bufferSRV.GetAddressOf());
             assert(hr >= 0 && "Failed to create buffer SRV\n");
+
+            D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+            uavDesc.Format = isStructured ? DXGI_FORMAT_UNKNOWN : DXGI_FORMAT_R32_FLOAT;
+            uavDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
+            uavDesc.Buffer.FirstElement = 0;
+            uavDesc.Buffer.NumElements = m_size;
+            uavDesc.Buffer.Flags = 0;
+
+            hr = globals->m_device->CreateUnorderedAccessView(
+                m_buffer.Get(),
+                &uavDesc,
+                m_bufferUAV.GetAddressOf());
+            assert(hr >= 0 && "Failed to create buffer UAV\n");
         }
     }
 
@@ -150,7 +162,8 @@ public:
         }
         case BufferUsage_ReadBuffer:
         {
-            globals->m_deviceContext->CSSetShaderResources(slot, 1, m_bufferSRV.GetAddressOf());
+            //globals->m_deviceContext->CSSetShaderResources(slot, 1, m_bufferSRV.GetAddressOf());
+            globals->m_deviceContext->CSSetUnorderedAccessViews(slot, 1, m_bufferUAV.GetAddressOf(), nullptr);
 
             break;
         }
@@ -166,5 +179,6 @@ public:
     uint32_t m_offset;
 
     ComPtr<ID3D11ShaderResourceView> m_bufferSRV;
+    ComPtr<ID3D11UnorderedAccessView> m_bufferUAV;
 };
 } // engine

@@ -165,8 +165,8 @@ void Renderer::RenderComputeShader()
 
     m_computeTexture->Bind(0);
 
-    m_readBuffer->Bind(0);
-    m_readStructuredBuffer->Bind(1);
+    m_readBuffer->Bind(1);
+    m_readStructuredBuffer->Bind(2);
 
     globals->m_deviceContext->Dispatch(160, 90, 1);
 }
