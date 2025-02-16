@@ -18,6 +18,8 @@ std::string GetShaderTarget(ShaderStage type)
         return "gs_5_0";
     case ShaderStage_PixelShader:
         return "ps_5_0";
+    case ShaderStage_ComputeShader:
+        return "cs_5_0";
     default:
         assert(false && "Unknown shader type\n");
         return "";
@@ -38,6 +40,8 @@ std::string GetShaderEntryPoint(ShaderStage type)
         return "mainGS";
     case ShaderStage_PixelShader:
         return "mainPS";
+    case ShaderStage_ComputeShader:
+        return "mainCS";
     default:
         assert(false && "Unknown shader type\n");
         return "";
@@ -68,6 +72,9 @@ Shader::Shader(uint32_t shaderStages,
 
     if (shaderStages & ShaderStage_PixelShader)
         Compile(ShaderStage_PixelShader);
+
+    if (shaderStages & ShaderStage_ComputeShader)
+        Compile(ShaderStage_ComputeShader);
 }
 
 void Shader::Compile(ShaderStage type,
@@ -152,6 +159,15 @@ void Shader::Compile(ShaderStage type,
             m_pixelShader.GetAddressOf());
         assert(hr >= 0 && "Failed to create pixel shader\n");
     }
+    else if (type & ShaderStage_ComputeShader)
+    {
+        hr = globals->m_device->CreateComputeShader(
+            compiled->GetBufferPointer(),
+            compiled->GetBufferSize(),
+            nullptr,
+            m_computeShader.GetAddressOf());
+        assert(hr >= 0 && "Failed to create compute shader\n");
+    }
 
     if (type & ShaderStage_VertexShader && inputLayout)
     {
@@ -234,6 +250,19 @@ void Shader::Bind()
     {
         ID3D11PixelShader *nullPS = nullptr;
         globals->m_deviceContext->PSSetShader(nullPS, nullptr, 0);
+    }
+
+    if (m_shaderStages & ShaderStage_ComputeShader)
+    {
+        globals->m_deviceContext->CSSetShader(
+            m_computeShader.Get(),
+            nullptr,
+            0);
+    }
+    else
+    {
+        ID3D11ComputeShader *nullCS = nullptr;
+        globals->m_deviceContext->CSSetShader(nullCS, nullptr, 0);
     }
 }
 } // namespace engine

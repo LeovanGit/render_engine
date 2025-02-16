@@ -35,4 +35,15 @@ std::shared_ptr<Texture> TextureManager::GetOrCreateTexture(const std::wstring &
         pathToFile,
         std::make_shared<Texture>(pathToFile)).first->second;
 }
+
+std::shared_ptr<Texture> TextureManager::GetOrCreateTexture(const std::wstring &name, bool createEmptyUAV)
+{
+    auto found = m_textures.find(name);
+    if (found != m_textures.end())
+        return found->second;
+
+    return m_textures.try_emplace(
+        name,
+        std::make_shared<Texture>(createEmptyUAV)).first->second;
+}
 } // namespace engine

@@ -15,7 +15,8 @@ enum ShaderStage
     ShaderStage_HullShader = (1 << 1),
     ShaderStage_DomainShader = (1 << 2),
     ShaderStage_GeometryShader = (1 << 3),
-    ShaderStage_PixelShader = (1 << 4)
+    ShaderStage_PixelShader = (1 << 4),
+    ShaderStage_ComputeShader = (1 << 5)
 };
 
 std::string GetShaderTarget(ShaderStage type);
@@ -47,5 +48,7 @@ public:
     ComPtr<ID3D11DomainShader> m_domainShader;
     ComPtr<ID3D11GeometryShader> m_geometryShader;
     ComPtr<ID3D11PixelShader> m_pixelShader;
+
+    ComPtr<ID3D11ComputeShader> m_computeShader;
 };
 } // namespace engine

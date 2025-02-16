@@ -91,6 +91,43 @@ void InitScene(engine::Renderer &renderer)
         DirectX::XMFLOAT3(90.0f, 0.0f, 0.0f));
 
     renderer.m_skybox = std::make_shared<engine::Sky>(L"../assets/textures/skybox.dds");
+
+    renderer.m_computeShader = sm->GetOrCreateShader(
+        engine::ShaderStage_ComputeShader,
+        L"../assets/shaders/compute.hlsl");
+
+    renderer.m_computeTexture = tm->GetOrCreateTexture(L"RWTexture", true);
+
+    uint32_t readBufferData[] =
+    {
+        10, 20, 30, 40, 50, 60, 70, 80, 90
+    };
+
+    renderer.m_readBuffer = std::make_shared<engine::Buffer>(
+        readBufferData,
+        sizeof(readBufferData),
+        sizeof(uint32_t),
+        engine::BufferUsage::BufferUsage_ReadBuffer);
+
+    struct BufferData
+    {
+        float value0;
+        float value1;
+    };
+
+    BufferData readStructuredBufferData[] =
+    {
+        { 0.0f, 1.0f },
+        { 3.0f, 2.0f },
+        { -5.0f, 11.0f }
+    };
+
+    renderer.m_readStructuredBuffer = std::make_shared<engine::Buffer>(
+        readStructuredBufferData,
+        sizeof(readStructuredBufferData),
+        sizeof(BufferData),
+        engine::BufferUsage::BufferUsage_ReadBuffer,
+        true);
 }
 
 int main(int argc, char *argv[])

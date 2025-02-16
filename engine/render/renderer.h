@@ -21,6 +21,7 @@ public:
     void RenderTerrain();
     void RenderDebug();
     void RenderSkybox();
+    void RenderComputeShader();
 
     void UnbindAll();
     void Destroy();
@@ -61,5 +62,10 @@ public:
 
     std::shared_ptr<Terrain> m_terrain;
     std::shared_ptr<Sky> m_skybox;
+
+    std::shared_ptr<Shader> m_computeShader;
+    std::shared_ptr<Texture> m_computeTexture;
+    std::shared_ptr<Buffer> m_readBuffer;
+    std::shared_ptr<Buffer> m_readStructuredBuffer;
 };
 } // namespace engine

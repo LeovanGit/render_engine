@@ -16,6 +16,8 @@ public:
 
     std::shared_ptr<Texture> GetOrCreateTexture(const std::wstring &pathToFile);
 
+    std::shared_ptr<Texture> GetOrCreateTexture(const std::wstring &name, bool createEmptyUAV);
+
     std::unordered_map<std::wstring, std::shared_ptr<Texture>> m_textures;
 
 private:

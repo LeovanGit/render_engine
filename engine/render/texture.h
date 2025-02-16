@@ -11,6 +11,7 @@ class Texture
 {
 public:
     Texture(const std::wstring &pathToFile);
+    Texture(bool createEmptyUAV);
 
     ~Texture() = default;
 
@@ -19,6 +20,7 @@ public:
 
     std::wstring m_pathToFile;
 
-    ComPtr<ID3D11ShaderResourceView> m_texture;
+    ComPtr<ID3D11ShaderResourceView> m_textureSRV;
+    ComPtr<ID3D11UnorderedAccessView> m_textureUAV;
 };
 } // namespace engine

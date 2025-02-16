@@ -40,6 +40,8 @@ void Renderer::Render(bool debugMode)
     if (debugMode) RenderDebug();
     RenderSkybox();
 
+    RenderComputeShader();
+
     m_window->Present();
 }
 
@@ -156,6 +158,19 @@ void Renderer::RenderSkybox()
     globals->m_deviceContext->Draw(3, 0);
 }
 
+void Renderer::RenderComputeShader()
+{
+    Globals *globals = Globals::GetInstance();
+    m_computeShader->Bind();
+
+    m_computeTexture->Bind(0);
+
+    m_readBuffer->Bind(0);
+    m_readStructuredBuffer->Bind(1);
+
+    globals->m_deviceContext->Dispatch(160, 90, 1);
+}
+
 void Renderer::UnbindAll()
 {
     Globals *globals = Globals::GetInstance();
@@ -175,11 +190,17 @@ void Renderer::UnbindAll()
     ID3D11PixelShader *nullPS = nullptr;
     globals->m_deviceContext->PSSetShader(nullPS, nullptr, 0);
 
+    ID3D11ComputeShader *nullCS = nullptr;
+    globals->m_deviceContext->CSSetShader(nullCS, nullptr, 0);
+
     ID3D11SamplerState *nullSampler = nullptr;
     globals->m_deviceContext->PSSetSamplers(0, 1, &nullSampler);
 
     ID3D11ShaderResourceView *nullSRV = nullptr;
     globals->m_deviceContext->PSSetShaderResources(0, 1, &nullSRV);
+    globals->m_deviceContext->DSSetShaderResources(0, 1, &nullSRV);
+    globals->m_deviceContext->CSSetShaderResources(0, 1, &nullSRV);
+    globals->m_deviceContext->CSSetShaderResources(1, 1, &nullSRV);
 
     ID3D11Buffer *nullBuffer = nullptr;
     UINT stride = 0;
@@ -218,6 +239,10 @@ void Renderer::Destroy()
     // Just break references to them, they will be destructed in Engine::Deinit():
     m_currentShader = nullptr;
     m_debugShader = nullptr;
+    m_computeShader = nullptr;
+    m_computeTexture = nullptr;
+    m_readBuffer = nullptr;
+    m_readStructuredBuffer = nullptr;
     m_meshes.clear();
 }
 
