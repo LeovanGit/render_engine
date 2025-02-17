@@ -1,6 +1,5 @@
 #include "globals.hlsli"
 
-sampler linearSampler : register(s0);
 Texture2D texture0 : register(t0);
 
 struct VSInput
