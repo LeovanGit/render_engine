@@ -9,6 +9,7 @@ Renderer::Renderer(std::shared_ptr<Window> window)
     , m_opaqueInstances(new OpaqueInstances)
     , m_terrain(nullptr)
     , m_skybox(nullptr)
+    , m_postprocess(nullptr)
 {
     Globals *globals = Globals::GetInstance();
 
@@ -45,8 +46,9 @@ void Renderer::Render(bool debugMode)
     if (debugMode) m_opaqueInstances->RenderDebug();
     m_terrain->Render();
     m_skybox->Render();
+    m_postprocess->Render();
 
-    m_window->Present();
+    m_window->Present();    
 }
 
 void Renderer::Destroy()
@@ -56,6 +58,7 @@ void Renderer::Destroy()
     // unbind all:
     globals->m_deviceContext->ClearState();
 
+    m_postprocess = nullptr;
     m_skybox = nullptr;
     m_terrain = nullptr;
     m_opaqueInstances = nullptr;

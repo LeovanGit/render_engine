@@ -12,7 +12,7 @@ Sky::Sky(const std::wstring &pathToCubemap)
         ShaderStage_PixelShader,
         L"../assets/shaders/skybox.hlsl");
 
-    m_cubemap = tm->GetOrCreateTexture(pathToCubemap);
+    m_cubemap = tm->GetOrCreateTexture(pathToCubemap, TextureUsage_SRV);
 }
 
 Sky::~Sky()
@@ -27,7 +27,7 @@ void Sky::Render()
     Globals *globals = Globals::GetInstance();
 
     m_shader->Bind();
-    m_cubemap->Bind(0, ShaderStage_PixelShader);
+    m_cubemap->Bind(0, TextureUsage_SRV, ShaderStage_PixelShader);
     
     globals->m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     globals->m_deviceContext->Draw(3, 0);

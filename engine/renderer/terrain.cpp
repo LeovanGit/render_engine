@@ -75,7 +75,7 @@ void Terrain::Render()
     
     m_shader->Bind();
 
-    m_mesh->m_texture->Bind(0, ShaderStage_DomainShader);
+    m_mesh->m_texture->Bind(0, TextureUsage_SRV, ShaderStage_DomainShader);
     m_mesh->m_vertexBuffer->Bind(0);
     m_mesh->m_indexBuffer->Bind();
 

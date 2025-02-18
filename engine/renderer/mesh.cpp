@@ -25,7 +25,7 @@ Mesh::Mesh(const std::wstring &pathToTexture,
         BufferUsage::BufferUsage_IndexBuffer);
 
     engine::TextureManager *tm = engine::TextureManager::GetInstance();
-    m_texture = tm->GetOrCreateTexture(pathToTexture);
+    m_texture = tm->GetOrCreateTexture(pathToTexture, TextureUsage_SRV);
 
     DirectX::XMMATRIX scalingMat = DirectX::XMMatrixScaling(scale.x, scale.y, scale.z);
     DirectX::XMMATRIX rotationMat = DirectX::XMMatrixRotationRollPitchYaw(

@@ -59,11 +59,11 @@ void ConstantBufferManager::UpdatePerMeshConstantBuffer(PerMesh &data)
 
 void ConstantBufferManager::BindPerViewConstantBuffer()
 {
-    m_perView->Bind(0, ShaderStage::ShaderStage_AllStages);
+    m_perView->Bind(0, ShaderStage::ShaderStage_AllExceptCompute);
 }
 
 void ConstantBufferManager::BindPerMeshConstantBuffer()
 {
-    m_perMesh->Bind(1, ShaderStage::ShaderStage_AllStages);
+    m_perMesh->Bind(1, ShaderStage::ShaderStage_AllExceptCompute);
 }
 } // namespace engine

@@ -1,5 +1,4 @@
 #include "globals.hlsli"
-
 Texture2D texture0 : register(t0);
 
 struct VSInput

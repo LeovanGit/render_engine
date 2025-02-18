@@ -14,7 +14,16 @@ public:
     static TextureManager *GetInstance();
     static void Destroy();
 
-    std::shared_ptr<Texture> GetOrCreateTexture(const std::wstring &pathToFile);
+    std::shared_ptr<Texture> GetOrCreateTexture(
+        const std::wstring &pathToFile,
+        TextureUsage usage);
+
+
+    std::shared_ptr<Texture> GetOrCreateTexture(
+        const std::wstring &name,
+        uint32_t width,
+        uint32_t height,
+        TextureUsage usage);
 
     std::unordered_map<std::wstring, std::shared_ptr<Texture>> m_textures;
 

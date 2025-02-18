@@ -58,6 +58,8 @@ void Controller::InitScene()
         DirectX::XMFLOAT3(90.0f, 0.0f, 0.0f));
 
     m_renderer->m_skybox = std::make_shared<engine::Sky>(L"../assets/textures/skybox.dds");
+
+    m_renderer->m_postprocess = std::make_shared<engine::PostProcess>();
 }
 
 void Controller::Update(float deltaTime, uint32_t fps)

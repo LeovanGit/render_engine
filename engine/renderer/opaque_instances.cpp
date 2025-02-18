@@ -79,7 +79,7 @@ void OpaqueInstances::Render()
 
         cbm->UpdatePerMeshConstantBuffer(perMeshData);
 
-        mesh->m_texture->Bind(0, ShaderStage_PixelShader);
+        mesh->m_texture->Bind(0, TextureUsage_SRV, ShaderStage_PixelShader);
         mesh->m_vertexBuffer->Bind(0);
         mesh->m_indexBuffer->Bind();
 

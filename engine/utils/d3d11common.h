@@ -16,9 +16,10 @@ enum ShaderStage
     ShaderStage_DomainShader = (1 << 2),
     ShaderStage_GeometryShader = (1 << 3),
     ShaderStage_PixelShader = (1 << 4),
-    ShaderStage_AllStages = (ShaderStage_VertexShader |
-                             ShaderStage_HullShader |
-                             ShaderStage_DomainShader |
-                             ShaderStage_GeometryShader |
-                             ShaderStage_PixelShader)
+    ShaderStage_ComputeShader = (1 << 5),
+    ShaderStage_AllExceptCompute = (ShaderStage_VertexShader |
+                                    ShaderStage_HullShader |
+                                    ShaderStage_DomainShader |
+                                    ShaderStage_GeometryShader |
+                                    ShaderStage_PixelShader)
 };

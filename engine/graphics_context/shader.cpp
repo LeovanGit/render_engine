@@ -18,6 +18,8 @@ std::string GetShaderTarget(ShaderStage type)
         return "gs_5_0";
     case ShaderStage_PixelShader:
         return "ps_5_0";
+    case ShaderStage_ComputeShader:
+        return "cs_5_0";
     default:
         assert(false && "Unknown shader type\n");
         return "";
@@ -38,6 +40,8 @@ std::string GetShaderEntryPoint(ShaderStage type)
         return "mainGS";
     case ShaderStage_PixelShader:
         return "mainPS";
+    case ShaderStage_ComputeShader:
+        return "mainCS";
     default:
         assert(false && "Unknown shader type\n");
         return "";
@@ -56,6 +60,7 @@ Shader::Shader(uint32_t shaderStages,
     , m_domainShader(nullptr)
     , m_geometryShader(nullptr)
     , m_pixelShader(nullptr)
+    , m_computeShader(nullptr)
 {
     assert(shaderStages != ShaderStage::ShaderStage_None && "shaderStages is equal to ShaderStage_None!");
 
@@ -73,6 +78,9 @@ Shader::Shader(uint32_t shaderStages,
 
     if (shaderStages & ShaderStage_PixelShader)
         Compile(ShaderStage::ShaderStage_PixelShader);
+
+    if (shaderStages & ShaderStage_ComputeShader)
+        Compile(ShaderStage::ShaderStage_ComputeShader);
 }
 
 void Shader::Compile(ShaderStage type,
@@ -168,6 +176,15 @@ void Shader::Compile(ShaderStage type,
             m_pixelShader.GetAddressOf());
         assert(hr >= 0 && "Failed to create pixel shader\n");
     }
+    else if (type && ShaderStage_ComputeShader)
+    {
+        hr = globals->m_device->CreateComputeShader(
+            compiled->GetBufferPointer(),
+            compiled->GetBufferSize(),
+            nullptr,
+            m_computeShader.GetAddressOf());
+        assert(hr >= 0 && "Failed to create compute shader\n");
+    }
 }
 
 void Shader::Bind()
@@ -212,6 +229,14 @@ void Shader::Bind()
     {
         globals->m_deviceContext->PSSetShader(
             m_pixelShader.Get(),
+            nullptr,
+            0);
+    }
+
+    if (m_shaderStages & ShaderStage_ComputeShader)
+    {
+        globals->m_deviceContext->CSSetShader(
+            m_computeShader.Get(),
             nullptr,
             0);
     }

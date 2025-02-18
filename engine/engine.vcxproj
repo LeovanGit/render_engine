@@ -32,6 +32,7 @@
     <ClCompile Include="graphics_context\texture_manager.cpp" />
     <ClCompile Include="renderer\camera.cpp" />
     <ClCompile Include="renderer\opaque_instances.cpp" />
+    <ClCompile Include="renderer\postprocess.cpp" />
     <ClCompile Include="renderer\renderer.cpp" />
     <ClCompile Include="renderer\sky.cpp" />
     <ClCompile Include="renderer\terrain.cpp" />
@@ -52,6 +53,7 @@
     <ClInclude Include="graphics_context\texture_manager.h" />
     <ClInclude Include="renderer\camera.h" />
     <ClInclude Include="renderer\opaque_instances.h" />
+    <ClInclude Include="renderer\postprocess.h" />
     <ClInclude Include="renderer\renderer.h" />
     <ClInclude Include="renderer\sky.h" />
     <ClInclude Include="renderer\terrain.h" />

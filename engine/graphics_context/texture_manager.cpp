@@ -25,7 +25,9 @@ void TextureManager::Destroy()
     s_instance = nullptr;
 }
 
-std::shared_ptr<Texture> TextureManager::GetOrCreateTexture(const std::wstring &pathToFile)
+std::shared_ptr<Texture> TextureManager::GetOrCreateTexture(
+    const std::wstring &pathToFile,
+    TextureUsage usage)
 {
     auto found = m_textures.find(pathToFile);
     if (found != m_textures.end())
@@ -33,6 +35,21 @@ std::shared_ptr<Texture> TextureManager::GetOrCreateTexture(const std::wstring &
 
     return m_textures.try_emplace(
         pathToFile,
-        std::make_shared<Texture>(pathToFile)).first->second;
+        std::make_shared<Texture>(pathToFile, usage)).first->second;
+}
+
+std::shared_ptr<Texture> TextureManager::GetOrCreateTexture(
+    const std::wstring &name,
+    uint32_t width,
+    uint32_t height,
+    TextureUsage usage)
+{
+    auto found = m_textures.find(name);
+    if (found != m_textures.end())
+        return found->second;
+
+    return m_textures.try_emplace(
+        name,
+        std::make_shared<Texture>(width, height, usage)).first->second;
 }
 } // namespace engine

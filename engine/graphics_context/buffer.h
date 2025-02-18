@@ -11,7 +11,11 @@ enum BufferUsage
 {
     BufferUsage_VertexBuffer = 0,
     BufferUsage_IndexBuffer,
-    BufferUsage_ConstantBuffer
+    BufferUsage_ConstantBuffer,
+    BufferUsage_ReadBuffer,
+    BufferUsage_ReadStructuredBuffer,
+    BufferUsage_RWBuffer,
+    BufferUsage_RWStructuredBuffer
 };
 
 class Buffer
@@ -32,6 +36,9 @@ public:
     uint32_t m_size; // count of elements
     uint32_t m_stride; // size of one element
     uint32_t m_offset;
+
+    ComPtr<ID3D11ShaderResourceView> m_bufferSRV;
+    ComPtr<ID3D11UnorderedAccessView> m_bufferUAV;
 
     struct BindInfo
     {

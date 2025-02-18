@@ -41,5 +41,7 @@ public:
     ComPtr<ID3D11DomainShader> m_domainShader;
     ComPtr<ID3D11GeometryShader> m_geometryShader;
     ComPtr<ID3D11PixelShader> m_pixelShader;
+
+    ComPtr<ID3D11ComputeShader> m_computeShader;
 };
 } // namespace engine
