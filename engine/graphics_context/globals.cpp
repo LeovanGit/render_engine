@@ -53,7 +53,7 @@ void Globals::InitD3D11()
     UINT flags = 0;
 #endif
 
-    constexpr D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_11_0;
+    constexpr D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_1;
 
     hr = D3D11CreateDevice(
         nullptr,

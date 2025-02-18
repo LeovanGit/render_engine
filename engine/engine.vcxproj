@@ -35,6 +35,7 @@
     <ClCompile Include="renderer\postprocess.cpp" />
     <ClCompile Include="renderer\renderer.cpp" />
     <ClCompile Include="renderer\sky.cpp" />
+    <ClCompile Include="renderer\quad_sphere.cpp" />
     <ClCompile Include="renderer\terrain.cpp" />
     <ClCompile Include="timer\timer.cpp" />
     <ClCompile Include="window\window.cpp" />
@@ -56,6 +57,7 @@
     <ClInclude Include="renderer\postprocess.h" />
     <ClInclude Include="renderer\renderer.h" />
     <ClInclude Include="renderer\sky.h" />
+    <ClInclude Include="renderer\quad_sphere.h" />
     <ClInclude Include="renderer\terrain.h" />
     <ClInclude Include="timer\timer.h" />
     <ClInclude Include="utils\d3d11common.h" />

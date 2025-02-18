@@ -6,6 +6,7 @@
 #include "terrain.h"
 #include "sky.h"
 #include "postprocess.h"
+#include "quad_sphere.h"
 
 namespace engine
 {
@@ -27,5 +28,7 @@ public:
     std::shared_ptr<Sky> m_skybox;
 
     std::shared_ptr<PostProcess> m_postprocess;
+
+    std::shared_ptr<QuadSphere> m_quadSphere;
 };
 } // namespace engine

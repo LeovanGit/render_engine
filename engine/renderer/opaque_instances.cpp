@@ -34,8 +34,6 @@ OpaqueInstances::OpaqueInstances()
 
     m_shader = sm->GetOrCreateShader(
         ShaderStage_VertexShader |
-        ShaderStage_HullShader |
-        ShaderStage_DomainShader |
         ShaderStage_PixelShader,
         L"../assets/shaders/opaque.hlsl",
         inputLayout,
@@ -70,7 +68,7 @@ void OpaqueInstances::Render()
 
     m_shader->Bind();
 
-    globals->m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
+    globals->m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     for (auto mesh : m_meshes)
     {
