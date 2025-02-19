@@ -13,7 +13,7 @@ OpaqueInstances::OpaqueInstances()
         {
             "POSITION",
             0,
-            DXGI_FORMAT_R32G32B32_FLOAT, // float3
+            DXGI_FORMAT_R32G32B32_FLOAT,
             0,
             D3D11_APPEND_ALIGNED_ELEMENT,
             D3D11_INPUT_PER_VERTEX_DATA,
@@ -22,12 +22,48 @@ OpaqueInstances::OpaqueInstances()
         {
             "UV",
             0,
-            DXGI_FORMAT_R32G32_FLOAT, // float2
+            DXGI_FORMAT_R32G32_FLOAT,
             0,
             D3D11_APPEND_ALIGNED_ELEMENT,
             D3D11_INPUT_PER_VERTEX_DATA,
             0
-        }
+        },
+        {
+            "TRANSFORM",
+            0,
+            DXGI_FORMAT_R32G32B32A32_FLOAT,
+            1,
+            D3D11_APPEND_ALIGNED_ELEMENT,
+            D3D11_INPUT_PER_INSTANCE_DATA,
+            1
+        },
+        {
+            "TRANSFORM",
+            1,
+            DXGI_FORMAT_R32G32B32A32_FLOAT,
+            1,
+            D3D11_APPEND_ALIGNED_ELEMENT,
+            D3D11_INPUT_PER_INSTANCE_DATA,
+            1
+        },
+        {
+            "TRANSFORM",
+            2,
+            DXGI_FORMAT_R32G32B32A32_FLOAT,
+            1,
+            D3D11_APPEND_ALIGNED_ELEMENT,
+            D3D11_INPUT_PER_INSTANCE_DATA,
+            1
+        },
+        {
+            "TRANSFORM",
+            3,
+            DXGI_FORMAT_R32G32B32A32_FLOAT,
+            1,
+            D3D11_APPEND_ALIGNED_ELEMENT,
+            D3D11_INPUT_PER_INSTANCE_DATA,
+            1
+        },
     };
 
     engine::ShaderManager *sm = engine::ShaderManager::GetInstance();
@@ -59,6 +95,30 @@ OpaqueInstances::~OpaqueInstances()
 void OpaqueInstances::AddInstance(std::shared_ptr<Mesh> mesh)
 {
     m_meshes.push_back(mesh);
+
+    if (m_instanceBuffer) m_instanceBuffer.reset();
+
+    struct InstanceBufferData
+    {
+        DirectX::XMFLOAT4X4 modelMatrix;
+    };
+
+    m_instanceBuffer = std::make_shared<Buffer>(
+        nullptr,
+        sizeof(InstanceBufferData) * m_meshes.size(),
+        sizeof(InstanceBufferData),
+        BufferUsage_InstanceBuffer);
+
+    std::vector<InstanceBufferData> data;
+    for (auto mesh : m_meshes)
+    {
+        InstanceBufferData instanceData;
+        DirectX::XMStoreFloat4x4(&instanceData.modelMatrix, mesh->m_modelMatrix);
+       
+        data.push_back(instanceData);
+    }
+
+    m_instanceBuffer->Update(data.data(), data.size() * sizeof(InstanceBufferData));
 }
 
 void OpaqueInstances::Render()
@@ -68,25 +128,23 @@ void OpaqueInstances::Render()
 
     m_shader->Bind();
 
+    m_meshes[0]->m_texture->Bind(0, TextureUsage_SRV, ShaderStage_PixelShader);
+    m_meshes[0]->m_vertexBuffer->Bind(0);
+    m_instanceBuffer->Bind(1);
+    m_meshes[0]->m_indexBuffer->Bind();
+
     globals->m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    globals->m_deviceContext->DrawIndexedInstanced(
+        m_meshes[0]->m_indexBuffer->m_size,
+        m_instanceBuffer->m_size,
+        0,
+        0,
+        0);
 
-    for (auto mesh : m_meshes)
-    {
-        ConstantBufferManager::PerMesh perMeshData;
-        DirectX::XMStoreFloat4x4(&perMeshData.modelMatrix, mesh->m_modelMatrix);
-
-        cbm->UpdatePerMeshConstantBuffer(perMeshData);
-
-        mesh->m_texture->Bind(0, TextureUsage_SRV, ShaderStage_PixelShader);
-        mesh->m_vertexBuffer->Bind(0);
-        mesh->m_indexBuffer->Bind();
-
-        globals->m_deviceContext->DrawIndexed(mesh->m_indexBuffer->m_size, 0, 0);
-
-        mesh->m_indexBuffer->Unbind();
-        mesh->m_vertexBuffer->Unbind();
-        mesh->m_texture->Unbind();
-    }
+    m_meshes[0]->m_indexBuffer->Unbind();
+    m_instanceBuffer->Unbind();
+    m_meshes[0]->m_vertexBuffer->Unbind();
+    m_meshes[0]->m_texture->Unbind();
 
     m_shader->Unbind();
 }

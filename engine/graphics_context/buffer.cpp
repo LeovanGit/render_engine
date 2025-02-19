@@ -40,6 +40,15 @@ Buffer::Buffer(void *data, uint32_t byteSize, uint32_t stride, BufferUsage usage
     
         break;
     }
+    case BufferUsage_InstanceBuffer:
+    {
+        bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+        bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+        bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+        bufferDesc.MiscFlags = 0;
+
+        break;
+    }
     case BufferUsage_ConstantBuffer:
     {
         bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -148,6 +157,7 @@ void Buffer::Bind(uint32_t slot, ShaderStage stages)
     switch (m_usage)
     {
     case BufferUsage_VertexBuffer:
+    case BufferUsage_InstanceBuffer:
     {
         globals->m_deviceContext->IASetVertexBuffers(
             slot,
@@ -260,6 +270,7 @@ void Buffer::Unbind()
     switch (m_usage)
     {
     case BufferUsage_VertexBuffer:
+    case BufferUsage_InstanceBuffer:
     {
         globals->m_deviceContext->IASetVertexBuffers(
             m_bindInfo.slot,

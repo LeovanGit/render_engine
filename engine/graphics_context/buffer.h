@@ -11,6 +11,7 @@ enum BufferUsage
 {
     BufferUsage_VertexBuffer = 0,
     BufferUsage_IndexBuffer,
+    BufferUsage_InstanceBuffer,
     BufferUsage_ConstantBuffer,
     BufferUsage_ReadBuffer,
     BufferUsage_ReadStructuredBuffer,

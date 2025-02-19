@@ -3,8 +3,15 @@ Texture2D texture0 : register(t0);
 
 struct VSInput
 {
+    // per-vertex data:
     float3 position : POSITION; // user defined semantics
     float2 uv : UV0;
+
+    // per-instance data:
+    float4 transform0 : TRANSFORM0;
+    float4 transform1 : TRANSFORM1;
+    float4 transform2 : TRANSFORM2;
+    float4 transform3 : TRANSFORM3;
 };
 
 struct VSOutput
@@ -15,7 +22,13 @@ struct VSOutput
 
 VSOutput mainVS(VSInput input)
 {
-    float4 posWS = mul(g_modelMatrix, float4(input.position.xyz, 1.0f));
+    float4x4 modelMatrix = float4x4(
+        input.transform0,
+        input.transform1,
+        input.transform2,
+        input.transform3);
+
+    float4 posWS = mul(float4(input.position.xyz, 1.0f), modelMatrix);
     float4 posCS = mul(g_viewProjMatrix, posWS);
 
     VSOutput output;
