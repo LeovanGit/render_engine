@@ -56,9 +56,10 @@ void Window::CreateSwapchain()
     swapChainFullScreenDesc.Windowed = true;
 
     // From docs: caller must initialize SDL_SysWMinfo::version before SDL_GetWindowWMInfo()
-    SDL_SysWMinfo winInfo;
+    SDL_SysWMinfo winInfo = {};
     SDL_VERSION(&winInfo.version);
-    assert(SDL_GetWindowWMInfo(m_window, &winInfo) == SDL_TRUE && "Failed to get HWND\n");
+    SDL_bool result = SDL_GetWindowWMInfo(m_window, &winInfo);
+    assert(result == SDL_TRUE && "Failed to get HWND\n");
 
     HRESULT hr = globals->m_dxgiFactory->CreateSwapChainForHwnd(
         globals->m_device.Get(),
