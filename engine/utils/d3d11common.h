@@ -1,7 +1,7 @@
 #pragma once
 
 #include <d3d11.h>
-#include <dxgi1_5.h>
+#include <dxgi1_6.h>
 #include <wrl.h>
 #include <d3dcompiler.h>
 

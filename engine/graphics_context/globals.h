@@ -23,7 +23,7 @@ public:
     void CreateRasterizerState();
     void BindRasterizerState();
 
-    ComPtr<IDXGIFactory2> m_dxgiFactory;
+    ComPtr<IDXGIFactory6> m_dxgiFactory;
     ComPtr<ID3D11Device> m_device;
     ComPtr<ID3D11DeviceContext> m_deviceContext;
 
@@ -36,6 +36,9 @@ public:
     ComPtr<ID3D11RasterizerState> m_rasterizerState;
 
 private:
+    void LogAdapters();
+    void LogAdapterOutputs(IDXGIAdapter *adapter);
+
     Globals();
     ~Globals() = default;
 

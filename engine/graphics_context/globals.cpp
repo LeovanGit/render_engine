@@ -1,6 +1,9 @@
 #include "globals.h"
 
+#include <iostream>
+#include <vector>
 #include <cassert>
+#include <string>
 
 namespace engine
 {
@@ -40,6 +43,67 @@ Globals::Globals()
     CreateRasterizerState();
 }
 
+void Globals::LogAdapterOutputs(IDXGIAdapter *adapter)
+{
+    uint32_t i = 0;
+    ComPtr<IDXGIOutput> output = nullptr;
+
+    while (adapter->EnumOutputs(i, &output) != DXGI_ERROR_NOT_FOUND)
+    {
+        DXGI_OUTPUT_DESC desc;
+        output->GetDesc(&desc);
+
+        std::wstring text = L"Adapter Output: ";
+        text += desc.DeviceName;
+        text += L"\n";
+        OutputDebugStringW(text.c_str());
+
+        // Call with nullptr to get count:
+        uint32_t count = 0;
+        output->GetDisplayModeList(DXGI_FORMAT_B8G8R8A8_UNORM, 0, &count, nullptr);
+
+        std::vector<DXGI_MODE_DESC> displayModes(count);
+        output->GetDisplayModeList(DXGI_FORMAT_B8G8R8A8_UNORM, 0, &count, &displayModes[0]);
+
+        for (auto &displayMode : displayModes)
+        {
+            float refreshRate = float(displayMode.RefreshRate.Numerator) / displayMode.RefreshRate.Denominator;
+
+            std::wstring text = 
+                std::to_wstring(displayMode.Width) + L"x" +
+                std::to_wstring(displayMode.Height) + L" " +
+                std::to_wstring(refreshRate) + L" Hz\n";
+
+            OutputDebugStringW(text.c_str());
+        }
+
+        ++i;
+    }
+}
+
+void Globals::LogAdapters()
+{
+    uint32_t i = 0;
+    ComPtr<IDXGIAdapter> adapter = nullptr;
+
+    while (m_dxgiFactory->EnumAdapters(i, &adapter) != DXGI_ERROR_NOT_FOUND)
+    {
+        DXGI_ADAPTER_DESC desc;
+        adapter->GetDesc(&desc);
+
+        std::wstring text = L"\nAdapter: ";
+        text += desc.Description;
+        text += L"\n";
+        OutputDebugStringW(text.c_str());
+
+        LogAdapterOutputs(adapter.Get());
+
+        ++i;
+    }
+
+    OutputDebugStringW(L"\n");
+}
+
 void Globals::InitD3D11()
 {
     HRESULT hr;
@@ -47,24 +111,32 @@ void Globals::InitD3D11()
     hr = CreateDXGIFactory1(IID_PPV_ARGS(&m_dxgiFactory));
     assert(hr >= 0 && "Unable to create DXGIFactory\n");
 
+    LogAdapters();
+
 #if defined(DEBUG) || defined(_DEBUG)
     UINT flags = D3D11_CREATE_DEVICE_DEBUG;
 #else
     UINT flags = 0;
 #endif
 
-    constexpr D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_1;
+    constexpr D3D_FEATURE_LEVEL featureLevels[] =
+    {
+        D3D_FEATURE_LEVEL_11_1,
+        D3D_FEATURE_LEVEL_11_0,
+    };
+
+    D3D_FEATURE_LEVEL selectedFeatureLevel;
 
     hr = D3D11CreateDevice(
         nullptr,
-        D3D_DRIVER_TYPE::D3D_DRIVER_TYPE_HARDWARE,
+        D3D_DRIVER_TYPE_HARDWARE,
         nullptr,
         flags,
-        &featureLevel,
-        1,
+        &featureLevels[0],
+        _countof(featureLevels),
         D3D11_SDK_VERSION,
         m_device.GetAddressOf(),
-        nullptr,
+        &selectedFeatureLevel,
         m_deviceContext.GetAddressOf());
     assert(hr >= 0 && "Failed to create device and device Context\n");
 
