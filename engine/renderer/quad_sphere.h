@@ -9,7 +9,7 @@
 namespace engine
 {
 // Quadrilateralized Spherical Cube (Sphere from Cube)
-class QuadSphere
+/*class QuadSphere
 {
 public:
     QuadSphere(
@@ -26,5 +26,5 @@ public:
     std::shared_ptr<Texture> m_texture;
     
     DirectX::XMMATRIX m_modelMatrix;
-};
+};*/
 } // namespace engine

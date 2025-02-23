@@ -5,7 +5,7 @@
 
 namespace engine
 {
-class Sky
+/*class Sky
 {
 public:
     Sky(const std::wstring &pathToCubemap);
@@ -16,5 +16,5 @@ public:
 
     std::shared_ptr<Shader> m_shader;
     std::shared_ptr<Texture> m_cubemap;
-};
+};*/
 } // namespace engine

@@ -2,7 +2,7 @@
 
 namespace engine
 {
-Sky::Sky(const std::wstring &pathToCubemap)
+/*Sky::Sky(const std::wstring &pathToCubemap)
 {
     ShaderManager *sm = ShaderManager::GetInstance();
     TextureManager *tm = TextureManager::GetInstance();
@@ -35,5 +35,5 @@ void Sky::Render()
     // Unbind after draw:
     m_cubemap->Unbind();
     m_shader->Unbind();
-}
+}*/
 } // namespace engine

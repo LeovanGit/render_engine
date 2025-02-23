@@ -4,7 +4,7 @@
 
 namespace engine
 {
-TextureManager *TextureManager::s_instance = nullptr;
+/*TextureManager *TextureManager::s_instance = nullptr;
 
 void TextureManager::Create()
 {
@@ -51,5 +51,5 @@ std::shared_ptr<Texture> TextureManager::GetOrCreateTexture(
     return m_textures.try_emplace(
         name,
         std::make_shared<Texture>(width, height, usage)).first->second;
-}
+}*/
 } // namespace engine

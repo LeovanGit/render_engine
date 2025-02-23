@@ -7,7 +7,7 @@
 
 namespace engine
 {
-class TextureManager : public NonCopyable
+/*class TextureManager : public NonCopyable
 {
 public:
     static void Create();
@@ -32,5 +32,5 @@ private:
     ~TextureManager() = default;
 
     static TextureManager *s_instance;
-};
+};*/
 } // engine

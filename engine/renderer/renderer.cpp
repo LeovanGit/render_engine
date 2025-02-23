@@ -6,11 +6,11 @@ namespace engine
 {
 Renderer::Renderer(std::shared_ptr<Window> window)
     : m_window(window)
-    , m_opaqueInstances(new OpaqueInstances)
-    , m_terrain(nullptr)
-    , m_skybox(nullptr)
-    , m_postprocess(nullptr)
-    , m_quadSphere(nullptr)
+    //, m_opaqueInstances(new OpaqueInstances)
+    //, m_terrain(nullptr)
+    //, m_skybox(nullptr)
+    //, m_postprocess(nullptr)
+    //, m_quadSphere(nullptr)
 {
     Globals *globals = Globals::GetInstance();
 
@@ -20,7 +20,27 @@ Renderer::Renderer(std::shared_ptr<Window> window)
 void Renderer::Render(bool debugMode)
 {
     Globals *globals = Globals::GetInstance();
-    ConstantBufferManager *cbm = ConstantBufferManager::GetInstance();
+    
+    globals->BeginCommandsRecording();
+
+    // viewport and scissor rect needs to be reset whenever the command list is reset:
+    m_window->SetViewport();
+    m_window->SetScissorRect();
+    
+    m_window->ClearRenderTarget();
+    m_window->BindRenderTarget();
+
+    globals->EndCommandsRecording();
+    globals->Submit();
+
+    m_window->Present();
+
+    globals->FlushCommandQueue();
+
+
+
+
+    /*ConstantBufferManager *cbm = ConstantBufferManager::GetInstance();
 
     ConstantBufferManager::PerView perViewData;
     DirectX::XMStoreFloat4x4(&perViewData.viewProjMatrix, m_camera->GetViewProjMatrix());
@@ -50,7 +70,7 @@ void Renderer::Render(bool debugMode)
     m_skybox->Render();
     m_postprocess->Render();
 
-    m_window->Present();    
+    m_window->Present();*/
 }
 
 void Renderer::Destroy()
@@ -58,13 +78,13 @@ void Renderer::Destroy()
     Globals *globals = Globals::GetInstance();
     
     // unbind all:
-    globals->m_deviceContext->ClearState();
+    //globals->m_deviceContext->ClearState();
 
-    m_quadSphere = nullptr;
-    m_postprocess = nullptr;
-    m_skybox = nullptr;
-    m_terrain = nullptr;
-    m_opaqueInstances = nullptr;
+    //m_quadSphere = nullptr;
+    //m_postprocess = nullptr;
+    //m_skybox = nullptr;
+    //m_terrain = nullptr;
+    //m_opaqueInstances = nullptr;
     m_camera = nullptr;
     m_window = nullptr;
 }

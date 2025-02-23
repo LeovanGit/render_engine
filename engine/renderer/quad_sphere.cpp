@@ -2,7 +2,7 @@
 
 namespace engine
 {
-QuadSphere::QuadSphere(
+/*QuadSphere::QuadSphere(
     const std::wstring &pathToTexture,
     DirectX::XMFLOAT3 position,
     DirectX::XMFLOAT3 scale,
@@ -59,5 +59,5 @@ void QuadSphere::Render()
 
     m_texture->Unbind();
     m_shader->Unbind();
-}
+}*/
 } // namespace engine

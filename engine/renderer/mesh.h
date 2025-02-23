@@ -9,7 +9,7 @@
 
 namespace engine
 {
-class Mesh
+/*class Mesh
 {
 public:
     Mesh(const std::wstring &pathToTexture,
@@ -30,5 +30,5 @@ public:
     std::shared_ptr<Buffer> m_indexBuffer;
 
     DirectX::XMMATRIX m_modelMatrix;
-};
+};*/
 } // namespace engine

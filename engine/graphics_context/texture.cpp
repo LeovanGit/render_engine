@@ -2,12 +2,12 @@
 
 #include <cassert>
 
-#include <DDSTextureLoader11.h>
+//#include <DDSTextureLoader11.h>
 
 namespace engine
 {
 // create empty texture
-Texture::Texture(uint32_t width, uint32_t height, TextureUsage usage)
+/*Texture::Texture(uint32_t width, uint32_t height, TextureUsage usage)
     : m_pathToFile(L"")
     , m_width(width)
     , m_height(height)
@@ -284,5 +284,5 @@ void Texture::Unbind()
     m_bindInfo.isBound = false;
     m_bindInfo.slot = 0;
     m_bindInfo.stages = ShaderStage::ShaderStage_None;
-}
+}*/
 } // namespace engine

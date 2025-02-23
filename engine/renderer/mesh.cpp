@@ -2,7 +2,7 @@
 
 namespace engine
 {
-Mesh::Mesh(const std::wstring &pathToTexture,
+/*Mesh::Mesh(const std::wstring &pathToTexture,
     void *vertexBufferData,
     size_t vertexBufferByteSize,
     size_t vertexBufferStride, // one vertex size
@@ -36,5 +36,5 @@ Mesh::Mesh(const std::wstring &pathToTexture,
 
     // Scale -> Rotate -> Translate
     m_modelMatrix = XMMatrixMultiply(XMMatrixMultiply(scalingMat, rotationMat), translationMat);
-}
+}*/
 } // namespace engine

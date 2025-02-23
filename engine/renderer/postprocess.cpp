@@ -2,7 +2,7 @@
 
 namespace engine
 {
-PostProcess::PostProcess()
+/*PostProcess::PostProcess()
     : m_shader(nullptr)
     , m_RWTexture(nullptr)
     , m_readBuffer(nullptr)
@@ -82,5 +82,5 @@ PostProcess::~PostProcess()
     m_readBuffer = nullptr;
     m_RWTexture = nullptr;
     m_shader = nullptr;
-}
+}*/
 } // namespace engine

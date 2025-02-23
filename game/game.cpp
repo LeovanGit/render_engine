@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     Controller controller;
     controller.InitScene();
 
-    engine::FPSTimer fpsTimer(0);
+    engine::FPSTimer fpsTimer(60);
     fpsTimer.Start();
 
     bool keyNDown = false; // could be std::map with event.key.keysym.sym as keys

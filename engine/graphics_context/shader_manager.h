@@ -7,7 +7,7 @@
 
 namespace engine
 {
-class ShaderManager : public NonCopyable
+/*class ShaderManager : public NonCopyable
 {
 public:
     static void Create();
@@ -27,5 +27,5 @@ private:
     ~ShaderManager() = default;
 
     static ShaderManager *s_instance;
-};
+};*/
 } // engine

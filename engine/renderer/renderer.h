@@ -23,12 +23,12 @@ public:
     std::shared_ptr<Window> m_window;
     std::shared_ptr<Camera> m_camera;
 
-    std::shared_ptr<OpaqueInstances> m_opaqueInstances;
-    std::shared_ptr<Terrain> m_terrain;
-    std::shared_ptr<Sky> m_skybox;
+    //std::shared_ptr<OpaqueInstances> m_opaqueInstances;
+    //std::shared_ptr<Terrain> m_terrain;
+    //std::shared_ptr<Sky> m_skybox;
 
-    std::shared_ptr<PostProcess> m_postprocess;
+    //std::shared_ptr<PostProcess> m_postprocess;
 
-    std::shared_ptr<QuadSphere> m_quadSphere;
+    //std::shared_ptr<QuadSphere> m_quadSphere;
 };
 } // namespace engine

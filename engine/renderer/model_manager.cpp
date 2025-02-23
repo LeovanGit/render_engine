@@ -4,7 +4,7 @@
 
 namespace engine
 {
-ModelManager *ModelManager::s_instance = nullptr;
+/*ModelManager *ModelManager::s_instance = nullptr;
 
 void ModelManager::Create()
 {
@@ -262,5 +262,5 @@ std::shared_ptr<Mesh> ModelManager::GenerateCube(
         position,
         scale,
         rotation);
-}
+}*/
 } // namespace engine

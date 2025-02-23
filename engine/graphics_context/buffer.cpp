@@ -4,7 +4,7 @@
 
 namespace engine
 {
-Buffer::Buffer(void *data, uint32_t byteSize, uint32_t stride, BufferUsage usage)
+/*Buffer::Buffer(void *data, uint32_t byteSize, uint32_t stride, BufferUsage usage)
     : m_usage(usage)
     , m_buffer(nullptr)
     , m_size(byteSize / stride)
@@ -370,5 +370,5 @@ void Buffer::Unbind()
     m_bindInfo.isBound = false;
     m_bindInfo.slot = 0;
     m_bindInfo.stages = ShaderStage::ShaderStage_None;
-}
+}*/
 } // namespace engine

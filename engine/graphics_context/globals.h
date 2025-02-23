@@ -1,7 +1,9 @@
 #pragma once
 
+#include <iostream>
+
 #include "utils/utils.h"
-#include "utils/d3d11common.h"
+#include "utils/d3dcommon.h"
 
 namespace engine
 {
@@ -12,7 +14,15 @@ public:
     static Globals *GetInstance();
     static void Destroy();
 
-    void InitD3D11();
+    void InitD3D12();
+
+    D3D12_CPU_DESCRIPTOR_HANDLE GetRTVDescriptor(uint32_t index) const;
+    D3D12_CPU_DESCRIPTOR_HANDLE GetDSVDescriptor(uint32_t index) const;
+
+    void BeginCommandsRecording();
+    void EndCommandsRecording();
+    void Submit();
+    void FlushCommandQueue();
 
     void CreateSamplers();
     void BindSamplers();
@@ -24,23 +34,39 @@ public:
     void BindRasterizerState();
 
     ComPtr<IDXGIFactory6> m_dxgiFactory;
-    ComPtr<ID3D11Device> m_device;
-    ComPtr<ID3D11DeviceContext> m_deviceContext;
+    ComPtr<ID3D12Device> m_device;
 
 #if defined(DEBUG) || defined(_DEBUG)
-    ComPtr<ID3D11Debug> m_debug;
+    ComPtr<ID3D12Debug> m_debug;
 #endif
 
-    ComPtr<ID3D11SamplerState> m_linearSampler;
-    ComPtr<ID3D11DepthStencilState> m_depthStencilState;
-    ComPtr<ID3D11RasterizerState> m_rasterizerState;
+    ComPtr<ID3D12CommandQueue> m_commandQueue;
+    ComPtr<ID3D12CommandAllocator> m_allocator;
+    ComPtr<ID3D12GraphicsCommandList> m_commandList;
+
+    ComPtr<ID3D12Fence> m_fence;
+    uint64_t m_fenceValue;
+
+    uint32_t m_RTVDescriptorSize;
+    uint32_t m_DSVDescriptorSize;
+    uint32_t m_CBV_SRV_UAVDescriptorSize;
+
+    ComPtr<ID3D12DescriptorHeap> m_RTVHeap;
+    ComPtr<ID3D12DescriptorHeap> m_DSVHeap;
+
+    //ComPtr<ID3D11SamplerState> m_linearSampler;
+    //ComPtr<ID3D11DepthStencilState> m_depthStencilState;
+    //ComPtr<ID3D11RasterizerState> m_rasterizerState;
 
 private:
     void LogAdapters();
     void LogAdapterOutputs(IDXGIAdapter *adapter);
 
+    void CreateCommandObjects();
+    void CreateDescriptorHeaps();
+
     Globals();
-    ~Globals() = default;
+    ~Globals();
 
     static Globals *s_instance;
 };

@@ -1,13 +1,13 @@
 #pragma once
 
-#include "utils/d3d11common.h"
+#include "utils/d3dcommon.h"
 #include "globals.h"
 
 #include <iostream>
 
 namespace engine
 {
-enum BufferUsage
+/*enum BufferUsage
 {
     BufferUsage_VertexBuffer = 0,
     BufferUsage_IndexBuffer,
@@ -47,5 +47,5 @@ public:
         uint32_t slot;
         ShaderStage stages;
     } m_bindInfo;
-};
+};*/
 } // engine

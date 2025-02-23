@@ -4,12 +4,12 @@
 
 #include <SDL.h>
 
-#include "utils/d3d11common.h"
+#include "utils/d3dcommon.h"
 #include "globals.h"
 
 namespace engine
 {
-std::string GetShaderTarget(ShaderStage type);
+/*std::string GetShaderTarget(ShaderStage type);
 std::string GetShaderEntryPoint(ShaderStage type);
 
 class Shader
@@ -43,5 +43,5 @@ public:
     ComPtr<ID3D11PixelShader> m_pixelShader;
 
     ComPtr<ID3D11ComputeShader> m_computeShader;
-};
+};*/
 } // namespace engine

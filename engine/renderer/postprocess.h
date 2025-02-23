@@ -6,7 +6,7 @@
 
 namespace engine
 {
-class PostProcess
+/*class PostProcess
 {
 public:
     PostProcess();
@@ -21,5 +21,5 @@ public:
     std::shared_ptr<Buffer> m_readStructuredBuffer;
     std::shared_ptr<Buffer> m_RWBuffer;
     std::shared_ptr<Buffer> m_RWStructuredBuffer;
-};
+};*/
 } // namespace engine

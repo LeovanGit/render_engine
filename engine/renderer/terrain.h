@@ -5,7 +5,7 @@
 
 namespace engine
 {
-class Terrain
+/*class Terrain
 {
 public:
     Terrain(const std::wstring &pathToHeightMap,
@@ -21,5 +21,5 @@ public:
 
     std::shared_ptr<Shader> m_shader;
     std::shared_ptr<Mesh> m_mesh;
-};
+};*/
 } // namespace engine

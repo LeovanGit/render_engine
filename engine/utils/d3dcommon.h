@@ -1,9 +1,10 @@
 #pragma once
 
-#include <d3d11.h>
+#include <d3d12.h>
 #include <dxgi1_6.h>
-#include <wrl.h>
-#include <d3dcompiler.h>
+#include "d3dx12.h"
+#include <wrl\client.h>
+//#include <d3dcompiler.h> // should be in shader.cpp?
 
 template <typename T>
 using ComPtr = Microsoft::WRL::ComPtr<T>;

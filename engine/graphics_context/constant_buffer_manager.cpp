@@ -4,7 +4,7 @@
 
 namespace engine
 {
-ConstantBufferManager *ConstantBufferManager::s_instance = nullptr;
+/*ConstantBufferManager *ConstantBufferManager::s_instance = nullptr;
 
 void ConstantBufferManager::Create()
 {
@@ -65,5 +65,5 @@ void ConstantBufferManager::BindPerViewConstantBuffer()
 void ConstantBufferManager::BindPerMeshConstantBuffer()
 {
     m_perMesh->Bind(1, ShaderStage::ShaderStage_AllExceptCompute);
-}
+}*/
 } // namespace engine

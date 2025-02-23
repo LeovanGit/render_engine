@@ -4,7 +4,7 @@
 
 namespace engine
 {
-std::string GetShaderTarget(ShaderStage type)
+/*std::string GetShaderTarget(ShaderStage type)
 {
     switch (type)
     {
@@ -275,5 +275,5 @@ void Shader::Unbind()
         ID3D11PixelShader *nullPS = nullptr;
         globals->m_deviceContext->PSSetShader(nullPS, nullptr, 0);
     }
-}
+}*/
 } // namespace engine

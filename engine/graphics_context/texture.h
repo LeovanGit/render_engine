@@ -2,12 +2,12 @@
 
 #include <iostream>
 
-#include "utils/d3d11common.h"
+#include "utils/d3dcommon.h"
 #include "globals.h"
 
 namespace engine
 {
-enum TextureUsage
+/*enum TextureUsage
 {
     TextureUsage_SRV = (1 << 0),
     TextureUsage_UAV = (1 << 1)
@@ -41,5 +41,5 @@ public:
         TextureUsage usage;
         ShaderStage stages;
     } m_bindInfo;
-};
+};*/
 } // namespace engine

@@ -83,7 +83,7 @@
     <ClInclude Include="utils\utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="utils\d3d11common.h">
+    <ClInclude Include="utils\d3dcommon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\external\DDSTextureLoader\DDSTextureLoader11.h">

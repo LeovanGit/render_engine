@@ -22,16 +22,25 @@ public:
     void Resize(uint16_t newWidth, uint16_t newHeight);
 
     void SetViewport();
+    void SetScissorRect();
 
     void ClearRenderTarget();
     void BindRenderTarget();
-    void UnbindRenderTarget();
 
     void Present();
 
     void SetTitle(const char *title);
 
-private:
+    ComPtr<ID3D12Resource> GetCurrentBackbuffer() const
+    {
+        return m_swapchainBuffers[m_currentBackbuffer];
+    }
+
+    uint32_t m_swapchainBuffersCount;
+    uint32_t m_currentBackbuffer;
+
+//private:
+public:
     void CreateSwapchain();
     void CreateRenderTargetView();
     void CreateDepthStencilView();
@@ -42,9 +51,10 @@ private:
     uint16_t m_height;
 
     ComPtr<IDXGISwapChain1> m_swapchain;
-    ComPtr<ID3D11RenderTargetView> m_renderTarget;
-    ComPtr<ID3D11DepthStencilView> m_depthStencil;
+    ComPtr<ID3D12Resource> m_swapchainBuffers[2];
+    ComPtr<ID3D12Resource> m_depthBuffer;
 
-    D3D11_VIEWPORT m_viewport;
+    D3D12_VIEWPORT m_viewport;
+    D3D12_RECT m_scissorRect;
 };
 } // namespace engine

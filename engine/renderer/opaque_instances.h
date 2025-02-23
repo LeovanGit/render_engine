@@ -5,7 +5,7 @@
 
 namespace engine
 {
-class OpaqueInstances
+/*class OpaqueInstances
 {
 public:
     OpaqueInstances();
@@ -23,5 +23,5 @@ public:
     std::vector<std::shared_ptr<Mesh>> m_meshes;
     // TODO: now it render all m_meshes with the same texture in instance render:
     std::shared_ptr<Buffer> m_instanceBuffer;
-};
+};*/
 } // namespace engine

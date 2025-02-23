@@ -4,7 +4,7 @@
 
 namespace engine
 {
-Terrain::Terrain(const std::wstring &pathToHeightMap,
+/*Terrain::Terrain(const std::wstring &pathToHeightMap,
     uint32_t rows,
     uint32_t cols,
     DirectX::XMFLOAT3 position,
@@ -87,5 +87,5 @@ void Terrain::Render()
     m_mesh->m_texture->Unbind();
 
     m_shader->Unbind();
-}
+}*/
 } // namespace engine

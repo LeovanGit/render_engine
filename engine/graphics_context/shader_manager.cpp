@@ -4,7 +4,7 @@
 
 namespace engine
 {
-ShaderManager *ShaderManager::s_instance = nullptr;
+/*ShaderManager *ShaderManager::s_instance = nullptr;
 
 void ShaderManager::Create()
 {
@@ -42,5 +42,5 @@ std::shared_ptr<Shader> ShaderManager::GetOrCreateShader(
             pathToFile,
             inputLayout,
             numElements)).first->second;
-}
+}*/
 } // namespace engine

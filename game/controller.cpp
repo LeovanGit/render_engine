@@ -31,7 +31,7 @@ void Controller::InitScene()
         90.0f);
     m_renderer->m_camera->SetPosition(0.0f, 0.0f, 0.0f);
 
-    engine::ModelManager *mm = engine::ModelManager::GetInstance();
+    /*engine::ModelManager *mm = engine::ModelManager::GetInstance();
 
     m_renderer->m_opaqueInstances->AddInstance(mm->GenerateCube(
         "unitCube",
@@ -65,7 +65,7 @@ void Controller::InitScene()
         L"../assets/textures/default.dds",
         DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
         DirectX::XMFLOAT3(0.02f, 0.02f, 0.02f),
-        DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
+        DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));*/
 }
 
 void Controller::Update(float deltaTime, uint32_t fps)

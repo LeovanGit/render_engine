@@ -4,7 +4,7 @@
 
 namespace engine
 {
-OpaqueInstances::OpaqueInstances()
+/*OpaqueInstances::OpaqueInstances()
     : m_shader(nullptr)
     , m_debugShader(nullptr)
 {
@@ -175,5 +175,5 @@ void OpaqueInstances::RenderDebug()
     }
 
     m_debugShader->Unbind();
-}
+}*/
 } // namespace engine
