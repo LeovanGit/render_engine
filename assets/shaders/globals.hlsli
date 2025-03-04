@@ -1,18 +1,20 @@
-cbuffer PerView : register(b0)
+struct PerView
 {
-    float4x4 g_viewProjMatrix;
-    float3 g_cameraPostionWS;
-    float g_offset;
+    float4x4 viewProjMatrix;
+    float3 cameraPostionWS;
+    float offset;
 
     // [0]: top-left
     // [1]: bottom-left
     // [2]: bottom-right
     float4 g_nearPlaneCornersWS[3];
 };
+ConstantBuffer<PerView> g_perView : register(b0, space0);
 
-cbuffer PerMesh : register(b1)
-{
-    float4x4 g_modelMatrix;
-};
+//struct PerMesh
+//{
+//    float4x4 modelMatrix;
+//};
+//ConstantBuffer<PerMesh> g_perMesh : register(b1);
 
-sampler linearSampler : register(s0);
+//sampler linearSampler : register(s0);

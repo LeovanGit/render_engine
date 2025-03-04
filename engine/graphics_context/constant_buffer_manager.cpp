@@ -4,7 +4,7 @@
 
 namespace engine
 {
-/*ConstantBufferManager *ConstantBufferManager::s_instance = nullptr;
+ConstantBufferManager *ConstantBufferManager::s_instance = nullptr;
 
 void ConstantBufferManager::Create()
 {
@@ -40,11 +40,11 @@ void ConstantBufferManager::CreateConstantBuffers()
         sizeof(PerView),
         BufferUsage_ConstantBuffer);
 
-    m_perMesh = std::make_shared<Buffer>(
-        nullptr,
-        sizeof(PerMesh),
-        sizeof(PerMesh),
-        BufferUsage_ConstantBuffer);
+    //m_perMesh = std::make_shared<Buffer>(
+    //    nullptr,
+    //    sizeof(PerMesh),
+    //    sizeof(PerMesh),
+    //    BufferUsage_ConstantBuffer);
 }
 
 void ConstantBufferManager::UpdatePerViewConstantBuffer(PerView &data)
@@ -65,5 +65,5 @@ void ConstantBufferManager::BindPerViewConstantBuffer()
 void ConstantBufferManager::BindPerMeshConstantBuffer()
 {
     m_perMesh->Bind(1, ShaderStage::ShaderStage_AllExceptCompute);
-}*/
+}
 } // namespace engine

@@ -4,7 +4,7 @@
 
 namespace engine
 {
-/*ShaderManager *ShaderManager::s_instance = nullptr;
+ShaderManager *ShaderManager::s_instance = nullptr;
 
 void ShaderManager::Create()
 {
@@ -28,7 +28,7 @@ void ShaderManager::Destroy()
 std::shared_ptr<Shader> ShaderManager::GetOrCreateShader(
     uint32_t shaderStages,
     const std::wstring &pathToFile,
-    D3D11_INPUT_ELEMENT_DESC inputLayout[],
+    D3D12_INPUT_ELEMENT_DESC inputLayout[],
     size_t numElements)
 {
     auto found = m_shaders.find(pathToFile);
@@ -42,5 +42,5 @@ std::shared_ptr<Shader> ShaderManager::GetOrCreateShader(
             pathToFile,
             inputLayout,
             numElements)).first->second;
-}*/
+}
 } // namespace engine

@@ -33,10 +33,10 @@ void Engine::Init()
     //SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Couldn't initialize SDL: %s\n", SDL_GetError());
     
     Globals::Create();    
-    //ConstantBufferManager::Create();
-    //ShaderManager::Create();
+    ConstantBufferManager::Create();
+    ShaderManager::Create();
     //TextureManager::Create();
-    //ModelManager::Create();
+    ModelManager::Create();
 }
 
 void Engine::Deinit()
@@ -44,11 +44,11 @@ void Engine::Deinit()
     // WARNING: Renderer still keep alive current texture, vertex buffer, input layout and shaders
     // because  shared_ptr, so we should break references to them separately before Engine::Deinit()
     // in Renderer::Destroy():
-    //ModelManager::Destroy();
+    ModelManager::Destroy();
     //TextureManager::Destroy();
-    //ShaderManager::Destroy();
-    //ConstantBufferManager::Destroy();
-    //Globals::Destroy();
+    ShaderManager::Destroy();
+    ConstantBufferManager::Destroy();
+    Globals::Destroy();
 
     SDL_Quit(); // SDL_Init
 }

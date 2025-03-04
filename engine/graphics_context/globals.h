@@ -18,20 +18,29 @@ public:
 
     D3D12_CPU_DESCRIPTOR_HANDLE GetRTVDescriptor(uint32_t index) const;
     D3D12_CPU_DESCRIPTOR_HANDLE GetDSVDescriptor(uint32_t index) const;
+    D3D12_CPU_DESCRIPTOR_HANDLE GetCBVDescriptor(uint32_t index) const;
 
     void BeginCommandsRecording();
     void EndCommandsRecording();
     void Submit();
     void FlushCommandQueue();
 
+    void CreateRootSignature();
+    void BindRootSignature();
+
+    void CreatePipeline(D3D12_GRAPHICS_PIPELINE_STATE_DESC PSODesc);
+    void BindPipeline();
+
     void CreateSamplers();
     void BindSamplers();
 
+    void CreateBlendState();
     void CreateDepthStencilState();
-    void BindDepthStencilState();
-
     void CreateRasterizerState();
-    void BindRasterizerState();
+
+    void BindCBVDescriptorsHeap();
+
+    void BindCBV();
 
     ComPtr<IDXGIFactory6> m_dxgiFactory;
     ComPtr<ID3D12Device> m_device;
@@ -53,10 +62,17 @@ public:
 
     ComPtr<ID3D12DescriptorHeap> m_RTVHeap;
     ComPtr<ID3D12DescriptorHeap> m_DSVHeap;
+    ComPtr<ID3D12DescriptorHeap> m_CBVHeap;
 
+    D3D12_BLEND_DESC m_blendState;
+    D3D12_DEPTH_STENCIL_DESC m_depthStencilState;
+    D3D12_RASTERIZER_DESC m_rasterizerState;
+
+    ComPtr<ID3D12RootSignature> m_rootSignature;
+
+    ComPtr<ID3D12PipelineState> m_PSO;
+    
     //ComPtr<ID3D11SamplerState> m_linearSampler;
-    //ComPtr<ID3D11DepthStencilState> m_depthStencilState;
-    //ComPtr<ID3D11RasterizerState> m_rasterizerState;
 
 private:
     void LogAdapters();

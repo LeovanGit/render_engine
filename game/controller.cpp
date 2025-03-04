@@ -31,9 +31,125 @@ void Controller::InitScene()
         90.0f);
     m_renderer->m_camera->SetPosition(0.0f, 0.0f, 0.0f);
 
-    /*engine::ModelManager *mm = engine::ModelManager::GetInstance();
+    engine::ModelManager *mm = engine::ModelManager::GetInstance();
 
-    m_renderer->m_opaqueInstances->AddInstance(mm->GenerateCube(
+    m_renderer->m_mesh = mm->GenerateCube("unitCube",
+        L"../assets/textures/bricks.dds",
+        { 0.0f, 0.0f, 3.0f },
+        { 1.0f, 1.0f, 1.0f },
+        { 0.0f, 45.0f, 0.0f });
+
+    struct InstanceBufferData
+    {
+        DirectX::XMFLOAT4X4 modelMatrix;
+    } ibData;
+    DirectX::XMStoreFloat4x4(&ibData.modelMatrix, m_renderer->m_mesh->m_modelMatrix);
+
+    m_renderer->m_instanceBuffer = std::make_shared<engine::Buffer>(
+        &ibData.modelMatrix,
+        sizeof(InstanceBufferData),
+        sizeof(InstanceBufferData),
+        engine::BufferUsage::BufferUsage_InstanceBuffer);
+
+    D3D12_INPUT_ELEMENT_DESC inputLayout[] =
+    {
+        {
+            "POSITION",
+            0,
+            DXGI_FORMAT_R32G32B32_FLOAT,
+            0,
+            D3D12_APPEND_ALIGNED_ELEMENT,
+            D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
+            0
+        },
+        {
+            "UV",
+            0,
+            DXGI_FORMAT_R32G32_FLOAT,
+            0,
+            D3D12_APPEND_ALIGNED_ELEMENT,
+            D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
+            0
+        },
+        {
+            "TRANSFORM",
+            0,
+            DXGI_FORMAT_R32G32B32A32_FLOAT,
+            1,
+            D3D12_APPEND_ALIGNED_ELEMENT,
+            D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA,
+            1
+        },
+        {
+            "TRANSFORM",
+            1,
+            DXGI_FORMAT_R32G32B32A32_FLOAT,
+            1,
+            D3D12_APPEND_ALIGNED_ELEMENT,
+            D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA,
+            1
+        },
+        {
+            "TRANSFORM",
+            2,
+            DXGI_FORMAT_R32G32B32A32_FLOAT,
+            1,
+            D3D12_APPEND_ALIGNED_ELEMENT,
+            D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA,
+            1
+        },
+        {
+            "TRANSFORM",
+            3,
+            DXGI_FORMAT_R32G32B32A32_FLOAT,
+            1,
+            D3D12_APPEND_ALIGNED_ELEMENT,
+            D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA,
+            1
+        },
+    };
+
+    engine::ShaderManager *sm = engine::ShaderManager::GetInstance();
+    m_renderer->m_shader = sm->GetOrCreateShader(
+        ShaderStage_VertexShader | ShaderStage_PixelShader,
+        L"../assets/shaders/opaque.hlsl",
+        inputLayout,
+        _countof(inputLayout));
+
+    engine::Globals *globals = engine::Globals::GetInstance();
+    globals->CreateRootSignature();
+
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC PSODesc = {};
+    PSODesc.pRootSignature = globals->m_rootSignature.Get();
+    PSODesc.VS =
+    {
+        m_renderer->m_shader->m_VSBytecode->GetBufferPointer(),
+        m_renderer->m_shader->m_VSBytecode->GetBufferSize()
+    };
+    PSODesc.PS =
+    {
+        m_renderer->m_shader->m_PSBytecode->GetBufferPointer(),
+        m_renderer->m_shader->m_PSBytecode->GetBufferSize()
+    };
+    PSODesc.BlendState = globals->m_blendState;
+    PSODesc.SampleMask = UINT_MAX;
+    PSODesc.RasterizerState = globals->m_rasterizerState;
+    PSODesc.DepthStencilState = globals->m_depthStencilState;
+    PSODesc.InputLayout = m_renderer->m_shader->m_inputLayout;
+    PSODesc.IBStripCutValue = D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_DISABLED;
+    PSODesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+    PSODesc.NumRenderTargets = 1;
+    PSODesc.RTVFormats[0] = DXGI_FORMAT_B8G8R8A8_UNORM;
+    PSODesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+    PSODesc.SampleDesc.Count = 1;
+    PSODesc.SampleDesc.Quality = 0;
+    PSODesc.NodeMask = 0;
+    PSODesc.CachedPSO = { nullptr, 0 };
+    PSODesc.Flags = D3D12_PIPELINE_STATE_FLAG_NONE;
+
+    globals->CreatePipeline(PSODesc);
+
+    /*m_renderer->m_opaqueInstances->AddInstance(mm->GenerateCube(
         "unitCube",
         L"../assets/textures/bricks.dds",
         { 0.0f, 0.0f, 3.0f },

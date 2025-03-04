@@ -40,10 +40,14 @@ Globals::Globals()
     , m_fenceValue(0)
     , m_RTVHeap(nullptr)
     , m_DSVHeap(nullptr)
+    , m_CBVHeap(nullptr)
+    , m_rootSignature(nullptr)
+    , m_PSO(nullptr)
     //, m_linearSampler(nullptr)
 {
     InitD3D12();
     CreateSamplers();
+    CreateBlendState();
     CreateDepthStencilState();
     CreateRasterizerState();
 }
@@ -204,6 +208,15 @@ void Globals::CreateDescriptorHeaps()
 
     hr = m_device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(m_DSVHeap.GetAddressOf()));
     assert(hr >= 0 && "Failed to create ID3D12DescriptorHeap\n");
+
+    D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc = {};
+    cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+    cbvHeapDesc.NumDescriptors = 1;
+    cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+    cbvHeapDesc.NodeMask = 0;
+
+    hr = m_device->CreateDescriptorHeap(&cbvHeapDesc, IID_PPV_ARGS(m_CBVHeap.GetAddressOf()));
+    assert(hr >= 0 && "Failed to create ID3D12DescriptorHeap\n");
 }
 
 D3D12_CPU_DESCRIPTOR_HANDLE Globals::GetRTVDescriptor(uint32_t index) const
@@ -220,6 +233,14 @@ D3D12_CPU_DESCRIPTOR_HANDLE Globals::GetDSVDescriptor(uint32_t index) const
         m_DSVHeap->GetCPUDescriptorHandleForHeapStart(),
         index,
         m_DSVDescriptorSize);
+}
+
+D3D12_CPU_DESCRIPTOR_HANDLE Globals::GetCBVDescriptor(uint32_t index) const
+{
+    return CD3DX12_CPU_DESCRIPTOR_HANDLE(
+        m_CBVHeap->GetCPUDescriptorHandleForHeapStart(),
+        index,
+        m_CBV_SRV_UAVDescriptorSize);
 }
 
 void Globals::BeginCommandsRecording()
@@ -268,6 +289,76 @@ void Globals::FlushCommandQueue()
     }
 }
 
+void Globals::CreateRootSignature()
+{
+    HRESULT hr;
+
+    D3D12_DESCRIPTOR_RANGE descriptorRange;
+    descriptorRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+    descriptorRange.NumDescriptors = 1;
+    descriptorRange.BaseShaderRegister = 0;
+    descriptorRange.RegisterSpace = 0;
+    descriptorRange.OffsetInDescriptorsFromTableStart = 0;
+
+    D3D12_ROOT_DESCRIPTOR_TABLE descriptorTable;
+    descriptorTable.NumDescriptorRanges = 1;
+    descriptorTable.pDescriptorRanges = &descriptorRange;
+
+    D3D12_ROOT_PARAMETER rootParameters;
+    rootParameters.ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+    rootParameters.DescriptorTable = descriptorTable;
+    rootParameters.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+    D3D12_ROOT_SIGNATURE_DESC rootSignatureDesc = {};
+    rootSignatureDesc.NumParameters = 1;
+    rootSignatureDesc.pParameters = &rootParameters;
+    rootSignatureDesc.NumStaticSamplers = 0;
+    rootSignatureDesc.pStaticSamplers = nullptr;
+    rootSignatureDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+    ComPtr<ID3DBlob> rootSignatureBlob = nullptr;
+    ComPtr<ID3DBlob> error = nullptr;
+
+    hr = D3D12SerializeRootSignature(
+        &rootSignatureDesc,
+        D3D_ROOT_SIGNATURE_VERSION_1,
+        rootSignatureBlob.GetAddressOf(),
+        error.GetAddressOf());
+
+    if (hr < 0)
+    {
+        if (error)
+        {
+            std::wcout << static_cast<char *>(error->GetBufferPointer()) << "\n";
+        }
+
+        assert(false && "Failed to serialize root signature\n");
+    }
+
+    hr = m_device->CreateRootSignature(
+        0,
+        rootSignatureBlob->GetBufferPointer(),
+        rootSignatureBlob->GetBufferSize(),
+        IID_PPV_ARGS(m_rootSignature.GetAddressOf()));
+    assert(hr >= 0 && "Failed to create root signature\n");
+}
+
+void Globals::BindRootSignature()
+{
+    m_commandList->SetGraphicsRootSignature(m_rootSignature.Get());
+}
+
+void Globals::CreatePipeline(D3D12_GRAPHICS_PIPELINE_STATE_DESC PSODesc)
+{
+    HRESULT hr = m_device->CreateGraphicsPipelineState(&PSODesc, IID_PPV_ARGS(&m_PSO));
+    assert(hr >= 0 && "Failed to create PSO\n");
+}
+
+void Globals::BindPipeline()
+{
+    m_commandList->SetPipelineState(m_PSO.Get());
+}
+
 void Globals::CreateSamplers()
 {
     /*D3D11_SAMPLER_DESC linearSamplerDesc = {};
@@ -294,32 +385,32 @@ void Globals::BindSamplers()
     m_deviceContext->CSSetSamplers(0, 1, m_linearSampler.GetAddressOf());*/
 }
 
-void Globals::CreateDepthStencilState()
+void Globals::CreateBlendState()
 {
-    /*D3D11_DEPTH_STENCIL_DESC depthStateDesc = {};
-    depthStateDesc.DepthEnable = TRUE;
-    depthStateDesc.DepthFunc = D3D11_COMPARISON_GREATER_EQUAL; // reversed depth
-    depthStateDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-
-    m_device->CreateDepthStencilState(&depthStateDesc, m_depthStencilState.GetAddressOf());*/
+    m_blendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 }
 
-void Globals::BindDepthStencilState()
+void Globals::CreateDepthStencilState()
 {
-    //m_deviceContext->OMSetDepthStencilState(m_depthStencilState.Get(), 0);
+    m_depthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+    m_depthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_GREATER_EQUAL; // reversed depth
 }
 
 void Globals::CreateRasterizerState()
 {
-    /*D3D11_RASTERIZER_DESC rasterizerDesc = {};
-    rasterizerDesc.CullMode = D3D11_CULL_BACK;
-    rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-
-    m_device->CreateRasterizerState(&rasterizerDesc, m_rasterizerState.GetAddressOf());*/
+    m_rasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 }
 
-void Globals::BindRasterizerState()
+void Globals::BindCBVDescriptorsHeap()
 {
-    //m_deviceContext->RSSetState(m_rasterizerState.Get());
+    ID3D12DescriptorHeap *descriptorHeaps[] = { m_CBVHeap.Get() };
+    m_commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+}
+
+void Globals::BindCBV()
+{
+    m_commandList->SetGraphicsRootDescriptorTable(
+        0,
+        m_CBVHeap->GetGPUDescriptorHandleForHeapStart());
 }
 } // namespace engine

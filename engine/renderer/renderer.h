@@ -23,6 +23,11 @@ public:
     std::shared_ptr<Window> m_window;
     std::shared_ptr<Camera> m_camera;
 
+    std::shared_ptr<Mesh> m_mesh;
+    std::shared_ptr<Shader> m_shader;
+
+    std::shared_ptr<Buffer> m_instanceBuffer;
+
     //std::shared_ptr<OpaqueInstances> m_opaqueInstances;
     //std::shared_ptr<Terrain> m_terrain;
     //std::shared_ptr<Sky> m_skybox;

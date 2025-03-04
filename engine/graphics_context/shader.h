@@ -9,7 +9,7 @@
 
 namespace engine
 {
-/*std::string GetShaderTarget(ShaderStage type);
+std::string GetShaderTarget(ShaderStage type);
 std::string GetShaderEntryPoint(ShaderStage type);
 
 class Shader
@@ -17,15 +17,13 @@ class Shader
 public:
     Shader(uint32_t shaderStages,
         const std::wstring &pathToFile,
-        D3D11_INPUT_ELEMENT_DESC inputLayout[] = nullptr,
+        D3D12_INPUT_ELEMENT_DESC inputLayout[] = nullptr,
         size_t numElements = 0);
 
     ~Shader() = default;
 
 private:
-    void Compile(ShaderStage type,
-        D3D11_INPUT_ELEMENT_DESC inputLayout[] = nullptr,
-        size_t numElements = 0);
+    void Compile(ShaderStage type);
 
 public:
     void Bind();
@@ -35,13 +33,14 @@ public:
     uint32_t m_shaderStages;
     std::wstring m_pathToFile;
 
-    ComPtr<ID3D11InputLayout> m_inputLayout;
-    ComPtr<ID3D11VertexShader> m_vertexShader;
-    ComPtr<ID3D11HullShader> m_hullShader;
-    ComPtr<ID3D11DomainShader> m_domainShader;
-    ComPtr<ID3D11GeometryShader> m_geometryShader;
-    ComPtr<ID3D11PixelShader> m_pixelShader;
+    D3D12_INPUT_LAYOUT_DESC m_inputLayout;
 
-    ComPtr<ID3D11ComputeShader> m_computeShader;
-};*/
+    ComPtr<ID3DBlob> m_VSBytecode;
+    ComPtr<ID3DBlob> m_HSBytecode;
+    ComPtr<ID3DBlob> m_DSBytecode;
+    ComPtr<ID3DBlob> m_GSBytecode;
+    ComPtr<ID3DBlob> m_PSBytecode;
+
+    ComPtr<ID3DBlob> m_CSBytecode;
+};
 } // namespace engine

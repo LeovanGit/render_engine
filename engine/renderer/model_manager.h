@@ -7,7 +7,7 @@
 
 namespace engine
 {
-/*class ModelManager : public NonCopyable
+class ModelManager : public NonCopyable
 {
 public:
     struct VertexData
@@ -62,5 +62,5 @@ private:
     ~ModelManager() = default;
 
     static ModelManager *s_instance;
-};*/
+};
 } // engine

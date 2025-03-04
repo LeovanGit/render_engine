@@ -217,8 +217,11 @@ void Window::ClearRenderTarget()
 {
     Globals *globals = Globals::GetInstance();
 
-    static constexpr float clearColor0[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-    static constexpr float clearColor1[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+#if defined(DEBUG) || defined(_DEBUG)
+    static constexpr float clearColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+#else
+    static constexpr float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+#endif
 
     D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
         m_swapchainBuffers[m_currentBackbuffer].Get(),
@@ -228,7 +231,7 @@ void Window::ClearRenderTarget()
 
     globals->m_commandList->ClearRenderTargetView(
         globals->GetRTVDescriptor(m_currentBackbuffer),
-        m_currentBackbuffer == 0 ? clearColor0 : clearColor1,
+        clearColor,
         0,
         nullptr);
 
@@ -254,6 +257,14 @@ void Window::BindRenderTarget()
         &currentRTV,
         true,
         &currentDSV);
+}
+
+void Window::Present()
+{
+    Globals *globals = Globals::GetInstance();
+
+    HRESULT hr = globals->m_commandList->Reset(globals->m_allocator.Get(), nullptr);
+    assert(hr >= 0 && "Failed to reset ID3D12GraphicsCommandList\n");
 
     D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
         GetCurrentBackbuffer().Get(),
@@ -261,10 +272,10 @@ void Window::BindRenderTarget()
         D3D12_RESOURCE_STATE_PRESENT);
 
     globals->m_commandList->ResourceBarrier(1, &barrier);
-}
 
-void Window::Present()
-{
+    globals->EndCommandsRecording();
+    globals->Submit();
+
     m_swapchain->Present(1, 0);
 
     m_currentBackbuffer = (m_currentBackbuffer + 1) % m_swapchainBuffersCount;

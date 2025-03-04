@@ -7,7 +7,7 @@
 
 namespace engine
 {
-/*enum BufferUsage
+enum BufferUsage
 {
     BufferUsage_VertexBuffer = 0,
     BufferUsage_IndexBuffer,
@@ -32,14 +32,13 @@ public:
 
     void Unbind();
 
+    ComPtr<ID3D12Resource> m_buffer;
     BufferUsage m_usage;
-    ComPtr<ID3D11Buffer> m_buffer;
-    uint32_t m_size; // count of elements
+    uint32_t m_byteSize;
     uint32_t m_stride; // size of one element
-    uint32_t m_offset;
 
-    ComPtr<ID3D11ShaderResourceView> m_bufferSRV;
-    ComPtr<ID3D11UnorderedAccessView> m_bufferUAV;
+    //ComPtr<ID3D11ShaderResourceView> m_bufferSRV;
+    //ComPtr<ID3D11UnorderedAccessView> m_bufferUAV;
 
     struct BindInfo
     {
@@ -47,5 +46,11 @@ public:
         uint32_t slot;
         ShaderStage stages;
     } m_bindInfo;
-};*/
+
+private:
+    void CreateAndInitDefaultBuffer(void *initData, uint32_t byteSize);
+
+    uint32_t CalcConstantBufferByteSize(uint32_t byteSize);
+    void CreateConstantBuffer(uint32_t byteSize);
+};
 } // engine

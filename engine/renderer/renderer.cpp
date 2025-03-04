@@ -30,6 +30,34 @@ void Renderer::Render(bool debugMode)
     m_window->ClearRenderTarget();
     m_window->BindRenderTarget();
 
+    ConstantBufferManager *cbm = ConstantBufferManager::GetInstance();
+    ConstantBufferManager::PerView perViewData;
+    DirectX::XMStoreFloat4x4(&perViewData.viewProjMatrix, m_camera->GetViewProjMatrix());
+    DirectX::XMStoreFloat3(&perViewData.cameraPostionWS, m_camera->GetPosition());
+    DirectX::XMStoreFloat4(&perViewData.nearPlaneCornersWS[0], m_camera->Reproject(-1.0f, 1.0f));
+    DirectX::XMStoreFloat4(&perViewData.nearPlaneCornersWS[1], m_camera->Reproject(-1.0f, -1.0f));
+    DirectX::XMStoreFloat4(&perViewData.nearPlaneCornersWS[2], m_camera->Reproject(1.0f, -1.0f));
+
+    cbm->UpdatePerViewConstantBuffer(perViewData);
+
+    globals->BindRootSignature();
+    globals->BindCBVDescriptorsHeap();
+    globals->BindCBV();
+    globals->BindPipeline();
+
+    m_mesh->m_vertexBuffer->Bind(0);
+    m_instanceBuffer->Bind(1);
+    m_mesh->m_indexBuffer->Bind();
+
+    globals->m_commandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+    globals->m_commandList->DrawIndexedInstanced(
+        m_mesh->m_indexBuffer->m_byteSize / m_mesh->m_indexBuffer->m_stride,
+        1,
+        0,
+        0,
+        0);
+
     globals->EndCommandsRecording();
     globals->Submit();
 
@@ -40,17 +68,7 @@ void Renderer::Render(bool debugMode)
 
 
 
-    /*ConstantBufferManager *cbm = ConstantBufferManager::GetInstance();
-
-    ConstantBufferManager::PerView perViewData;
-    DirectX::XMStoreFloat4x4(&perViewData.viewProjMatrix, m_camera->GetViewProjMatrix());
-    DirectX::XMStoreFloat3(&perViewData.cameraPostionWS, m_camera->GetPosition());
-    DirectX::XMStoreFloat4(&perViewData.nearPlaneCornersWS[0], m_camera->Reproject(-1.0f, 1.0f));
-    DirectX::XMStoreFloat4(&perViewData.nearPlaneCornersWS[1], m_camera->Reproject(-1.0f, -1.0f));
-    DirectX::XMStoreFloat4(&perViewData.nearPlaneCornersWS[2], m_camera->Reproject(1.0f, -1.0f));
-
-    cbm->UpdatePerViewConstantBuffer(perViewData);
-    cbm->BindPerViewConstantBuffer();
+    /*
 
     cbm->BindPerMeshConstantBuffer();
 

@@ -8,7 +8,7 @@
 
 namespace engine
 {
-/*class ConstantBufferManager : public NonCopyable
+class ConstantBufferManager : public NonCopyable
 {
 public:
     static void Create();
@@ -45,5 +45,5 @@ private:
     ~ConstantBufferManager() = default;
 
     static ConstantBufferManager *s_instance;
-};*/
+};
 } // namespace engine

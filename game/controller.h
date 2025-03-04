@@ -6,6 +6,7 @@
 
 #include "window/window.h"
 #include "renderer/renderer.h"
+#include "graphics_context/shader_manager.h" // remove
 
 class Controller
 {

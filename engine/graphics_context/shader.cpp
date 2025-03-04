@@ -2,24 +2,26 @@
 
 #include <cassert>
 
+#include <d3dcompiler.h>
+
 namespace engine
 {
-/*std::string GetShaderTarget(ShaderStage type)
+std::string GetShaderTarget(ShaderStage type)
 {
     switch (type)
     {
     case ShaderStage_VertexShader:
-        return "vs_5_0";
+        return "vs_5_1";
     case ShaderStage_HullShader:
-        return "hs_5_0";
+        return "hs_5_1";
     case ShaderStage_DomainShader:
-        return "ds_5_0";
+        return "ds_5_1";
     case ShaderStage_GeometryShader:
-        return "gs_5_0";
+        return "gs_5_1";
     case ShaderStage_PixelShader:
-        return "ps_5_0";
+        return "ps_5_1";
     case ShaderStage_ComputeShader:
-        return "cs_5_0";
+        return "cs_5_1";
     default:
         assert(false && "Unknown shader type\n");
         return "";
@@ -50,22 +52,27 @@ std::string GetShaderEntryPoint(ShaderStage type)
 
 Shader::Shader(uint32_t shaderStages,
     const std::wstring &pathToFile,
-    D3D11_INPUT_ELEMENT_DESC inputLayout[],
+    D3D12_INPUT_ELEMENT_DESC inputLayout[],
     size_t numElements)
     : m_shaderStages(shaderStages)
     , m_pathToFile(pathToFile)
-    , m_inputLayout(nullptr)
-    , m_vertexShader(nullptr)
-    , m_hullShader(nullptr)
-    , m_domainShader(nullptr)
-    , m_geometryShader(nullptr)
-    , m_pixelShader(nullptr)
-    , m_computeShader(nullptr)
+    , m_VSBytecode(nullptr)
+    , m_HSBytecode(nullptr)
+    , m_DSBytecode(nullptr)
+    , m_GSBytecode(nullptr)
+    , m_PSBytecode(nullptr)
+    , m_CSBytecode(nullptr)
 {
     assert(shaderStages != ShaderStage::ShaderStage_None && "shaderStages is equal to ShaderStage_None!");
 
+    if (inputLayout)
+    {
+        m_inputLayout.pInputElementDescs = inputLayout;
+        m_inputLayout.NumElements = numElements;
+    }
+
     if (shaderStages & ShaderStage_VertexShader)
-        Compile(ShaderStage::ShaderStage_VertexShader, inputLayout, numElements);
+        Compile(ShaderStage::ShaderStage_VertexShader);
 
     if (shaderStages & ShaderStage_HullShader)
         Compile(ShaderStage::ShaderStage_HullShader);
@@ -83,9 +90,7 @@ Shader::Shader(uint32_t shaderStages,
         Compile(ShaderStage::ShaderStage_ComputeShader);
 }
 
-void Shader::Compile(ShaderStage type,
-    D3D11_INPUT_ELEMENT_DESC inputLayout[],
-    size_t numElements)
+void Shader::Compile(ShaderStage type)
 {
     Globals *globals = Globals::GetInstance();
     HRESULT hr;
@@ -96,8 +101,32 @@ void Shader::Compile(ShaderStage type,
     uint32_t flags = 0;
 #endif
 
-    ComPtr<ID3DBlob> compiled = nullptr; // bytecode
+    ID3DBlob **compiled = nullptr;
     ComPtr<ID3DBlob> error = nullptr;
+
+    switch (type)
+    {
+    case ShaderStage_VertexShader:
+        compiled = m_VSBytecode.GetAddressOf();
+        break;
+    case ShaderStage_HullShader:
+        compiled = m_HSBytecode.GetAddressOf();
+        break;
+    case ShaderStage_DomainShader:
+        compiled = m_DSBytecode.GetAddressOf();
+        break;
+    case ShaderStage_GeometryShader:
+        compiled = m_GSBytecode.GetAddressOf();
+        break;
+    case ShaderStage_PixelShader:
+        compiled = m_PSBytecode.GetAddressOf();
+        break;
+    case ShaderStage_ComputeShader:
+        compiled = m_CSBytecode.GetAddressOf();
+        break;
+    default:
+        assert(false && "Unknown shader type\n");
+    }
 
     hr = D3DCompileFromFile(
         m_pathToFile.c_str(),
@@ -107,7 +136,7 @@ void Shader::Compile(ShaderStage type,
         GetShaderTarget(type).c_str(),
         flags,
         0,
-        compiled.GetAddressOf(),
+        compiled,
         error.GetAddressOf());
 
     if (hr < 0)
@@ -119,75 +148,9 @@ void Shader::Compile(ShaderStage type,
 
         assert(false && "Failed to compile shader\n");
     }
-
-    if (type & ShaderStage_VertexShader)
-    {
-        hr = globals->m_device->CreateVertexShader(
-            compiled->GetBufferPointer(),
-            compiled->GetBufferSize(),
-            nullptr,
-            m_vertexShader.GetAddressOf());
-        assert(hr >= 0 && "Failed to create vertex shader\n");
-
-        if (inputLayout)
-        {
-            hr = globals->m_device->CreateInputLayout(
-                inputLayout,
-                numElements,
-                compiled->GetBufferPointer(),
-                compiled->GetBufferSize(),
-                m_inputLayout.GetAddressOf());
-            assert(hr >= 0 && "Failed to create input layout\n");
-        }
-    }
-    else if (type & ShaderStage_HullShader)
-    {
-        hr = globals->m_device->CreateHullShader(
-            compiled->GetBufferPointer(),
-            compiled->GetBufferSize(),
-            nullptr,
-            m_hullShader.GetAddressOf());
-        assert(hr >= 0 && "Failed to create hull shader\n");
-    }
-    else if (type & ShaderStage_DomainShader)
-    {
-        hr = globals->m_device->CreateDomainShader(
-            compiled->GetBufferPointer(),
-            compiled->GetBufferSize(),
-            nullptr,
-            m_domainShader.GetAddressOf());
-        assert(hr >= 0 && "Failed to create hull shader\n");
-    }
-    else if (type & ShaderStage_GeometryShader)
-    {
-        hr = globals->m_device->CreateGeometryShader(
-            compiled->GetBufferPointer(),
-            compiled->GetBufferSize(),
-            nullptr,
-            m_geometryShader.GetAddressOf());
-        assert(hr >= 0 && "Failed to create geometry shader\n");
-    }
-    else if (type & ShaderStage_PixelShader)
-    {
-        hr = globals->m_device->CreatePixelShader(
-            compiled->GetBufferPointer(),
-            compiled->GetBufferSize(),
-            nullptr,
-            m_pixelShader.GetAddressOf());
-        assert(hr >= 0 && "Failed to create pixel shader\n");
-    }
-    else if (type && ShaderStage_ComputeShader)
-    {
-        hr = globals->m_device->CreateComputeShader(
-            compiled->GetBufferPointer(),
-            compiled->GetBufferSize(),
-            nullptr,
-            m_computeShader.GetAddressOf());
-        assert(hr >= 0 && "Failed to create compute shader\n");
-    }
 }
 
-void Shader::Bind()
+/*void Shader::Bind()
 {
     Globals *globals = Globals::GetInstance();
 

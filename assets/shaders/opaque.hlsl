@@ -1,5 +1,5 @@
 #include "globals.hlsli"
-Texture2D texture0 : register(t0);
+//Texture2D texture0 : register(t0);
 
 struct VSInput
 {
@@ -29,7 +29,7 @@ VSOutput mainVS(VSInput input)
         input.transform3);
 
     float4 posWS = mul(float4(input.position.xyz, 1.0f), modelMatrix);
-    float4 posCS = mul(g_viewProjMatrix, posWS);
+    float4 posCS = mul(g_perView.viewProjMatrix, posWS);
 
     VSOutput output;
     output.position = posCS;
@@ -40,7 +40,8 @@ VSOutput mainVS(VSInput input)
 
 float4 mainPS(VSOutput input) : SV_TARGET0
 {
-    float4 texel = texture0.Sample(linearSampler, input.uv);
+    //float4 texel = texture0.Sample(linearSampler, input.uv);
+    float4 texel = float4(1.0f, 0.0f, 0.0f, 1.0f);
 
     return texel;
 }

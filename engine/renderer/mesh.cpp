@@ -2,7 +2,7 @@
 
 namespace engine
 {
-/*Mesh::Mesh(const std::wstring &pathToTexture,
+Mesh::Mesh(const std::wstring &pathToTexture,
     void *vertexBufferData,
     size_t vertexBufferByteSize,
     size_t vertexBufferStride, // one vertex size
@@ -24,8 +24,8 @@ namespace engine
         sizeof(uint16_t),
         BufferUsage::BufferUsage_IndexBuffer);
 
-    engine::TextureManager *tm = engine::TextureManager::GetInstance();
-    m_texture = tm->GetOrCreateTexture(pathToTexture, TextureUsage_SRV);
+    //engine::TextureManager *tm = engine::TextureManager::GetInstance();
+    //m_texture = tm->GetOrCreateTexture(pathToTexture, TextureUsage_SRV);
 
     DirectX::XMMATRIX scalingMat = DirectX::XMMatrixScaling(scale.x, scale.y, scale.z);
     DirectX::XMMATRIX rotationMat = DirectX::XMMatrixRotationRollPitchYaw(
@@ -36,5 +36,5 @@ namespace engine
 
     // Scale -> Rotate -> Translate
     m_modelMatrix = XMMatrixMultiply(XMMatrixMultiply(scalingMat, rotationMat), translationMat);
-}*/
+}
 } // namespace engine
