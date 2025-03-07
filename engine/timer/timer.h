@@ -1,27 +1,24 @@
 #pragma once
 
-#include "SDL.h"
+#include <chrono>
 
 namespace engine
 {
-class FPSTimer
+using Clock = std::chrono::steady_clock;
+using TimePoint = std::chrono::time_point<Clock>;
+using Seconds = std::chrono::duration<float>;
+
+class Timer
 {
 public:
-    FPSTimer(uint8_t m_fpsCap = 0);
+    Timer();
 
-    void Start();
+    bool IsTimeElapsed(float durationInMilliseconds);
 
-    bool IsTimeElapsed();
-
-    uint8_t GetFPS() const;
     float GetDeltaTime() const;
 
 private:
-    uint8_t m_fpsCap;
-    uint32_t m_msCap; // milliseconds cap
-
-    uint32_t m_prevTime;
-
-    uint32_t m_deltaTime;
+    TimePoint m_prevTime;
+    Seconds m_deltaTime;
 };
 } // namespace engine

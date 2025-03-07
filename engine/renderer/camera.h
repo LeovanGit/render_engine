@@ -30,6 +30,7 @@ using DirectX::XMMatrixMultiply;
 using DirectX::XMMatrixInverse;
 
 using DirectX::XMConvertToRadians;
+using DirectX::XMConvertToDegrees;
 using DirectX::XMQuaternionRotationAxis;
 using DirectX::XMQuaternionMultiply;
 using DirectX::XMVector3Rotate;
@@ -69,9 +70,12 @@ public:
     XMVECTOR GetUp() const;
     XMVECTOR GetForward() const;
 
+    float GetWidth() const { return m_width; }
+    float GetHeight() const { return m_height; }
     float GetNearPlane() const { return m_nearPlane; };
     float GetFarPlane() const { return m_farPlane; };
     float GetFOVY() const { return m_fovY; };
+    float GetFOVX() const { return m_fovX; }
 
     XMVECTOR Reproject(float x, float y) const;
 
@@ -92,6 +96,7 @@ private:
     float m_farPlane;
 
     float m_fovY; // in degrees
+    float m_fovX;
     
     bool m_dirtyFlag; // true - need to update matrices
 

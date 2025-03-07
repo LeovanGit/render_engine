@@ -43,7 +43,9 @@ void Renderer::Render(bool debugMode)
     globals->BindRootSignature();
     globals->BindCBVDescriptorsHeap();
     globals->BindCBV();
-    globals->BindPipeline();
+    
+    PipelineManager *pm = PipelineManager::GetInstance();
+    pm->GetOrCreatePipeline("opaque")->Bind();
 
     m_mesh->m_vertexBuffer->Bind(0);
     m_instanceBuffer->Bind(1);
@@ -60,10 +62,11 @@ void Renderer::Render(bool debugMode)
 
     globals->EndCommandsRecording();
     globals->Submit();
+    globals->FlushCommandQueue();
 
     m_window->Present();
 
-    globals->FlushCommandQueue();
+    
 
 
 

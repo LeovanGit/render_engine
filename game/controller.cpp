@@ -8,7 +8,7 @@ Controller::Controller()
     : m_window(nullptr)
     , m_renderer(nullptr)
     , m_moveSpeed(1.0f)
-    , m_rotateSpeed(12.0f)
+    , m_rotateSpeed(30.0f)
     , m_drawDebug(false)
 {
     m_keyStates = SDL_GetKeyboardState(nullptr);
@@ -120,7 +120,7 @@ void Controller::InitScene()
     globals->CreateRootSignature();
 
     D3D12_GRAPHICS_PIPELINE_STATE_DESC PSODesc = {};
-    PSODesc.pRootSignature = globals->m_rootSignature.Get();
+    PSODesc.pRootSignature = globals->m_globalRootSignature.Get();
     PSODesc.VS =
     {
         m_renderer->m_shader->m_VSBytecode->GetBufferPointer(),
@@ -147,7 +147,8 @@ void Controller::InitScene()
     PSODesc.CachedPSO = { nullptr, 0 };
     PSODesc.Flags = D3D12_PIPELINE_STATE_FLAG_NONE;
 
-    globals->CreatePipeline(PSODesc);
+    engine::PipelineManager *pm = engine::PipelineManager::GetInstance();
+    pm->GetOrCreatePipeline("opaque", &PSODesc);
 
     /*m_renderer->m_opaqueInstances->AddInstance(mm->GenerateCube(
         "unitCube",
@@ -189,7 +190,7 @@ void Controller::Update(float deltaTime, uint32_t fps)
     UpdateScene(deltaTime);
     m_renderer->m_camera->UpdateMatrices();
 
-    std::string title = "Render Engine (SDL + Direct3D11). FPS: " + std::to_string(fps);
+    std::string title = "Render Engine (SDL + Direct3D12). FPS: " + std::to_string(fps);
     m_window->SetTitle(title.c_str());
 }
 
@@ -197,11 +198,7 @@ void Controller::UpdateScene(float deltaTime)
 {
     SDL_PumpEvents();
 
-    float acceleration = 1.0f;
-    if (m_keyStates[SDL_SCANCODE_LSHIFT])
-    {
-        acceleration = 4.0f;
-    }
+    float acceleration = m_keyStates[SDL_SCANCODE_LSHIFT] ? 4.0f : 1.0f;
 
     if (m_keyStates[SDL_SCANCODE_W])
     {
@@ -257,19 +254,33 @@ void Controller::UpdateScene(float deltaTime)
         m_renderer->m_camera->AddPosition(up.x, up.y, up.z);
     }
 
-    int currentMouseX = 0;
-    int currentMouseY = 0;
-    uint32_t mouseState = SDL_GetMouseState(&currentMouseX, &currentMouseY);
-
-    int deltaMouseX = 0;
-    int deltaMouseY = 0;
-    SDL_GetRelativeMouseState(&deltaMouseX, &deltaMouseY);
+    // mouse coords relative to window client area:
+    int mouseX = 0;
+    int mouseY = 0;
+    uint32_t mouseState = SDL_GetMouseState(&mouseX, &mouseY);
 
     if (mouseState & SDL_BUTTON_RMASK)
     {
+        float screenWidthHalf = float(m_window->GetWidth()) / 2.0f;
+        float screenHeightHalf = float(m_window->GetHeight()) / 2.0f;
+
+        float screenCenterX = screenWidthHalf;
+        float screenCenterY = screenHeightHalf;
+
+        float deltaX = mouseX - screenCenterX;
+        float deltaY = mouseY - screenCenterY;
+
+        // rotate speed depends on the mouse distance from the center of the screen:
+        // deltaX = screenWidthHalf is equal to 180 degrees per second speed
+        // deltaY = screenHeightHalf is equal to 180 degrees per second speed
+        float rotateSpeedX = 180.0f * deltaX / screenWidthHalf;
+        float rotateSpeedY = 180.0f * deltaY / screenHeightHalf;
+
+        // To reach the same rotation for different deltaTimes we should
+        // pass degreesPerSecond * deltaTime to Camera::AddRotation()
         m_renderer->m_camera->AddRotation(
-            deltaMouseY * m_rotateSpeed * deltaTime,
-            deltaMouseX * m_rotateSpeed * deltaTime,
+            rotateSpeedY * deltaTime,
+            rotateSpeedX * deltaTime,
             0.0f);
     }
 }

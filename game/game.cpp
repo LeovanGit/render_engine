@@ -5,6 +5,12 @@
 
 #include "controller.h"
 
+namespace
+{
+constexpr float FPS_LIMIT = 60.0f;
+constexpr float SECONDS_LIMIT = 1.0f / FPS_LIMIT;
+} // namespace
+
 int main(int argc, char *argv[])
 {
     engine::Engine::Create();
@@ -14,8 +20,7 @@ int main(int argc, char *argv[])
     Controller controller;
     controller.InitScene();
 
-    engine::FPSTimer fpsTimer(60);
-    fpsTimer.Start();
+    engine::Timer timer;
 
     bool keyNDown = false; // could be std::map with event.key.keysym.sym as keys
 
@@ -67,9 +72,12 @@ int main(int argc, char *argv[])
             }
         }
         
-        if (fpsTimer.IsTimeElapsed())
+        if (timer.IsTimeElapsed(0 /*SECONDS_LIMIT*/))
         {
-            controller.Update(fpsTimer.GetDeltaTime(), fpsTimer.GetFPS());
+            float deltaTime = timer.GetDeltaTime();
+            float fps = 1.0f / deltaTime;
+
+            controller.Update(deltaTime, fps);
             controller.Draw();
         }
     }

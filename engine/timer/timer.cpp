@@ -1,49 +1,31 @@
 #include "timer.h"
 
-namespace
-{
-constexpr uint32_t MILLISECONDS_IN_SECOND = 1000.0f;
-}
-
 namespace engine
 {
-FPSTimer::FPSTimer(uint8_t fpsCap)
-    : m_fpsCap(fpsCap)
-    , m_prevTime(0)
-    , m_deltaTime(0)
+Timer::Timer()
+    : m_prevTime(Clock::now())
+    , m_deltaTime(0.0f)
 {
-    if (m_fpsCap != 0)
-        m_msCap = MILLISECONDS_IN_SECOND / m_fpsCap;
-    else
-        m_msCap = 0; // no limit
+
 }
 
-void FPSTimer::Start()
+bool Timer::IsTimeElapsed(float durationInSeconds)
 {
-    m_prevTime = SDL_GetTicks();
-}
+    using namespace std::chrono;
 
-bool FPSTimer::IsTimeElapsed()
-{
-    // TODO: SDL_GetTicks has very poor accuracy, use std::chrono instead
-    uint32_t currentTime = SDL_GetTicks();
+    TimePoint currentTime = Clock::now();
+    auto deltaTime = duration_cast<Seconds>(currentTime - m_prevTime);
 
-    uint32_t delta = currentTime - m_prevTime;
-    if (delta < m_msCap) return false;
+    if (deltaTime.count() < durationInSeconds) return false;
 
     m_prevTime = currentTime;
-    // if deltaTime is 0, then set it to 1 ms to avoid division zero:
-    m_deltaTime = delta == 0 ? 1 : delta;
+    m_deltaTime = deltaTime;
+
+    return true;
 }
 
-uint8_t FPSTimer::GetFPS() const
+float Timer::GetDeltaTime() const
 {
-    return MILLISECONDS_IN_SECOND / m_deltaTime;
-}
-
-float FPSTimer::GetDeltaTime() const
-{
-    // in seconds
-    return static_cast<float>(m_deltaTime) / MILLISECONDS_IN_SECOND;
+    return m_deltaTime.count();
 }
 } // namespace engine

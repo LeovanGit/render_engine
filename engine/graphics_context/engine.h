@@ -6,6 +6,7 @@
 #include "renderer/model_manager.h"
 #include "texture_manager.h"
 #include "constant_buffer_manager.h"
+#include "pipeline_manager.h"
 
 namespace engine
 {

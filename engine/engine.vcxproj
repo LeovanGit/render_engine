@@ -24,6 +24,8 @@
     <ClCompile Include="graphics_context\constant_buffer_manager.cpp" />
     <ClCompile Include="graphics_context\engine.cpp" />
     <ClCompile Include="graphics_context\globals.cpp" />
+    <ClCompile Include="graphics_context\pipeline.cpp" />
+    <ClCompile Include="graphics_context\pipeline_manager.cpp" />
     <ClCompile Include="renderer\mesh.cpp" />
     <ClCompile Include="renderer\model_manager.cpp" />
     <ClCompile Include="graphics_context\shader.cpp" />
@@ -46,6 +48,8 @@
     <ClInclude Include="graphics_context\constant_buffer_manager.h" />
     <ClInclude Include="graphics_context\engine.h" />
     <ClInclude Include="graphics_context\globals.h" />
+    <ClInclude Include="graphics_context\pipeline.h" />
+    <ClInclude Include="graphics_context\pipeline_manager.h" />
     <ClInclude Include="renderer\mesh.h" />
     <ClInclude Include="renderer\model_manager.h" />
     <ClInclude Include="graphics_context\shader.h" />

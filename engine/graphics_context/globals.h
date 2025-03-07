@@ -28,9 +28,6 @@ public:
     void CreateRootSignature();
     void BindRootSignature();
 
-    void CreatePipeline(D3D12_GRAPHICS_PIPELINE_STATE_DESC PSODesc);
-    void BindPipeline();
-
     void CreateSamplers();
     void BindSamplers();
 
@@ -68,9 +65,7 @@ public:
     D3D12_DEPTH_STENCIL_DESC m_depthStencilState;
     D3D12_RASTERIZER_DESC m_rasterizerState;
 
-    ComPtr<ID3D12RootSignature> m_rootSignature;
-
-    ComPtr<ID3D12PipelineState> m_PSO;
+    ComPtr<ID3D12RootSignature> m_globalRootSignature;
     
     //ComPtr<ID3D11SamplerState> m_linearSampler;
 
@@ -82,7 +77,7 @@ private:
     void CreateDescriptorHeaps();
 
     Globals();
-    ~Globals();
+    ~Globals() = default;
 
     static Globals *s_instance;
 };

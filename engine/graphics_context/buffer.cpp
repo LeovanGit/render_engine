@@ -157,7 +157,7 @@ void Buffer::CreateAndInitDefaultBuffer(void *initData, uint32_t byteSize)
     globals->m_commandList->ResourceBarrier(1, &barrier);
 
     // m_uploadBuffer must remain alive until copying is done
-    // (until command list has not been executed)
+    // (until command list has not been executed):
     globals->EndCommandsRecording();
     globals->Submit();
     globals->FlushCommandQueue();

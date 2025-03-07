@@ -33,6 +33,7 @@ void Camera::ChangeSettings(
     m_farPlane = farPlane;
 
     m_fovY = fovY;
+    m_fovX = XMConvertToDegrees(2.0f * atanf(m_aspectRatio * tanf(XMConvertToRadians(m_fovY) / 2.0f)));
 
     m_dirtyFlag = true;
 

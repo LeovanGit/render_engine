@@ -3,6 +3,7 @@
 #include <vector>
 #include <cassert>
 #include <string>
+#include <unordered_map>
 
 namespace engine
 {
@@ -41,8 +42,6 @@ Globals::Globals()
     , m_RTVHeap(nullptr)
     , m_DSVHeap(nullptr)
     , m_CBVHeap(nullptr)
-    , m_rootSignature(nullptr)
-    , m_PSO(nullptr)
     //, m_linearSampler(nullptr)
 {
     InitD3D12();
@@ -50,11 +49,6 @@ Globals::Globals()
     CreateBlendState();
     CreateDepthStencilState();
     CreateRasterizerState();
-}
-
-Globals::~Globals()
-{
-
 }
 
 void Globals::LogAdapterOutputs(IDXGIAdapter *adapter)
@@ -193,7 +187,7 @@ void Globals::CreateDescriptorHeaps()
 
     D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
     rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-    rtvHeapDesc.NumDescriptors = 2; // count of swapchain buffers
+    rtvHeapDesc.NumDescriptors = 2; // 2 swapchain buffers
     rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
     rtvHeapDesc.NodeMask = 0;
 
@@ -202,7 +196,7 @@ void Globals::CreateDescriptorHeaps()
 
     D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
     dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-    dsvHeapDesc.NumDescriptors = 1;
+    dsvHeapDesc.NumDescriptors = 1; // 1 depth buffer
     dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
     dsvHeapDesc.NodeMask = 0;
 
@@ -211,7 +205,7 @@ void Globals::CreateDescriptorHeaps()
 
     D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc = {};
     cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-    cbvHeapDesc.NumDescriptors = 1;
+    cbvHeapDesc.NumDescriptors = 1; // 1 constant buffer
     cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
     cbvHeapDesc.NodeMask = 0;
 
@@ -339,24 +333,13 @@ void Globals::CreateRootSignature()
         0,
         rootSignatureBlob->GetBufferPointer(),
         rootSignatureBlob->GetBufferSize(),
-        IID_PPV_ARGS(m_rootSignature.GetAddressOf()));
+        IID_PPV_ARGS(m_globalRootSignature.GetAddressOf()));
     assert(hr >= 0 && "Failed to create root signature\n");
 }
 
 void Globals::BindRootSignature()
 {
-    m_commandList->SetGraphicsRootSignature(m_rootSignature.Get());
-}
-
-void Globals::CreatePipeline(D3D12_GRAPHICS_PIPELINE_STATE_DESC PSODesc)
-{
-    HRESULT hr = m_device->CreateGraphicsPipelineState(&PSODesc, IID_PPV_ARGS(&m_PSO));
-    assert(hr >= 0 && "Failed to create PSO\n");
-}
-
-void Globals::BindPipeline()
-{
-    m_commandList->SetPipelineState(m_PSO.Get());
+    m_commandList->SetGraphicsRootSignature(m_globalRootSignature.Get());
 }
 
 void Globals::CreateSamplers()

@@ -7,6 +7,7 @@
 #include "sky.h"
 #include "postprocess.h"
 #include "quad_sphere.h"
+#include "graphics_context/pipeline_manager.h"
 
 namespace engine
 {

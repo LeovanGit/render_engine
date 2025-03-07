@@ -32,7 +32,8 @@ void Engine::Init()
     assert(SDL_Init(SDL_INIT_VIDEO) == 0 && "Couldn't initialize SDL\n");
     //SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Couldn't initialize SDL: %s\n", SDL_GetError());
     
-    Globals::Create();    
+    Globals::Create();
+    PipelineManager::Create();
     ConstantBufferManager::Create();
     ShaderManager::Create();
     //TextureManager::Create();
@@ -48,6 +49,7 @@ void Engine::Deinit()
     //TextureManager::Destroy();
     ShaderManager::Destroy();
     ConstantBufferManager::Destroy();
+    PipelineManager::Destroy();
     Globals::Destroy();
 
     SDL_Quit(); // SDL_Init
