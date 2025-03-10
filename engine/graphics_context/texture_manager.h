@@ -7,7 +7,7 @@
 
 namespace engine
 {
-/*class TextureManager : public NonCopyable
+class TextureManager : public NonCopyable
 {
 public:
     static void Create();
@@ -18,13 +18,6 @@ public:
         const std::wstring &pathToFile,
         TextureUsage usage);
 
-
-    std::shared_ptr<Texture> GetOrCreateTexture(
-        const std::wstring &name,
-        uint32_t width,
-        uint32_t height,
-        TextureUsage usage);
-
     std::unordered_map<std::wstring, std::shared_ptr<Texture>> m_textures;
 
 private:
@@ -32,5 +25,5 @@ private:
     ~TextureManager() = default;
 
     static TextureManager *s_instance;
-};*/
-} // engine
+};
+} // namespace engine

@@ -10,14 +10,11 @@ Window::Window(uint16_t width, uint16_t height)
     : m_window(nullptr)
     , m_width(width)
     , m_height(height)
-    , m_swapchain(nullptr)
-    , m_swapchainBuffersCount(2)
     , m_currentBackbuffer(0)
-    , m_backBufferFormat(DXGI_FORMAT_B8G8R8A8_UNORM)
-    , m_depthBufferFormat(DXGI_FORMAT_D32_FLOAT)
+    , m_swapchain(nullptr)
     , m_depthBuffer(nullptr)
 {
-    for (uint32_t i = 0; i != m_swapchainBuffersCount; ++i)
+    for (uint32_t i = 0; i != s_swapchainBuffersCount; ++i)
     {
         m_swapchainBuffers[i] = nullptr;
     }
@@ -58,11 +55,11 @@ void Window::CreateSwapchain()
     DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
     swapChainDesc.Width = m_width;
     swapChainDesc.Height = m_height;
-    swapChainDesc.Format = m_backBufferFormat;
+    swapChainDesc.Format = s_backBufferFormat;
     swapChainDesc.SampleDesc.Count = 1;
     swapChainDesc.SampleDesc.Quality = 0;
     swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    swapChainDesc.BufferCount = m_swapchainBuffersCount;
+    swapChainDesc.BufferCount = s_swapchainBuffersCount;
     swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
     swapChainDesc.Scaling = DXGI_SCALING_STRETCH;
 #if ENABLE_VSYNC
@@ -96,7 +93,7 @@ void Window::CreateRenderTargetView()
     Globals *globals = Globals::GetInstance();
     HRESULT hr;
 
-    for (uint32_t i = 0; i != m_swapchainBuffersCount; ++i)
+    for (uint32_t i = 0; i != s_swapchainBuffersCount; ++i)
     {
         hr = m_swapchain->GetBuffer(i, IID_PPV_ARGS(&m_swapchainBuffers[i]));
         assert(hr >= 0 && "Failed to get buffer from the swapchain\n");
@@ -120,13 +117,13 @@ void Window::CreateDepthStencilView()
     textureDesc.Height = m_height;
     textureDesc.DepthOrArraySize = 1;
     textureDesc.MipLevels = 1;
-    textureDesc.Format = m_depthBufferFormat;
+    textureDesc.Format = s_depthBufferFormat;
     textureDesc.SampleDesc.Count = 1;
     textureDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
     textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
 
     D3D12_CLEAR_VALUE clearValue = {};
-    clearValue.Format = m_depthBufferFormat;
+    clearValue.Format = s_depthBufferFormat;
     clearValue.DepthStencil.Depth = 0.0f;
     clearValue.DepthStencil.Stencil = 0;
 
@@ -166,7 +163,7 @@ void Window::Destroy()
     Globals *globals = Globals::GetInstance();
     globals->FlushCommandQueue();
 
-    for (uint32_t i = 0; i != m_swapchainBuffersCount; ++i)
+    for (uint32_t i = 0; i != s_swapchainBuffersCount; ++i)
     {
         m_swapchainBuffers[i].Reset();
     }
@@ -190,7 +187,7 @@ void Window::Resize(uint16_t newWidth, uint16_t newHeight)
     m_scissorRect.right = newWidth;
     m_scissorRect.bottom = newHeight;
 
-    for (uint32_t i = 0; i != m_swapchainBuffersCount; ++i)
+    for (uint32_t i = 0; i != s_swapchainBuffersCount; ++i)
     {
         m_swapchainBuffers[i].Reset();
     }
@@ -201,7 +198,7 @@ void Window::Resize(uint16_t newWidth, uint16_t newHeight)
         0,
         newWidth,
         newHeight,
-        m_backBufferFormat,
+        s_backBufferFormat,
         0);
 
     m_currentBackbuffer = 0;
@@ -293,7 +290,7 @@ void Window::Present()
     m_swapchain->Present(0, DXGI_PRESENT_ALLOW_TEARING);
 #endif
 
-    m_currentBackbuffer = (m_currentBackbuffer + 1) % m_swapchainBuffersCount;
+    m_currentBackbuffer = (m_currentBackbuffer + 1) % s_swapchainBuffersCount;
 }
 
 void Window::SetTitle(const char *title)
@@ -301,3 +298,4 @@ void Window::SetTitle(const char *title)
     SDL_SetWindowTitle(m_window, title);
 }
 } // namespace engine
+

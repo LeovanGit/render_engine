@@ -28,8 +28,7 @@ void ShaderManager::Destroy()
 std::shared_ptr<Shader> ShaderManager::GetOrCreateShader(
     uint32_t shaderStages,
     const std::wstring &pathToFile,
-    D3D12_INPUT_ELEMENT_DESC inputLayout[],
-    size_t numElements)
+    D3D12_INPUT_LAYOUT_DESC inputLayout)
 {
     auto found = m_shaders.find(pathToFile);
     if (found != m_shaders.end())
@@ -40,7 +39,6 @@ std::shared_ptr<Shader> ShaderManager::GetOrCreateShader(
         std::make_shared<Shader>(
             shaderStages,
             pathToFile,
-            inputLayout,
-            numElements)).first->second;
+            inputLayout)).first->second;
 }
 } // namespace engine

@@ -1,9 +1,6 @@
 #include "globals.h"
 
-#include <vector>
 #include <cassert>
-#include <string>
-#include <unordered_map>
 
 namespace engine
 {
@@ -39,16 +36,22 @@ Globals::Globals()
     , m_commandList(nullptr)
     , m_fence(nullptr)
     , m_fenceValue(0)
+    , m_RTVDescriptorSize(0)
+    , m_DSVDescriptorSize(0)
+    , m_CBV_SRV_UAVDescriptorSize(0)
+    , m_samplerDescriptorSize(0)
     , m_RTVHeap(nullptr)
     , m_DSVHeap(nullptr)
     , m_CBVHeap(nullptr)
-    //, m_linearSampler(nullptr)
+    , m_SRVHeap(nullptr)
+    , m_samplersHeap(nullptr)
+    , m_globalRootSignature(nullptr)
 {
     InitD3D12();
+
+    CreateGlobalRootSignature();
+
     CreateSamplers();
-    CreateBlendState();
-    CreateDepthStencilState();
-    CreateRasterizerState();
 }
 
 void Globals::LogAdapterOutputs(IDXGIAdapter *adapter)
@@ -144,10 +147,6 @@ void Globals::InitD3D12()
         D3D12_FENCE_FLAG_NONE,
         IID_PPV_ARGS(m_fence.GetAddressOf()));
     assert(hr >= 0 && "Failed to create ID3D12Fence\n");
-
-    m_RTVDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-    m_DSVDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
-    m_CBV_SRV_UAVDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
     
     CreateDescriptorHeaps();
 }
@@ -211,10 +210,35 @@ void Globals::CreateDescriptorHeaps()
 
     hr = m_device->CreateDescriptorHeap(&cbvHeapDesc, IID_PPV_ARGS(m_CBVHeap.GetAddressOf()));
     assert(hr >= 0 && "Failed to create ID3D12DescriptorHeap\n");
+
+    D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
+    srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+    srvHeapDesc.NumDescriptors = 1; // 1 texture
+    srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+    srvHeapDesc.NodeMask = 0;
+
+    hr = m_device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(m_SRVHeap.GetAddressOf()));
+    assert(hr >= 0 && "Failed to create ID3D12DescriptorHeap\n");
+
+    D3D12_DESCRIPTOR_HEAP_DESC samplersHeapDesc = {};
+    samplersHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
+    samplersHeapDesc.NumDescriptors = 1; // 1 sampler
+    samplersHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+    samplersHeapDesc.NodeMask = 0;
+
+    hr = m_device->CreateDescriptorHeap(&samplersHeapDesc, IID_PPV_ARGS(m_samplersHeap.GetAddressOf()));
+    assert(hr >= 0 && "Failed to create ID3D12DescriptorHeap\n");
+
+    m_RTVDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+    m_DSVDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+    m_CBV_SRV_UAVDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+    m_samplerDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
 }
 
 D3D12_CPU_DESCRIPTOR_HANDLE Globals::GetRTVDescriptor(uint32_t index) const
 {
+    assert(index < m_RTVHeap->GetDesc().NumDescriptors && "index >= NumDescriptors");
+
     return CD3DX12_CPU_DESCRIPTOR_HANDLE(
         m_RTVHeap->GetCPUDescriptorHandleForHeapStart(),
         index,
@@ -223,6 +247,8 @@ D3D12_CPU_DESCRIPTOR_HANDLE Globals::GetRTVDescriptor(uint32_t index) const
 
 D3D12_CPU_DESCRIPTOR_HANDLE Globals::GetDSVDescriptor(uint32_t index) const
 {
+    assert(index < m_DSVHeap->GetDesc().NumDescriptors && "index >= NumDescriptors");
+
     return CD3DX12_CPU_DESCRIPTOR_HANDLE(
         m_DSVHeap->GetCPUDescriptorHandleForHeapStart(),
         index,
@@ -231,10 +257,74 @@ D3D12_CPU_DESCRIPTOR_HANDLE Globals::GetDSVDescriptor(uint32_t index) const
 
 D3D12_CPU_DESCRIPTOR_HANDLE Globals::GetCBVDescriptor(uint32_t index) const
 {
+    assert(index < m_CBVHeap->GetDesc().NumDescriptors && "index >= NumDescriptors");
+
     return CD3DX12_CPU_DESCRIPTOR_HANDLE(
         m_CBVHeap->GetCPUDescriptorHandleForHeapStart(),
         index,
         m_CBV_SRV_UAVDescriptorSize);
+}
+
+D3D12_CPU_DESCRIPTOR_HANDLE Globals::GetSRVDescriptor(uint32_t index) const
+{
+    assert(index < m_SRVHeap->GetDesc().NumDescriptors && "index >= NumDescriptors");
+
+    return CD3DX12_CPU_DESCRIPTOR_HANDLE(
+        m_SRVHeap->GetCPUDescriptorHandleForHeapStart(),
+        index,
+        m_CBV_SRV_UAVDescriptorSize);
+}
+
+D3D12_CPU_DESCRIPTOR_HANDLE Globals::GetSamplerDescriptor(uint32_t index) const
+{
+    assert(index < m_samplersHeap->GetDesc().NumDescriptors && "index >= NumDescriptors");
+
+    return CD3DX12_CPU_DESCRIPTOR_HANDLE(
+        m_samplersHeap->GetCPUDescriptorHandleForHeapStart(),
+        index,
+        m_samplerDescriptorSize);
+}
+
+void Globals::BindCBVDescriptorsHeap() const
+{
+    m_commandList->SetDescriptorHeaps(1, m_CBVHeap.GetAddressOf());
+}
+
+void Globals::BindSRVDescriptorsHeap() const
+{
+    m_commandList->SetDescriptorHeaps(1, m_SRVHeap.GetAddressOf());
+}
+
+void Globals::BindSamplerDescriptorsHeap() const
+{
+    m_commandList->SetDescriptorHeaps(1, m_samplersHeap.GetAddressOf());
+}
+
+void Globals::BindConstantBuffers() const
+{
+    BindCBVDescriptorsHeap();
+
+    m_commandList->SetGraphicsRootDescriptorTable(
+        RootSignatureSlot_CBV,
+        m_CBVHeap->GetGPUDescriptorHandleForHeapStart());
+}
+
+void Globals::BindShaderResources() const
+{
+    BindSRVDescriptorsHeap();
+
+    m_commandList->SetGraphicsRootDescriptorTable(
+        RootSignatureSlot_SRV,
+        m_SRVHeap->GetGPUDescriptorHandleForHeapStart());
+}
+
+void Globals::BindSamplers() const
+{
+    BindSamplerDescriptorsHeap();
+
+    m_commandList->SetGraphicsRootDescriptorTable(
+        RootSignatureSlot_Sampler,
+        m_samplersHeap->GetGPUDescriptorHandleForHeapStart());
 }
 
 void Globals::BeginCommandsRecording()
@@ -283,29 +373,60 @@ void Globals::FlushCommandQueue()
     }
 }
 
-void Globals::CreateRootSignature()
+void Globals::CreateGlobalRootSignature()
 {
     HRESULT hr;
 
-    D3D12_DESCRIPTOR_RANGE descriptorRange;
-    descriptorRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
-    descriptorRange.NumDescriptors = 1;
-    descriptorRange.BaseShaderRegister = 0;
-    descriptorRange.RegisterSpace = 0;
-    descriptorRange.OffsetInDescriptorsFromTableStart = 0;
+    // DESCRIPTOR RANGES
+    D3D12_DESCRIPTOR_RANGE CBVDescriptorRange = {};
+    CBVDescriptorRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+    CBVDescriptorRange.NumDescriptors = 1;
+    CBVDescriptorRange.BaseShaderRegister = 0; // b0
+    CBVDescriptorRange.RegisterSpace = 0;
+    CBVDescriptorRange.OffsetInDescriptorsFromTableStart = 0;
 
-    D3D12_ROOT_DESCRIPTOR_TABLE descriptorTable;
-    descriptorTable.NumDescriptorRanges = 1;
-    descriptorTable.pDescriptorRanges = &descriptorRange;
+    D3D12_DESCRIPTOR_RANGE SRVDescriptorRange = {};
+    SRVDescriptorRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+    SRVDescriptorRange.NumDescriptors = 1;
+    SRVDescriptorRange.BaseShaderRegister = 0; // t0
+    SRVDescriptorRange.RegisterSpace = 0;
+    SRVDescriptorRange.OffsetInDescriptorsFromTableStart = 0;
 
-    D3D12_ROOT_PARAMETER rootParameters;
-    rootParameters.ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-    rootParameters.DescriptorTable = descriptorTable;
-    rootParameters.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+    D3D12_DESCRIPTOR_RANGE samplerDescriptorRange = {};
+    samplerDescriptorRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
+    samplerDescriptorRange.NumDescriptors = 1;
+    samplerDescriptorRange.BaseShaderRegister = 0; // s0
+    samplerDescriptorRange.RegisterSpace = 0;
+    samplerDescriptorRange.OffsetInDescriptorsFromTableStart = 0;
+
+    // DESCRIPTOR TABLES
+    D3D12_ROOT_DESCRIPTOR_TABLE descriptorTables[3];
+    descriptorTables[0].NumDescriptorRanges = 1;
+    descriptorTables[0].pDescriptorRanges = &CBVDescriptorRange;
+
+    descriptorTables[1].NumDescriptorRanges = 1;
+    descriptorTables[1].pDescriptorRanges = &SRVDescriptorRange;
+
+    descriptorTables[2].NumDescriptorRanges = 1;
+    descriptorTables[2].pDescriptorRanges = &samplerDescriptorRange;
+
+    // ROOT SIGNATURE
+    D3D12_ROOT_PARAMETER rootParameters[RootSignatureSlot_Count];
+    rootParameters[RootSignatureSlot_CBV].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+    rootParameters[RootSignatureSlot_CBV].DescriptorTable = descriptorTables[0];
+    rootParameters[RootSignatureSlot_CBV].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+    rootParameters[RootSignatureSlot_SRV].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+    rootParameters[RootSignatureSlot_SRV].DescriptorTable = descriptorTables[1];
+    rootParameters[RootSignatureSlot_SRV].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+    rootParameters[RootSignatureSlot_Sampler].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+    rootParameters[RootSignatureSlot_Sampler].DescriptorTable = descriptorTables[2];
+    rootParameters[RootSignatureSlot_Sampler].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
     D3D12_ROOT_SIGNATURE_DESC rootSignatureDesc = {};
-    rootSignatureDesc.NumParameters = 1;
-    rootSignatureDesc.pParameters = &rootParameters;
+    rootSignatureDesc.NumParameters = _countof(rootParameters);
+    rootSignatureDesc.pParameters = rootParameters;
     rootSignatureDesc.NumStaticSamplers = 0;
     rootSignatureDesc.pStaticSamplers = nullptr;
     rootSignatureDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
@@ -337,63 +458,22 @@ void Globals::CreateRootSignature()
     assert(hr >= 0 && "Failed to create root signature\n");
 }
 
-void Globals::BindRootSignature()
+void Globals::BindGlobalRootSignature()
 {
     m_commandList->SetGraphicsRootSignature(m_globalRootSignature.Get());
 }
 
 void Globals::CreateSamplers()
 {
-    /*D3D11_SAMPLER_DESC linearSamplerDesc = {};
-    linearSamplerDesc.Filter = D3D11_FILTER::D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
-    linearSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
-    linearSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
-    linearSamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
+    D3D12_SAMPLER_DESC linearSamplerDesc = {};
+    linearSamplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+    linearSamplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+    linearSamplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+    linearSamplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
     linearSamplerDesc.MipLODBias = 0.0f;
     linearSamplerDesc.MaxAnisotropy = 1;
-    linearSamplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+    linearSamplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
 
-    HRESULT hr = m_device->CreateSamplerState(&linearSamplerDesc, m_linearSampler.GetAddressOf());
-    assert(hr >= 0 && "Failed to create sampler state\n");*/
-}
-
-void Globals::BindSamplers()
-{
-    /*m_deviceContext->VSSetSamplers(0, 1, m_linearSampler.GetAddressOf());
-    m_deviceContext->HSSetSamplers(0, 1, m_linearSampler.GetAddressOf());
-    m_deviceContext->DSSetSamplers(0, 1, m_linearSampler.GetAddressOf());
-    m_deviceContext->GSSetSamplers(0, 1, m_linearSampler.GetAddressOf());
-    m_deviceContext->PSSetSamplers(0, 1, m_linearSampler.GetAddressOf());
-
-    m_deviceContext->CSSetSamplers(0, 1, m_linearSampler.GetAddressOf());*/
-}
-
-void Globals::CreateBlendState()
-{
-    m_blendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-}
-
-void Globals::CreateDepthStencilState()
-{
-    m_depthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
-    m_depthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_GREATER_EQUAL; // reversed depth
-}
-
-void Globals::CreateRasterizerState()
-{
-    m_rasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-}
-
-void Globals::BindCBVDescriptorsHeap()
-{
-    ID3D12DescriptorHeap *descriptorHeaps[] = { m_CBVHeap.Get() };
-    m_commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
-}
-
-void Globals::BindCBV()
-{
-    m_commandList->SetGraphicsRootDescriptorTable(
-        0,
-        m_CBVHeap->GetGPUDescriptorHandleForHeapStart());
+    m_device->CreateSampler(&linearSamplerDesc, GetSamplerDescriptor(0));
 }
 } // namespace engine

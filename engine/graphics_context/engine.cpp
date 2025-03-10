@@ -34,9 +34,8 @@ void Engine::Init()
     
     Globals::Create();
     PipelineManager::Create();
-    ConstantBufferManager::Create();
     ShaderManager::Create();
-    //TextureManager::Create();
+    TextureManager::Create();
     ModelManager::Create();
 }
 
@@ -46,9 +45,8 @@ void Engine::Deinit()
     // because  shared_ptr, so we should break references to them separately before Engine::Deinit()
     // in Renderer::Destroy():
     ModelManager::Destroy();
-    //TextureManager::Destroy();
+    TextureManager::Destroy();
     ShaderManager::Destroy();
-    ConstantBufferManager::Destroy();
     PipelineManager::Destroy();
     Globals::Destroy();
 

@@ -39,24 +39,9 @@ public:
         return m_height;
     }
 
-    uint32_t GetBackbufferCount() const
-    {
-        return m_swapchainBuffersCount;
-    }
-
     ComPtr<ID3D12Resource> GetCurrentBackbuffer() const
     {
         return m_swapchainBuffers[m_currentBackbuffer];
-    }
-
-    DXGI_FORMAT GetBackbufferFormat() const
-    {
-        return m_backBufferFormat;
-    }
-
-    DXGI_FORMAT GetDepthBufferFormat() const
-    {
-        return m_depthBufferFormat;
     }
 
 private:
@@ -69,13 +54,10 @@ private:
     uint16_t m_width; // client area size
     uint16_t m_height;
 
-    uint32_t m_swapchainBuffersCount;
     uint32_t m_currentBackbuffer;
-    DXGI_FORMAT m_backBufferFormat;
-    DXGI_FORMAT m_depthBufferFormat;
 
     ComPtr<IDXGISwapChain1> m_swapchain;
-    ComPtr<ID3D12Resource> m_swapchainBuffers[2];
+    ComPtr<ID3D12Resource> m_swapchainBuffers[s_swapchainBuffersCount];
     ComPtr<ID3D12Resource> m_depthBuffer;
 
     D3D12_VIEWPORT m_viewport;

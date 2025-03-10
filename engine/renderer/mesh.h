@@ -15,7 +15,7 @@ public:
     Mesh(const std::wstring &pathToTexture,
         void *vertexBufferData,
         size_t vertexBufferByteSize,
-        size_t vertexBufferStride, // one vertex size
+        size_t vertexBufferStride, // size of one vertex
         void *indexBufferData,
         size_t indexBufferByteSize,
         DirectX::XMFLOAT3 position,
@@ -24,7 +24,7 @@ public:
 
     ~Mesh() = default;
 
-    //std::shared_ptr<Texture> m_texture;
+    std::shared_ptr<Texture> m_texture;
 
     std::shared_ptr<Buffer> m_vertexBuffer;
     std::shared_ptr<Buffer> m_indexBuffer;

@@ -7,6 +7,14 @@
 
 namespace engine
 {
+namespace
+{
+// SETTINGS
+const uint32_t s_swapchainBuffersCount = 2;
+const DXGI_FORMAT s_backBufferFormat = DXGI_FORMAT_B8G8R8A8_UNORM;
+const DXGI_FORMAT s_depthBufferFormat = DXGI_FORMAT_D32_FLOAT;
+}
+
 class Globals : public NonCopyable
 {
 public:
@@ -19,25 +27,26 @@ public:
     D3D12_CPU_DESCRIPTOR_HANDLE GetRTVDescriptor(uint32_t index) const;
     D3D12_CPU_DESCRIPTOR_HANDLE GetDSVDescriptor(uint32_t index) const;
     D3D12_CPU_DESCRIPTOR_HANDLE GetCBVDescriptor(uint32_t index) const;
+    D3D12_CPU_DESCRIPTOR_HANDLE GetSRVDescriptor(uint32_t index) const;
+    D3D12_CPU_DESCRIPTOR_HANDLE GetSamplerDescriptor(uint32_t index) const;
+
+    void BindCBVDescriptorsHeap() const;
+    void BindSRVDescriptorsHeap() const;
+    void BindSamplerDescriptorsHeap() const;
+
+    void BindConstantBuffers() const;
+    void BindShaderResources() const;
+    void BindSamplers() const;
 
     void BeginCommandsRecording();
     void EndCommandsRecording();
     void Submit();
     void FlushCommandQueue();
 
-    void CreateRootSignature();
-    void BindRootSignature();
+    void CreateGlobalRootSignature();
+    void BindGlobalRootSignature();
 
     void CreateSamplers();
-    void BindSamplers();
-
-    void CreateBlendState();
-    void CreateDepthStencilState();
-    void CreateRasterizerState();
-
-    void BindCBVDescriptorsHeap();
-
-    void BindCBV();
 
     ComPtr<IDXGIFactory6> m_dxgiFactory;
     ComPtr<ID3D12Device> m_device;
@@ -56,18 +65,15 @@ public:
     uint32_t m_RTVDescriptorSize;
     uint32_t m_DSVDescriptorSize;
     uint32_t m_CBV_SRV_UAVDescriptorSize;
+    uint32_t m_samplerDescriptorSize;
 
     ComPtr<ID3D12DescriptorHeap> m_RTVHeap;
     ComPtr<ID3D12DescriptorHeap> m_DSVHeap;
     ComPtr<ID3D12DescriptorHeap> m_CBVHeap;
-
-    D3D12_BLEND_DESC m_blendState;
-    D3D12_DEPTH_STENCIL_DESC m_depthStencilState;
-    D3D12_RASTERIZER_DESC m_rasterizerState;
+    ComPtr<ID3D12DescriptorHeap> m_SRVHeap;
+    ComPtr<ID3D12DescriptorHeap> m_samplersHeap;
 
     ComPtr<ID3D12RootSignature> m_globalRootSignature;
-    
-    //ComPtr<ID3D11SamplerState> m_linearSampler;
 
 private:
     void LogAdapters();

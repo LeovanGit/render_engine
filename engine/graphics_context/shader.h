@@ -17,8 +17,7 @@ class Shader
 public:
     Shader(uint32_t shaderStages,
         const std::wstring &pathToFile,
-        D3D12_INPUT_ELEMENT_DESC inputLayout[] = nullptr,
-        size_t numElements = 0);
+        D3D12_INPUT_LAYOUT_DESC inputLayout = { nullptr, 0 });
 
     ~Shader() = default;
 
@@ -26,10 +25,6 @@ private:
     void Compile(ShaderStage type);
 
 public:
-    void Bind();
-
-    void Unbind();
-
     uint32_t m_shaderStages;
     std::wstring m_pathToFile;
 

@@ -2,7 +2,6 @@
 
 #include "graphics_context/shader_manager.h"
 #include "graphics_context/texture_manager.h"
-#include "graphics_context/constant_buffer_manager.h"
 
 #include <DirectXMath.h>
 

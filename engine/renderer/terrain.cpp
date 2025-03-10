@@ -1,7 +1,5 @@
 #include "terrain.h"
 
-#include "graphics_context/constant_buffer_manager.h"
-
 namespace engine
 {
 /*Terrain::Terrain(const std::wstring &pathToHeightMap,

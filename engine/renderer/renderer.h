@@ -11,11 +11,23 @@
 
 namespace engine
 {
+struct PerViewData
+{
+    DirectX::XMFLOAT4X4 viewProjMatrix;
+    DirectX::XMFLOAT3 cameraPostionWS;
+    float offset0;
+    // camera frustum near plane's corners in WS:
+    DirectX::XMFLOAT4 nearPlaneCornersWS[3];
+};
+
 class Renderer
 {
 public:
     Renderer(std::shared_ptr<Window> window);
     ~Renderer() = default;
+
+    void CreateConstantBuffers();
+    void UpdatePerViewConstantBuffer();
 
     void Render(bool debugMode);
 
@@ -24,12 +36,9 @@ public:
     std::shared_ptr<Window> m_window;
     std::shared_ptr<Camera> m_camera;
 
-    std::shared_ptr<Mesh> m_mesh;
-    std::shared_ptr<Shader> m_shader;
+    std::shared_ptr<Buffer> m_perViewConstantBuffer;
 
-    std::shared_ptr<Buffer> m_instanceBuffer;
-
-    //std::shared_ptr<OpaqueInstances> m_opaqueInstances;
+    std::shared_ptr<OpaqueInstances> m_opaqueInstances;
     //std::shared_ptr<Terrain> m_terrain;
     //std::shared_ptr<Sky> m_skybox;
 

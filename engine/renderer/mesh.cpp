@@ -12,20 +12,20 @@ Mesh::Mesh(const std::wstring &pathToTexture,
     DirectX::XMFLOAT3 scale,
     DirectX::XMFLOAT3 rotation)
 {
+    engine::TextureManager *tm = engine::TextureManager::GetInstance();
+    m_texture = tm->GetOrCreateTexture(pathToTexture, TextureUsage_SRV);
+
     m_vertexBuffer = std::make_shared<Buffer>(
+        BufferUsage::BufferUsage_VertexBuffer,
         vertexBufferData,
         vertexBufferByteSize,
-        vertexBufferStride,
-        BufferUsage::BufferUsage_VertexBuffer);
+        vertexBufferStride);
 
     m_indexBuffer = std::make_shared<Buffer>(
+        BufferUsage::BufferUsage_IndexBuffer,
         indexBufferData,
         indexBufferByteSize,
-        sizeof(uint16_t),
-        BufferUsage::BufferUsage_IndexBuffer);
-
-    //engine::TextureManager *tm = engine::TextureManager::GetInstance();
-    //m_texture = tm->GetOrCreateTexture(pathToTexture, TextureUsage_SRV);
+        sizeof(uint16_t));
 
     DirectX::XMMATRIX scalingMat = DirectX::XMMatrixScaling(scale.x, scale.y, scale.z);
     DirectX::XMMATRIX rotationMat = DirectX::XMMatrixRotationRollPitchYaw(

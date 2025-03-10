@@ -11,10 +11,6 @@ struct PerView
 };
 ConstantBuffer<PerView> g_perView : register(b0, space0);
 
-//struct PerMesh
-//{
-//    float4x4 modelMatrix;
-//};
-//ConstantBuffer<PerMesh> g_perMesh : register(b1);
+Texture2D texture0 : register(t0, space0);
 
-//sampler linearSampler : register(s0);
+SamplerState sampler0 : register(s0, space0);

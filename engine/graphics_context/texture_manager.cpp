@@ -4,7 +4,7 @@
 
 namespace engine
 {
-/*TextureManager *TextureManager::s_instance = nullptr;
+TextureManager *TextureManager::s_instance = nullptr;
 
 void TextureManager::Create()
 {
@@ -37,19 +37,4 @@ std::shared_ptr<Texture> TextureManager::GetOrCreateTexture(
         pathToFile,
         std::make_shared<Texture>(pathToFile, usage)).first->second;
 }
-
-std::shared_ptr<Texture> TextureManager::GetOrCreateTexture(
-    const std::wstring &name,
-    uint32_t width,
-    uint32_t height,
-    TextureUsage usage)
-{
-    auto found = m_textures.find(name);
-    if (found != m_textures.end())
-        return found->second;
-
-    return m_textures.try_emplace(
-        name,
-        std::make_shared<Texture>(width, height, usage)).first->second;
-}*/
 } // namespace engine

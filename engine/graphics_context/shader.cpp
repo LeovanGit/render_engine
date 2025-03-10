@@ -52,10 +52,10 @@ std::string GetShaderEntryPoint(ShaderStage type)
 
 Shader::Shader(uint32_t shaderStages,
     const std::wstring &pathToFile,
-    D3D12_INPUT_ELEMENT_DESC inputLayout[],
-    size_t numElements)
+    D3D12_INPUT_LAYOUT_DESC inputLayout)
     : m_shaderStages(shaderStages)
     , m_pathToFile(pathToFile)
+    , m_inputLayout(inputLayout)
     , m_VSBytecode(nullptr)
     , m_HSBytecode(nullptr)
     , m_DSBytecode(nullptr)
@@ -63,14 +63,6 @@ Shader::Shader(uint32_t shaderStages,
     , m_PSBytecode(nullptr)
     , m_CSBytecode(nullptr)
 {
-    assert(shaderStages != ShaderStage::ShaderStage_None && "shaderStages is equal to ShaderStage_None!");
-
-    if (inputLayout)
-    {
-        m_inputLayout.pInputElementDescs = inputLayout;
-        m_inputLayout.NumElements = numElements;
-    }
-
     if (shaderStages & ShaderStage_VertexShader)
         Compile(ShaderStage::ShaderStage_VertexShader);
 
@@ -143,100 +135,13 @@ void Shader::Compile(ShaderStage type)
     {
         if (error)
         {
+            //std::wcout.write(static_cast<wchar_t *>(error->GetBufferPointer()), error->GetBufferSize());
+            //std::wcout << std::endl;
+            
             SDL_LogError(SDL_LOG_CATEGORY_ERROR, "%s", static_cast<char *>(error->GetBufferPointer()));
         }
 
         assert(false && "Failed to compile shader\n");
     }
 }
-
-/*void Shader::Bind()
-{
-    Globals *globals = Globals::GetInstance();
-
-    if (m_shaderStages & ShaderStage_VertexShader)
-    {
-        globals->m_deviceContext->IASetInputLayout(m_inputLayout.Get());
-
-        globals->m_deviceContext->VSSetShader(
-            m_vertexShader.Get(),
-            nullptr,
-            0);
-    }
-
-    if (m_shaderStages & ShaderStage_HullShader)
-    {
-        globals->m_deviceContext->HSSetShader(
-            m_hullShader.Get(),
-            nullptr,
-            0);
-    }
-
-    if (m_shaderStages & ShaderStage_DomainShader)
-    {
-        globals->m_deviceContext->DSSetShader(
-            m_domainShader.Get(),
-            nullptr,
-            0);
-    }
-
-    if (m_shaderStages & ShaderStage_GeometryShader)
-    {
-        globals->m_deviceContext->GSSetShader(
-            m_geometryShader.Get(),
-            nullptr,
-            0);
-    }
-
-    if (m_shaderStages & ShaderStage_PixelShader)
-    {
-        globals->m_deviceContext->PSSetShader(
-            m_pixelShader.Get(),
-            nullptr,
-            0);
-    }
-
-    if (m_shaderStages & ShaderStage_ComputeShader)
-    {
-        globals->m_deviceContext->CSSetShader(
-            m_computeShader.Get(),
-            nullptr,
-            0);
-    }
-}
-
-void Shader::Unbind()
-{
-    Globals *globals = Globals::GetInstance();
-
-    if (m_shaderStages & ShaderStage_VertexShader)
-    {
-        ID3D11VertexShader *nullVS = nullptr;
-        globals->m_deviceContext->VSSetShader(nullVS, nullptr, 0);
-    }
-
-    if (m_shaderStages & ShaderStage_HullShader)
-    {
-        ID3D11HullShader *nullHS = nullptr;
-        globals->m_deviceContext->HSSetShader(nullHS, nullptr, 0);
-    }
-
-    if (m_shaderStages & ShaderStage_DomainShader)
-    {
-        ID3D11DomainShader *nullDS = nullptr;
-        globals->m_deviceContext->DSSetShader(nullDS, nullptr, 0);
-    }
-
-    if (m_shaderStages & ShaderStage_GeometryShader)
-    {
-        ID3D11GeometryShader *nullGS = nullptr;
-        globals->m_deviceContext->GSSetShader(nullGS, nullptr, 0);
-    }
-
-    if (m_shaderStages & ShaderStage_PixelShader)
-    {
-        ID3D11PixelShader *nullPS = nullptr;
-        globals->m_deviceContext->PSSetShader(nullPS, nullptr, 0);
-    }
-}*/
 } // namespace engine
