@@ -1,6 +1,6 @@
 #include "globals.hlsli"
 
-TextureCube skyboxTexture : register(t0);
+TextureCube skyboxTexture : register(t0, space0);
 
 struct VSOutput
 {
@@ -17,9 +17,9 @@ VSOutput mainVS(uint vertexID : SV_VertexID)
         { 3.0f, -1.0f }
     };
 
-    float3 bottomLeftDirWS = g_nearPlaneCornersWS[1] - g_cameraPostionWS;
-    float3 dx = g_nearPlaneCornersWS[2] - g_nearPlaneCornersWS[1];
-    float3 dy = g_nearPlaneCornersWS[0] - g_nearPlaneCornersWS[1];
+    float3 bottomLeftDirWS = g_perView.nearPlaneCornersWS[1] - g_perView.cameraPostionWS;
+    float3 dx = g_perView.nearPlaneCornersWS[2] - g_perView.nearPlaneCornersWS[1];
+    float3 dy = g_perView.nearPlaneCornersWS[0] - g_perView.nearPlaneCornersWS[1];
 
     float2 uv = (positionsCS[vertexID] + float2(1.0f, 1.0f)) / 2.0f;
 
@@ -32,5 +32,5 @@ VSOutput mainVS(uint vertexID : SV_VertexID)
 
 float4 mainPS(VSOutput input) : SV_TARGET0
 {
-    return skyboxTexture.Sample(linearSampler, input.sampleDirection);
+    return skyboxTexture.Sample(sampler0, input.sampleDirection);
 }

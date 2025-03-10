@@ -75,11 +75,11 @@ void Controller::InitScene()
         120,
         DirectX::XMFLOAT3(0.0f, -10.0f, 0.0f),
         DirectX::XMFLOAT3(3.0f, 3.0f, 3.0f),
-        DirectX::XMFLOAT3(90.0f, 0.0f, 0.0f));
+        DirectX::XMFLOAT3(90.0f, 0.0f, 0.0f));*/
 
     m_renderer->m_skybox = std::make_shared<engine::Sky>(L"../assets/textures/skybox.dds");
 
-    m_renderer->m_postprocess = std::make_shared<engine::PostProcess>();
+    /*m_renderer->m_postprocess = std::make_shared<engine::PostProcess>();
 
     m_renderer->m_quadSphere = std::make_shared<engine::QuadSphere>(
         L"../assets/textures/default.dds",

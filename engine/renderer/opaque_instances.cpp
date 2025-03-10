@@ -272,5 +272,10 @@ void OpaqueInstances::Render()
             instancesRendered += _material.m_instances.size();
         }
     }
+
+    // unbind
+    Buffer::BindIndexBuffer(nullptr);
+    Buffer::BindVertexBuffer(0, nullptr);
+    Buffer::BindVertexBuffer(1, nullptr);
 }
 } // namespace engine

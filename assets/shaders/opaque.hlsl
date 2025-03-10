@@ -1,5 +1,7 @@
 #include "globals.hlsli"
 
+Texture2D texture0 : register(t0, space0);
+
 struct VSInput
 {
     // per-vertex data:

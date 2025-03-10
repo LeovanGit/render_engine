@@ -7,7 +7,7 @@ Renderer::Renderer(std::shared_ptr<Window> window)
     , m_camera(nullptr)
     , m_opaqueInstances(new OpaqueInstances)
     //, m_terrain(nullptr)
-    //, m_skybox(nullptr)
+    , m_skybox(nullptr)
     //, m_postprocess(nullptr)
     //, m_quadSphere(nullptr)
 {
@@ -54,6 +54,7 @@ void Renderer::Render(bool debugMode)
     globals->BindSamplers();
     
     m_opaqueInstances->Render();
+    m_skybox->Render();
 
     globals->EndCommandsRecording();
     globals->Submit();
@@ -61,28 +62,10 @@ void Renderer::Render(bool debugMode)
 
     m_window->Present();
 
-    
-    /*
-
-    cbm->BindPerMeshConstantBuffer();
-
-    m_window->SetViewport();
-
-    m_window->ClearRenderTarget();
-    m_window->BindRenderTarget(); // RTV + DSV
-
-    // bind states which will not change during frame rendering:
-    globals->BindDepthStencilState();
-    globals->BindRasterizerState();
-
-    m_opaqueInstances->Render();
-    if (debugMode) m_opaqueInstances->RenderDebug();
-    m_quadSphere->Render();
-    m_terrain->Render();
-    m_skybox->Render();
-    m_postprocess->Render();
-
-    m_window->Present();*/
+    //if (debugMode) m_opaqueInstances->RenderDebug();
+    //m_quadSphere->Render();
+   // m_terrain->Render();
+    //m_postprocess->Render();
 }
 
 void Renderer::Destroy()

@@ -70,12 +70,24 @@ void Texture::CreateShaderResourceView()
 {
     Globals *globals = Globals::GetInstance();
 
+    D3D12_RESOURCE_DESC textureDesc = m_texture->GetDesc();
+    
+    D3D12_SRV_DIMENSION viewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+    // TODO: this is a little hacky
+    // Texture array also can be with D3D12_RESOURCE_DIMENSION_TEXTURE2D and DepthOrArraySize == 6
+    // Use something like DirectX::TexMetadata from LoadFromDDSFile()
+    if (textureDesc.Dimension == D3D12_RESOURCE_DIMENSION_TEXTURE2D &&
+        textureDesc.DepthOrArraySize == 6)
+    {
+        viewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
+    }
+
     D3D12_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
-    SRVDesc.Format = m_texture->GetDesc().Format;
-    SRVDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+    SRVDesc.Format = textureDesc.Format;
+    SRVDesc.ViewDimension = viewDimension;
     SRVDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
     SRVDesc.Texture2D.MostDetailedMip = 0;
-    SRVDesc.Texture2D.MipLevels = m_texture->GetDesc().MipLevels;
+    SRVDesc.Texture2D.MipLevels = textureDesc.MipLevels;
     SRVDesc.Texture2D.PlaneSlice = 0;
     SRVDesc.Texture2D.ResourceMinLODClamp = 0.0f;
 

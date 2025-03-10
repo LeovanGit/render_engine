@@ -7,10 +7,8 @@ struct PerView
     // [0]: top-left
     // [1]: bottom-left
     // [2]: bottom-right
-    float4 g_nearPlaneCornersWS[3];
+    float4 nearPlaneCornersWS[3];
 };
 ConstantBuffer<PerView> g_perView : register(b0, space0);
-
-Texture2D texture0 : register(t0, space0);
 
 SamplerState sampler0 : register(s0, space0);

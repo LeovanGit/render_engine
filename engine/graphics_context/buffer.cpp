@@ -163,30 +163,46 @@ void Buffer::Update(void *data, uint32_t byteSize)
 
 void Buffer::BindVertexBuffer(uint32_t slot, std::shared_ptr<Buffer> buffer)
 {
-    assert((buffer->m_usage == BufferUsage_VertexBuffer ||
-        buffer->m_usage == BufferUsage_InstanceBuffer) && "Must be Vertex/Instance Buffer");
-
     Globals *globals = Globals::GetInstance();
 
-    D3D12_VERTEX_BUFFER_VIEW VBV = {};
-    VBV.BufferLocation = buffer->m_buffer->GetGPUVirtualAddress();
-    VBV.SizeInBytes = buffer->m_byteSize;
-    VBV.StrideInBytes = buffer->m_stride;
+    // unbind
+    if (buffer == nullptr)
+    {
+        globals->m_commandList->IASetVertexBuffers(slot, 1, nullptr);
+    }
+    else
+    {
+        assert((buffer->m_usage == BufferUsage_VertexBuffer ||
+            buffer->m_usage == BufferUsage_InstanceBuffer) && "Must be Vertex/Instance Buffer");
 
-    globals->m_commandList->IASetVertexBuffers(slot, 1, &VBV);
+        D3D12_VERTEX_BUFFER_VIEW VBV = {};
+        VBV.BufferLocation = buffer->m_buffer->GetGPUVirtualAddress();
+        VBV.SizeInBytes = buffer->m_byteSize;
+        VBV.StrideInBytes = buffer->m_stride;
+
+        globals->m_commandList->IASetVertexBuffers(slot, 1, &VBV);
+    }
 }
 
 void Buffer::BindIndexBuffer(std::shared_ptr<Buffer> buffer)
 {
-    assert(buffer->m_usage == BufferUsage_IndexBuffer && "Must be Index Buffer");
-
     Globals *globals = Globals::GetInstance();
 
-    D3D12_INDEX_BUFFER_VIEW IBV = {};
-    IBV.BufferLocation = buffer->m_buffer->GetGPUVirtualAddress();
-    IBV.SizeInBytes = buffer->m_byteSize;
-    IBV.Format = DXGI_FORMAT_R16_UINT;
+    // unbind
+    if (buffer == nullptr)
+    {
+        globals->m_commandList->IASetIndexBuffer(nullptr);
+    }
+    else
+    {
+        assert(buffer->m_usage == BufferUsage_IndexBuffer && "Must be Index Buffer");
 
-    globals->m_commandList->IASetIndexBuffer(&IBV);
+        D3D12_INDEX_BUFFER_VIEW IBV = {};
+        IBV.BufferLocation = buffer->m_buffer->GetGPUVirtualAddress();
+        IBV.SizeInBytes = buffer->m_byteSize;
+        IBV.Format = DXGI_FORMAT_R16_UINT;
+
+        globals->m_commandList->IASetIndexBuffer(&IBV);
+    }
 }
 } // namespace engine

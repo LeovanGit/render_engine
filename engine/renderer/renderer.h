@@ -40,7 +40,7 @@ public:
 
     std::shared_ptr<OpaqueInstances> m_opaqueInstances;
     //std::shared_ptr<Terrain> m_terrain;
-    //std::shared_ptr<Sky> m_skybox;
+    std::shared_ptr<Sky> m_skybox;
 
     //std::shared_ptr<PostProcess> m_postprocess;
 
