@@ -3,8 +3,8 @@
 namespace engine
 {
 OpaqueInstances::OpaqueInstances()
-    : m_PSO(nullptr)
-    //, m_debugShader(nullptr)
+    : m_instanceBuffer(nullptr)
+    , m_PSO(nullptr)
 {
     Globals *globals = Globals::GetInstance();
 
@@ -126,61 +126,115 @@ OpaqueInstances::OpaqueInstances()
     PSODesc.Flags = D3D12_PIPELINE_STATE_FLAG_NONE;
 
     m_PSO = pm->GetOrCreatePipeline("opaque", &PSODesc);
-
-
-
-
-    //m_debugShader = sm->GetOrCreateShader(
-    //    ShaderStage_VertexShader |
-    //    ShaderStage_GeometryShader |
-    //    ShaderStage_PixelShader,
-    //    L"../assets/shaders/debug.hlsl",
-    //    inputLayout,
-    //    _countof(inputLayout));
 }
 
 OpaqueInstances::~OpaqueInstances()
 {
     // Just break references to them, they will be destructed in Engine::Deinit():
-    m_meshes.clear();
-    //m_debugShader = nullptr;
     m_PSO = nullptr;
+    m_instanceBuffer = nullptr;
+    m_meshes.clear();
 }
 
-void OpaqueInstances::AddInstance(std::shared_ptr<Mesh> mesh)
+void OpaqueInstances::AddInstance(
+    const std::wstring &pathToTexture,
+    std::shared_ptr<Mesh> mesh,
+    DirectX::XMFLOAT3 position,
+    DirectX::XMFLOAT3 scale,
+    DirectX::XMFLOAT3 rotation)
 {
-    m_meshes.push_back(mesh);
+    engine::TextureManager *tm = engine::TextureManager::GetInstance();
+    std::shared_ptr<Texture> texture = tm->GetOrCreateTexture(pathToTexture, TextureUsage_SRV);
 
-    static uint32_t hackCounter = 0;
-    if (hackCounter < 1)
+    DirectX::XMMATRIX scalingMat = DirectX::XMMatrixScaling(scale.x, scale.y, scale.z);
+    DirectX::XMMATRIX rotationMat = DirectX::XMMatrixRotationRollPitchYaw(
+        DirectX::XMConvertToRadians(rotation.x),
+        DirectX::XMConvertToRadians(rotation.y),
+        DirectX::XMConvertToRadians(rotation.z));
+    DirectX::XMMATRIX translationMat = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+
+    // Scale -> Rotate -> Translate
+    DirectX::XMFLOAT4X4 modelMatrix;
+    DirectX::XMStoreFloat4x4(&modelMatrix,
+        XMMatrixMultiply(XMMatrixMultiply(scalingMat, rotationMat), translationMat));
+
+    for (auto &_mesh : m_meshes)
     {
-        hackCounter++;
-        return;
+        // search the same mesh
+        if (_mesh.m_mesh == mesh)
+        {
+            // search the same material
+            for (auto &_material : _mesh.m_perMaterial)
+            {
+                if (_material.m_material.m_texture == texture)
+                {
+                    InstanceData instance;
+                    instance.m_modelMatrix = modelMatrix;
+
+                    _material.m_instances.push_back(std::move(instance));
+                    goto END;
+                }
+            }
+
+            // material not found -> add new:
+            Material material;
+            material.m_texture = texture;
+
+            InstanceData instance;
+            instance.m_modelMatrix = modelMatrix;
+
+            PerMaterial perMat;
+            perMat.m_material = material;
+            perMat.m_instances.push_back(std::move(instance));
+
+            _mesh.m_perMaterial.push_back(std::move(perMat));
+            goto END;
+        }
     }
 
+    // mesh not found -> add new:
+    {
+        Material material;
+        material.m_texture = texture;
+
+        InstanceData instance;
+        instance.m_modelMatrix = modelMatrix;
+
+        PerMaterial perMat;
+        perMat.m_material = material;
+        perMat.m_instances.push_back(std::move(instance));
+
+        PerMesh perMesh;
+        perMesh.m_mesh = mesh;
+        perMesh.m_perMaterial.push_back(std::move(perMat));
+
+        m_meshes.push_back(perMesh);
+    }
+
+    END:
+
+    // recreate instance buffer (TODO: move to separate func. No need to do this each time we add
+    // new instance, do it at the end, when all instances added)
     if (m_instanceBuffer) m_instanceBuffer.reset();
 
-    struct InstanceBufferData
+    std::vector<InstanceData> data;
+    for (auto &_mesh : m_meshes)
     {
-        DirectX::XMFLOAT4X4 modelMatrix;
-    };
-
-    std::vector<InstanceBufferData> data;
-    for (auto mesh : m_meshes)
-    {
-        InstanceBufferData instanceData;
-        DirectX::XMStoreFloat4x4(&instanceData.modelMatrix, mesh->m_modelMatrix);
-       
-        data.push_back(instanceData);
+        for (auto &_material : _mesh.m_perMaterial)
+        {
+            // TODO: just memcpy m_instances instead of iterate over them
+            for (auto &_instance : _material.m_instances)
+            {
+                data.push_back(_instance);
+            }
+        }
     }
 
     m_instanceBuffer = std::make_shared<Buffer>(
         BufferUsage_InstanceBuffer,
         data.data(),
-        sizeof(InstanceBufferData) * m_meshes.size(),
-        sizeof(InstanceBufferData));
-
-    //m_instanceBuffer->Update(data.data(), data.size() * sizeof(InstanceBufferData));
+        sizeof(InstanceData) * data.size(),
+        sizeof(InstanceData));
 }
 
 void OpaqueInstances::Render()
@@ -188,47 +242,35 @@ void OpaqueInstances::Render()
     Globals *globals = Globals::GetInstance();
 
     m_PSO->Bind();
-
-    Buffer::BindVertexBuffer(0, m_meshes[0]->m_vertexBuffer);
-    Buffer::BindVertexBuffer(1, m_instanceBuffer);
-
-    Buffer::BindIndexBuffer(m_meshes[0]->m_indexBuffer);
-
     globals->m_commandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-    globals->m_commandList->DrawIndexedInstanced(
-        m_meshes[0]->m_indexBuffer->m_byteSize / m_meshes[0]->m_indexBuffer->m_stride,
-        m_instanceBuffer->m_byteSize / m_instanceBuffer->m_stride,
-        0,
-        0,
-        0);
-}
+    globals->BindSRVDescriptorsHeap();
 
-//void OpaqueInstances::RenderDebug()
-//{
-//    Globals *globals = Globals::GetInstance();
-//    ConstantBufferManager *cbm = ConstantBufferManager::GetInstance();
-//
-//    m_debugShader->Bind();
-//
-//    globals->m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-//
-//    for (auto mesh : m_meshes)
-//    {
-//        ConstantBufferManager::PerMesh perMeshData;
-//        DirectX::XMStoreFloat4x4(&perMeshData.modelMatrix, mesh->m_modelMatrix);
-//        
-//        cbm->UpdatePerMeshConstantBuffer(perMeshData);
-//
-//        mesh->m_vertexBuffer->Bind(0);
-//        mesh->m_indexBuffer->Bind();
-//
-//        globals->m_deviceContext->DrawIndexed(mesh->m_indexBuffer->m_size, 0, 0);
-//
-//        mesh->m_indexBuffer->Unbind();
-//        mesh->m_vertexBuffer->Unbind();
-//    }
-//
-//    m_debugShader->Unbind();
-//}
+    Buffer::BindVertexBuffer(1, m_instanceBuffer);
+
+    uint32_t instancesRendered = 0;
+
+    for (auto &_mesh : m_meshes)
+    {
+        Buffer::BindVertexBuffer(0, _mesh.m_mesh->m_vertexBuffer);
+        Buffer::BindIndexBuffer(_mesh.m_mesh->m_indexBuffer);
+
+        uint32_t indexCountPerInstance = _mesh.m_mesh->m_indexBuffer->m_byteSize / _mesh.m_mesh->m_indexBuffer->m_stride;
+
+        for (auto &_material : _mesh.m_perMaterial)
+        {
+            // Bind Texture. Tmp hack with m_slotInHeap:
+            globals->BindSRVDescriptor(_material.m_material.m_texture->m_slotInHeap);
+
+            globals->m_commandList->DrawIndexedInstanced(
+                indexCountPerInstance,
+                _material.m_instances.size(),
+                0,
+                0,
+                instancesRendered);
+
+            instancesRendered += _material.m_instances.size();
+        }
+    }
+}
 } // namespace engine

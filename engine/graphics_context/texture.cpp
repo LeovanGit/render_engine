@@ -68,10 +68,6 @@ void Texture::CreateTexture(const std::wstring &pathToFile)
 
 void Texture::CreateShaderResourceView()
 {
-    static uint32_t hackCounter = 0;
-    if (hackCounter > 0) return;
-    hackCounter++;
-
     Globals *globals = Globals::GetInstance();
 
     D3D12_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
@@ -88,6 +84,7 @@ void Texture::CreateShaderResourceView()
         m_texture.Get(),
         &SRVDesc,
         globals->GetSRVDescriptor(indexInSRVHeap));
+    m_slotInHeap = indexInSRVHeap;
     ++indexInSRVHeap;
 }
 } // namespace engine

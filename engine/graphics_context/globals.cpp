@@ -213,7 +213,7 @@ void Globals::CreateDescriptorHeaps()
 
     D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
     srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-    srvHeapDesc.NumDescriptors = 1; // 1 texture
+    srvHeapDesc.NumDescriptors = 2; // 2 textures: bricks, lava
     srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
     srvHeapDesc.NodeMask = 0;
 
@@ -309,13 +309,16 @@ void Globals::BindConstantBuffers() const
         m_CBVHeap->GetGPUDescriptorHandleForHeapStart());
 }
 
-void Globals::BindShaderResources() const
+void Globals::BindSRVDescriptor(uint32_t slotInHeap) const
 {
-    BindSRVDescriptorsHeap();
+    CD3DX12_GPU_DESCRIPTOR_HANDLE handle(
+        m_SRVHeap->GetGPUDescriptorHandleForHeapStart(),
+        slotInHeap,
+        m_CBV_SRV_UAVDescriptorSize);
 
     m_commandList->SetGraphicsRootDescriptorTable(
         RootSignatureSlot_SRV,
-        m_SRVHeap->GetGPUDescriptorHandleForHeapStart());
+        handle);
 }
 
 void Globals::BindSamplers() const

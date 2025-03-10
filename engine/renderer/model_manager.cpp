@@ -27,15 +27,11 @@ void ModelManager::Destroy()
 
 std::shared_ptr<Mesh> ModelManager::GetOrCreateModel(
     const std::string &modelName,
-    const std::wstring &pathToTexture,
     void *vertexBufferData,
     size_t vertexBufferSize,
     size_t vertexSize,
     void *indexBufferData,
-    size_t indexBufferSize,
-    DirectX::XMFLOAT3 position,
-    DirectX::XMFLOAT3 scale,
-    DirectX::XMFLOAT3 rotation)
+    size_t indexBufferSize)
 {
     auto found = m_models.find(modelName);
     if (found != m_models.end())
@@ -44,23 +40,14 @@ std::shared_ptr<Mesh> ModelManager::GetOrCreateModel(
     return m_models.try_emplace(
         modelName,
         std::make_shared<Mesh>(
-            pathToTexture,
             vertexBufferData,
             vertexBufferSize,
             vertexSize,
             indexBufferData,
-            indexBufferSize,
-            position,
-            scale,
-            rotation)).first->second;
+            indexBufferSize)).first->second;
 }
 
-std::shared_ptr<Mesh> ModelManager::GeneratePlane(
-    const std::string &modelName,
-    const std::wstring &pathToTexture,
-    DirectX::XMFLOAT3 position,
-    DirectX::XMFLOAT3 scale,
-    DirectX::XMFLOAT3 rotation)
+std::shared_ptr<Mesh> ModelManager::GenerateUnitPlane(const std::string &modelName)
 {
     VertexData vertices[] =
     {
@@ -90,25 +77,17 @@ std::shared_ptr<Mesh> ModelManager::GeneratePlane(
 
     return GetOrCreateModel(
         modelName,
-        pathToTexture,
         vertices,
         sizeof(vertices),
         sizeof(VertexData),
         indices,
-        sizeof(indices),
-        position,
-        scale,
-        rotation);
+        sizeof(indices));
 }
 
-std::shared_ptr<Mesh> ModelManager::GeneratePlanesGrid(
+std::shared_ptr<Mesh> ModelManager::GeneratePlanesUnitGrid(
     const std::string &modelName,
-    const std::wstring &pathToTexture,
     uint32_t rows,
-    uint32_t cols,
-    DirectX::XMFLOAT3 position,
-    DirectX::XMFLOAT3 scale,
-    DirectX::XMFLOAT3 rotation)
+    uint32_t cols)
 {
     std::vector<VertexData> vertices;
     std::vector<uint16_t> indices;
@@ -170,23 +149,14 @@ std::shared_ptr<Mesh> ModelManager::GeneratePlanesGrid(
 
     return GetOrCreateModel(
         modelName,
-        pathToTexture,
         vertices.data(),
         vertices.size() * sizeof(VertexData),
         sizeof(VertexData),
         indices.data(),
-        indices.size() * sizeof(uint16_t),
-        position,
-        scale,
-        rotation);
+        indices.size() * sizeof(uint16_t));
 }
 
-std::shared_ptr<Mesh> ModelManager::GenerateCube(
-    const std::string &modelName,
-    const std::wstring &pathToTexture,
-    DirectX::XMFLOAT3 position,
-    DirectX::XMFLOAT3 scale,
-    DirectX::XMFLOAT3 rotation)
+std::shared_ptr<Mesh> ModelManager::GenerateUnitCube(const std::string &modelName)
 {
     VertexData vertices[] =
     {
@@ -253,14 +223,10 @@ std::shared_ptr<Mesh> ModelManager::GenerateCube(
 
     return GetOrCreateModel(
         modelName,
-        pathToTexture,
         vertices,
         sizeof(vertices),
         sizeof(VertexData),
         indices,
-        sizeof(indices),
-        position,
-        scale,
-        rotation);
+        sizeof(indices));
 }
 } // namespace engine

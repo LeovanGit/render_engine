@@ -35,7 +35,7 @@ public:
     void BindSamplerDescriptorsHeap() const;
 
     void BindConstantBuffers() const;
-    void BindShaderResources() const;
+    void BindSRVDescriptor(uint32_t slotInHeap) const;
     void BindSamplers() const;
 
     void BeginCommandsRecording();

@@ -32,20 +32,40 @@ void Controller::InitScene()
     m_renderer->m_camera->SetPosition(0.0f, 0.0f, 0.0f);
 
     engine::ModelManager *mm = engine::ModelManager::GetInstance();
-
-    m_renderer->m_opaqueInstances->AddInstance(mm->GenerateCube(
-        "unitCube",
+    m_renderer->m_opaqueInstances->AddInstance(
         L"../assets/textures/bricks.dds",
+        mm->GenerateUnitCube("unitCube"),
         { 0.0f, 0.0f, 3.0f },
         { 1.0f, 1.0f, 1.0f },
-        { 0.0f, 45.0f, 0.0f }));
+        { 0.0f, 45.0f, 0.0f });
 
-    m_renderer->m_opaqueInstances->AddInstance(mm->GenerateCube(
-        "worldOrigin",
+    m_renderer->m_opaqueInstances->AddInstance(
+        L"../assets/textures/bricks.dds",
+        mm->GenerateUnitCube("unitCube"),
+        { 0.0f, 2.0f, 3.0f },
+        { 1.0f, 1.0f, 1.0f },
+        { 0.0f, 0.0f, 0.0f });
+
+    m_renderer->m_opaqueInstances->AddInstance(
         L"../assets/textures/lava.dds",
+        mm->GenerateUnitCube("worldOrigin"),
         { 3.0f, 0.0f, 3.0f },
         { 0.5f, 0.5f, 0.5f },
-        { 0.0f, 0.0f, 0.0f }));
+        { 0.0f, 0.0f, 0.0f });
+
+    m_renderer->m_opaqueInstances->AddInstance(
+        L"../assets/textures/lava.dds",
+        mm->GenerateUnitCube("worldOrigin"),
+        { 3.0f, 1.0f, 3.0f },
+        { 0.5f, 0.5f, 0.5f },
+        { 0.0f, 32.0f, 0.0f });
+
+    m_renderer->m_opaqueInstances->AddInstance(
+        L"../assets/textures/lava.dds",
+        mm->GenerateUnitCube("worldOrigin"),
+        { 0.0f, 0.0f, 0.0f },
+        { 0.05f, 0.05f, 0.05f },
+        { 0.0f, 0.0f, 0.0f });
 
     /*// be aware: for big grid size need to change index type from uint16 to uin32
     // max for uint16 is 21845 triangles

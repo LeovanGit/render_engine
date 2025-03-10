@@ -51,7 +51,6 @@ void Renderer::Render(bool debugMode)
 
     globals->BindGlobalRootSignature();
     globals->BindConstantBuffers();
-    globals->BindShaderResources();
     globals->BindSamplers();
     
     m_opaqueInstances->Render();
