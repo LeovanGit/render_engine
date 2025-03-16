@@ -50,6 +50,7 @@ void Renderer::Render(bool debugMode)
     UpdatePerViewConstantBuffer();
 
     globals->BindGlobalRootSignature();
+    globals->BindDescriptorHeaps();
     globals->BindConstantBuffers();
     globals->BindSamplers();
     

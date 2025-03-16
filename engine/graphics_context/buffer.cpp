@@ -11,7 +11,6 @@ Buffer::Buffer(BufferUsage usage, void *data, uint32_t byteSize, uint32_t stride
     , m_stride(stride)
 {
     Globals *globals = Globals::GetInstance();
-    HRESULT hr;
 
     switch (usage)
     {
@@ -126,9 +125,8 @@ void Buffer::CreateConstantBuffer(uint32_t byteSize)
     cbvDesc.BufferLocation = m_buffer->GetGPUVirtualAddress();
     cbvDesc.SizeInBytes = alignedByteSize;
 
-    static uint32_t indexInCBVHeap = 0;
-    globals->m_device->CreateConstantBufferView(&cbvDesc, globals->GetCBVDescriptor(indexInCBVHeap));
-    ++indexInCBVHeap;
+    uint32_t indexInHeap = globals->GetNextFreeCBV_SRV_UAVDescriptorIndex();
+    globals->m_device->CreateConstantBufferView(&cbvDesc, globals->GetCBV_SRV_UAVDescriptor(indexInHeap));
 }
 
 void Buffer::CreateUploadBuffer(uint32_t byteSize)

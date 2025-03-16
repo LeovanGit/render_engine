@@ -42,9 +42,9 @@ Globals::Globals()
     , m_samplerDescriptorSize(0)
     , m_RTVHeap(nullptr)
     , m_DSVHeap(nullptr)
-    , m_CBVHeap(nullptr)
-    , m_SRVHeap(nullptr)
+    , m_CBV_SRV_UAVHeap(nullptr)
     , m_samplersHeap(nullptr)
+    , m_CBV_SRV_UAVDescriptorIndex(0)
     , m_globalRootSignature(nullptr)
 {
     InitD3D12();
@@ -132,6 +132,7 @@ void Globals::InitD3D12()
     assert(hr >= 0 && "Unable to create ID3D12Debug\n");
 
     m_debug->EnableDebugLayer();
+    m_debug->SetEnableGPUBasedValidation(TRUE);
 #endif
 
     hr = D3D12CreateDevice(
@@ -201,23 +202,16 @@ void Globals::CreateDescriptorHeaps()
 
     hr = m_device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(m_DSVHeap.GetAddressOf()));
     assert(hr >= 0 && "Failed to create ID3D12DescriptorHeap\n");
+    
+    // 1 constant buffer
+    // 3 textures: bricks, lava, cubemap
+    D3D12_DESCRIPTOR_HEAP_DESC cbv_srv_uavHeapDesc = {};
+    cbv_srv_uavHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+    cbv_srv_uavHeapDesc.NumDescriptors = 4;
+    cbv_srv_uavHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+    cbv_srv_uavHeapDesc.NodeMask = 0;
 
-    D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc = {};
-    cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-    cbvHeapDesc.NumDescriptors = 1; // 1 constant buffer
-    cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-    cbvHeapDesc.NodeMask = 0;
-
-    hr = m_device->CreateDescriptorHeap(&cbvHeapDesc, IID_PPV_ARGS(m_CBVHeap.GetAddressOf()));
-    assert(hr >= 0 && "Failed to create ID3D12DescriptorHeap\n");
-
-    D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
-    srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-    srvHeapDesc.NumDescriptors = 3; // 2 textures: bricks, lava, cubemap
-    srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-    srvHeapDesc.NodeMask = 0;
-
-    hr = m_device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(m_SRVHeap.GetAddressOf()));
+    hr = m_device->CreateDescriptorHeap(&cbv_srv_uavHeapDesc, IID_PPV_ARGS(m_CBV_SRV_UAVHeap.GetAddressOf()));
     assert(hr >= 0 && "Failed to create ID3D12DescriptorHeap\n");
 
     D3D12_DESCRIPTOR_HEAP_DESC samplersHeapDesc = {};
@@ -255,22 +249,12 @@ D3D12_CPU_DESCRIPTOR_HANDLE Globals::GetDSVDescriptor(uint32_t index) const
         m_DSVDescriptorSize);
 }
 
-D3D12_CPU_DESCRIPTOR_HANDLE Globals::GetCBVDescriptor(uint32_t index) const
+D3D12_CPU_DESCRIPTOR_HANDLE Globals::GetCBV_SRV_UAVDescriptor(uint32_t index) const
 {
-    assert(index < m_CBVHeap->GetDesc().NumDescriptors && "index >= NumDescriptors");
+    assert(index < m_CBV_SRV_UAVHeap->GetDesc().NumDescriptors && "index >= NumDescriptors");
 
     return CD3DX12_CPU_DESCRIPTOR_HANDLE(
-        m_CBVHeap->GetCPUDescriptorHandleForHeapStart(),
-        index,
-        m_CBV_SRV_UAVDescriptorSize);
-}
-
-D3D12_CPU_DESCRIPTOR_HANDLE Globals::GetSRVDescriptor(uint32_t index) const
-{
-    assert(index < m_SRVHeap->GetDesc().NumDescriptors && "index >= NumDescriptors");
-
-    return CD3DX12_CPU_DESCRIPTOR_HANDLE(
-        m_SRVHeap->GetCPUDescriptorHandleForHeapStart(),
+        m_CBV_SRV_UAVHeap->GetCPUDescriptorHandleForHeapStart(),
         index,
         m_CBV_SRV_UAVDescriptorSize);
 }
@@ -285,34 +269,28 @@ D3D12_CPU_DESCRIPTOR_HANDLE Globals::GetSamplerDescriptor(uint32_t index) const
         m_samplerDescriptorSize);
 }
 
-void Globals::BindCBVDescriptorsHeap() const
+void Globals::BindDescriptorHeaps() const
 {
-    m_commandList->SetDescriptorHeaps(1, m_CBVHeap.GetAddressOf());
-}
+    ID3D12DescriptorHeap *heaps[] =
+    {
+        m_CBV_SRV_UAVHeap.Get(),
+        m_samplersHeap.Get()
+    };
 
-void Globals::BindSRVDescriptorsHeap() const
-{
-    m_commandList->SetDescriptorHeaps(1, m_SRVHeap.GetAddressOf());
-}
-
-void Globals::BindSamplerDescriptorsHeap() const
-{
-    m_commandList->SetDescriptorHeaps(1, m_samplersHeap.GetAddressOf());
+    m_commandList->SetDescriptorHeaps(_countof(heaps), heaps);
 }
 
 void Globals::BindConstantBuffers() const
 {
-    BindCBVDescriptorsHeap();
-
     m_commandList->SetGraphicsRootDescriptorTable(
         RootSignatureSlot_CBV,
-        m_CBVHeap->GetGPUDescriptorHandleForHeapStart());
+        m_CBV_SRV_UAVHeap->GetGPUDescriptorHandleForHeapStart());
 }
 
 void Globals::BindSRVDescriptor(uint32_t slotInHeap) const
 {
     CD3DX12_GPU_DESCRIPTOR_HANDLE handle(
-        m_SRVHeap->GetGPUDescriptorHandleForHeapStart(),
+        m_CBV_SRV_UAVHeap->GetGPUDescriptorHandleForHeapStart(),
         slotInHeap,
         m_CBV_SRV_UAVDescriptorSize);
 
@@ -323,8 +301,6 @@ void Globals::BindSRVDescriptor(uint32_t slotInHeap) const
 
 void Globals::BindSamplers() const
 {
-    BindSamplerDescriptorsHeap();
-
     m_commandList->SetGraphicsRootDescriptorTable(
         RootSignatureSlot_Sampler,
         m_samplersHeap->GetGPUDescriptorHandleForHeapStart());

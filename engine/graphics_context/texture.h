@@ -23,7 +23,7 @@ public:
     std::wstring m_pathToFile;
 
     ComPtr<ID3D12Resource> m_texture;
-    uint32_t m_slotInHeap; // tmp hack
+    uint32_t m_indexInHeap;
 
 private:
     void CreateTexture(const std::wstring &pathToFile);

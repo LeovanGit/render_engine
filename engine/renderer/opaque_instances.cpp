@@ -244,8 +244,6 @@ void OpaqueInstances::Render()
     m_PSO->Bind();
     globals->m_commandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-    globals->BindSRVDescriptorsHeap();
-
     Buffer::BindVertexBuffer(1, m_instanceBuffer);
 
     uint32_t instancesRendered = 0;
@@ -259,8 +257,8 @@ void OpaqueInstances::Render()
 
         for (auto &_material : _mesh.m_perMaterial)
         {
-            // Bind Texture. Tmp hack with m_slotInHeap:
-            globals->BindSRVDescriptor(_material.m_material.m_texture->m_slotInHeap);
+            // Bind Texture:
+            globals->BindSRVDescriptor(_material.m_material.m_texture->m_indexInHeap);
 
             globals->m_commandList->DrawIndexedInstanced(
                 indexCountPerInstance,

@@ -80,8 +80,7 @@ void Sky::Render()
     m_PSO->Bind();
 
     // bind texture
-    globals->BindSRVDescriptorsHeap();
-    globals->BindSRVDescriptor(m_cubemap->m_slotInHeap);
+    globals->BindSRVDescriptor(m_cubemap->m_indexInHeap);
     
     globals->m_commandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     globals->m_commandList->DrawInstanced(3, 1, 0, 0);

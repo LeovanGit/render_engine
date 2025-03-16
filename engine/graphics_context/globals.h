@@ -26,13 +26,15 @@ public:
 
     D3D12_CPU_DESCRIPTOR_HANDLE GetRTVDescriptor(uint32_t index) const;
     D3D12_CPU_DESCRIPTOR_HANDLE GetDSVDescriptor(uint32_t index) const;
-    D3D12_CPU_DESCRIPTOR_HANDLE GetCBVDescriptor(uint32_t index) const;
-    D3D12_CPU_DESCRIPTOR_HANDLE GetSRVDescriptor(uint32_t index) const;
+    D3D12_CPU_DESCRIPTOR_HANDLE GetCBV_SRV_UAVDescriptor(uint32_t index) const;
     D3D12_CPU_DESCRIPTOR_HANDLE GetSamplerDescriptor(uint32_t index) const;
 
-    void BindCBVDescriptorsHeap() const;
-    void BindSRVDescriptorsHeap() const;
-    void BindSamplerDescriptorsHeap() const;
+    uint32_t GetNextFreeCBV_SRV_UAVDescriptorIndex()
+    {
+        return m_CBV_SRV_UAVDescriptorIndex++;
+    }
+
+    void BindDescriptorHeaps() const;
 
     void BindConstantBuffers() const;
     void BindSRVDescriptor(uint32_t slotInHeap) const;
@@ -52,7 +54,7 @@ public:
     ComPtr<ID3D12Device> m_device;
 
 #if defined(DEBUG) || defined(_DEBUG)
-    ComPtr<ID3D12Debug> m_debug;
+    ComPtr<ID3D12Debug1> m_debug;
 #endif
 
     ComPtr<ID3D12CommandQueue> m_commandQueue;
@@ -69,9 +71,10 @@ public:
 
     ComPtr<ID3D12DescriptorHeap> m_RTVHeap;
     ComPtr<ID3D12DescriptorHeap> m_DSVHeap;
-    ComPtr<ID3D12DescriptorHeap> m_CBVHeap;
-    ComPtr<ID3D12DescriptorHeap> m_SRVHeap;
+    ComPtr<ID3D12DescriptorHeap> m_CBV_SRV_UAVHeap;
     ComPtr<ID3D12DescriptorHeap> m_samplersHeap;
+
+    uint32_t m_CBV_SRV_UAVDescriptorIndex;
 
     ComPtr<ID3D12RootSignature> m_globalRootSignature;
 

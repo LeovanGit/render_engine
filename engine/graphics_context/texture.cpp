@@ -11,6 +11,7 @@ namespace engine
 Texture::Texture(const std::wstring &pathToFile, TextureUsage usage)
     : m_pathToFile(pathToFile)
     , m_texture(nullptr)
+    , m_indexInHeap(-1)
 {
     CreateTexture(pathToFile);
     CreateShaderResourceView();
@@ -91,12 +92,11 @@ void Texture::CreateShaderResourceView()
     SRVDesc.Texture2D.PlaneSlice = 0;
     SRVDesc.Texture2D.ResourceMinLODClamp = 0.0f;
 
-    static uint32_t indexInSRVHeap = 0;
+    m_indexInHeap = globals->GetNextFreeCBV_SRV_UAVDescriptorIndex();
+
     globals->m_device->CreateShaderResourceView(
         m_texture.Get(),
         &SRVDesc,
-        globals->GetSRVDescriptor(indexInSRVHeap));
-    m_slotInHeap = indexInSRVHeap;
-    ++indexInSRVHeap;
+        globals->GetCBV_SRV_UAVDescriptor(m_indexInHeap));
 }
 } // namespace engine
