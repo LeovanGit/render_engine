@@ -21,11 +21,13 @@ public:
     struct PerViewConstantBuffer
     {
         DirectX::XMFLOAT4X4 viewProjMatrix;
+        DirectX::XMFLOAT4 cameraPos;
     };
 
     struct PerMeshConstantBuffer
     {
         DirectX::XMFLOAT4X4 modelMatrix;
+        DirectX::XMFLOAT4X4 modelMatrixInv;
     };
 
     void CreateConstantBuffers();

@@ -54,6 +54,11 @@ public:
     XMVECTOR GetUp() const;
     XMVECTOR GetForward() const;
 
+    XMVECTOR GetWorldPosition() const
+    {
+        return XMLoadFloat3(&m_position);
+    }
+
 private:
     XMFLOAT3 m_position;
 

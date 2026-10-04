@@ -15,6 +15,7 @@ void Renderer::Update()
 {
     PerViewConstantBuffer perViewData;
     DirectX::XMStoreFloat4x4(&perViewData.viewProjMatrix, m_camera->GetViewProjMatrix());
+    DirectX::XMStoreFloat4(&perViewData.cameraPos, m_camera->GetWorldPosition());
     UpdatePerViewConstantBuffer(perViewData);
 }
 
@@ -43,12 +44,25 @@ void Renderer::Render()
     {
         PerMeshConstantBuffer perMeshData;
         DirectX::XMStoreFloat4x4(&perMeshData.modelMatrix, mesh->m_modelMatrix);
+        DirectX::XMStoreFloat4x4(&perMeshData.modelMatrixInv, DirectX::XMMatrixInverse(nullptr, mesh->m_modelMatrix));        
+
         UpdatePerMeshConstantBuffer(perMeshData);
         BindPerMeshConstantBuffer();
 
         mesh->m_texture->Bind(0);
         mesh->m_vertexBuffer->Bind();
         mesh->m_indexBuffer->Bind();
+
+        ComPtr<ID3D11RasterizerState> rastState;
+
+        //D3D11_RASTERIZER_DESC  rastDesc = {};
+       // rastDesc.FillMode = D3D11_FILL_SOLID;
+        //rastDesc.CullMode = D3D11_CULL_BACK;
+        //rastDesc.FrontCounterClockwise = true;
+
+        //globals->m_device->CreateRasterizerState(&rastDesc, rastState.ReleaseAndGetAddressOf());
+        
+       // globals->m_deviceContext->RSSetState(rastState.Get());
 
         globals->m_deviceContext->DrawIndexed(mesh->m_indexBuffer->m_size, 0, 0);
     }

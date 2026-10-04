@@ -58,15 +58,15 @@ void InitScene(engine::Renderer &renderer)
         "unitCube",
         L"../assets/textures/bricks.dds",
         { 0.0f, 0.0f, 3.0f },
-        { 1.0f, 1.0f, 1.0f },
+        { 1.0f, 5.0f, 1.0f },
         { 0.0f, 45.0f, 0.0f }));
 
-    renderer.m_meshes.push_back(mm->GenerateUnitCube(
-        "unitCube2",
-        L"../assets/textures/lava.dds",
-        { 0.0f, 1.6f, 3.0f },
-        { 0.6f, 0.6f, 0.6f },
-        { 0.0f, 0.0f, 0.0f }));
+    //renderer.m_meshes.push_back(mm->GenerateUnitCube(
+    //    "unitCube2",
+    //    L"../assets/textures/lava.dds",
+    //    { 0.0f, 1.6f, 3.0f },
+    //    { 0.6f, 0.6f, 0.6f },
+    //    { 0.0f, 0.0f, 0.0f }));
 }
 
 int main(int argc, char *argv[])

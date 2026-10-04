@@ -78,6 +78,15 @@ void Globals::CreateSamplers()
     linearSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
     linearSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
     linearSamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
+   
+    //linearSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+    //linearSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+    //linearSamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+    //linearSamplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+    //linearSamplerDesc.MipLODBias = 0;
+    //linearSamplerDesc.MaxAnisotropy = 16.0f;
+    //LOD Clamp : 0 - FLT_MAX MinLOD MaxLOD 
+
 
     HRESULT hr = m_device->CreateSamplerState(&linearSamplerDesc, m_linearSampler.GetAddressOf());
     assert(hr >= 0 && "Failed to create linear sampler state\n");
@@ -107,6 +116,7 @@ void Globals::CreateRasterizerState()
 {
     D3D11_RASTERIZER_DESC rasterizerDesc = {};
     rasterizerDesc.CullMode = D3D11_CULL_BACK;
+    rasterizerDesc.FrontCounterClockwise = true;
     rasterizerDesc.FillMode = D3D11_FILL_SOLID;
 
     m_device->CreateRasterizerState(&rasterizerDesc, m_rasterizerState.GetAddressOf());
